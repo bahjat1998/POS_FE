@@ -1,0 +1,70 @@
+<modal #DeliveryCustomerPop class="modal-top rounded lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{'DeliveryCustomer'| translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="gap-2 grid grid-cols-2">
+            <div>
+                <label>{{ 'Phone1'| translate }} </label>
+                <input type="text" [(ngModel)]="model.phone1" class="form-input"
+                    (ngModelChange)="SearchForRelatedPhone()" />
+            </div>
+            <div>
+                <label>{{ 'Phone2'| translate }} </label>
+                <input type="text" [(ngModel)]="model.phone2" class="form-input" (ngModelChange)="MasterInfoChanged()" />
+            </div>
+            <div class="col-span-2">
+                <label>{{ 'Name'| translate }} </label>
+                <input type="text" [(ngModel)]="model.name" class="form-input" (ngModelChange)="MasterInfoChanged()" />
+            </div>
+            <div>
+                <label>{{ 'Address'| translate }} </label>
+                <input type="text" [(ngModel)]="model.address.address" class="form-input"
+                    (ngModelChange)="AddressChanged()" />
+            </div>
+            <div>
+                <label>{{ 'DeliveryArea'| translate }} </label>
+                <ng-select class="form-control" [items]="lstLkps['DeliveryAreas']" bindLabel="label" bindValue="value"
+                    [(ngModel)]="model.address.areaId" (ngModelChange)="AddressChanged()">
+                </ng-select>
+            </div>
+
+
+            <ng-container *ngIf="beCustomer && beCustomer.lstAddress && beCustomer.lstAddress.length > 0">
+                <div class="col-span-2">
+                    <h6 class="mb-4 font-semibold dark:text-white-light">{{ 'PleaseSelectDeliveryArea' | translate }} :
+                    </h6>
+                    <div class="flex flex-col border border-[#e0e6ed] dark:border-[#1b2e4b] rounded-md w-full">
+                        <div *ngFor="let r of beCustomer.lstAddress" (click)="selectAddress(r)"
+                            class="flex hover:bg-[#eee] dark:hover:bg-[#eee]/10 px-4 py-2.5 border-[#e0e6ed] dark:border-[#1b2e4b] border-b cursor-pointer"
+                            [ngClass]="{'bg-primary text-white-light hover:text-black' : model.deliveryCustomerAddressId == r.id}">
+                            <div class="ltr:mr-3 rtl:ml-3">
+                                <img src="../../../assets/images/point.png" alt=""
+                                    class="rounded-full w-12 h-12 object-cover" />
+                            </div>
+                            <div class="flex-1 font-semibold">
+                                <h6 class="mb-1 text-base">{{r.address}}</h6>
+                                <div class="flex justify-between" *ngIf="r.area">
+                                    <p class="text-xs">{{ 'AreaName' | translate }}: {{r.area.label}} </p>
+                                    <p>{{ 'Cost' | translate }}: <span class="font-bold">{{r.area.decimal1}}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-template>
+    <ng-template #modalFooter>
+        <div class="flex justify-end w-full">
+            <div class="flex justify-end">
+                <button type="button" (click)="closeModel()" class="btn-outline-danger btn">{{
+                    'Discard' |
+                    translate
+                    }}</button>
+                <button type="button" (click)="save()" class="rtl:mr-4 ltr:ml-4 btn btn-success">{{ 'Save'
+                    | translate }}</button>
+            </div>
+        </div>
+    </ng-template>
+</modal>

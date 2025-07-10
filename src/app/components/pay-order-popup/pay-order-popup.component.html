@@ -1,0 +1,93 @@
+<modal #PosPaymentScreenPopup class="modal-top rounded extra-large-modal paymentPop">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'PaymentScreen' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="grid grid-cols-8 pb-4" *ngIf="componentData.orderDetails">
+            <div class="col-span-3 pr-3">
+                <ng-container [ngTemplateOutlet]="CartItemView"
+                    [ngTemplateOutletContext]="{order:componentData.orderDetails}">
+                </ng-container>
+            </div>
+            <div class="col-span-5">
+                <p>Payment Details</p>
+                <div class="gap-x-2 grid grid-cols-4">
+                    <div class="flex flex-col space-y-1">
+                        <ng-container *ngFor="let r of lstLkps['lstPredefinedCurrenciesValues']">
+                            <button class="btn btn-lg grow" [ngClass]="r.selected ? 'btn-dark' : 'btn-outline-dark'"
+                                (click)="selectPredefinedCurrency(r)">{{r.label}}</button>
+                        </ng-container>
+                    </div>
+                    <div class="space-y-1 col-span-2 mx-auto w-64">
+                        <input type="text"
+                            class="mb-1 p-2 border border-gray-300 rounded focus:outline-none w-full text-xl"
+                            [value]="calcValue" readonly style=" height: 55px; " />
+                        <app-calc *ngIf="renderCalc" (bindVal)="updateCalc($event)"></app-calc>
+                    </div>
+                    <div class="flex flex-col space-y-1 rtl:pr-2 ltr:pl-2">
+                        <ng-container *ngFor="let r of lstLkps['PaymentMethod']">
+                            <button class="btn grow" *ngIf="r.str1" (click)="handleChangePaymentMethod(r.str1)"
+                                [ngClass]="r.str1 == componentData.paymentType ? 'btn-dark':'btn-outline-dark'">{{r.label}}</button>
+                        </ng-container>
+                        <div hlMenu class="dropdown grow">
+                            <button type="button" hlMenuButton class="w-full h-full btn btn-info dropdown-toggle grow">
+                                {{ 'More' | translate}}
+                                <icon-caret-down class="inline-block rtl:mr-1 ltr:ml-1" />
+                            </button>
+                            <ul *hlMenuItems @toggleAnimation class="ltr:right-0 rtl:left-0 whitespace-nowrap">
+                                <li><a href="javascript:;" *hlMenuItem="let menuItem">{{'ChangeCurrency' |
+                                        translate}}</a></li>
+                                <li><a href="javascript:;" *hlMenuItem="let menuItem">{{'Split' | translate}}</a></li>
+                            </ul>
+                        </div>
+                        <ng-container *ngFor="let r of lstLkps['ExtraActions']">
+                            <button class="btn grow {{r.class}}"
+                                (click)="handleCustomAction(r.value)">{{r.label|translate}}</button>
+                        </ng-container>
+                    </div>
+                </div>
+
+                <div class="flex justify-between pt-1">
+                    <div>
+                        <p>{{ 'Paid' | translate }}: <span
+                                class="font-bold text-primary">{{(componentData.orderDetails.paid ??
+                                0)|number}}</span>
+                        </p>
+                        <p>{{ 'Remain' | translate }}: <span class="font-bold">{{(componentData.orderDetails.remaining
+                                ?? 0)|number}}</span></p>
+                        <p>{{ 'ToReturn' | translate }}: <span
+                                class="font-bold text-danger text-lg">{{((componentData.orderDetails.paid ?? 0) -
+                                (componentData.orderDetails.finalTotal ?? 0) )|number}}</span></p>
+                    </div>
+
+
+
+                    <div class="flex justify-between gap-x-1">
+                        <div hlMenu class="h-full dropdown grow">
+                            <button type="button" hlMenuButton class="inline-flex w-full h-full btn btn-info dropdown-toggle">
+                                {{'SaveWithout'|translate}}
+                            </button>
+                            <ul *hlMenuItems @toggleAnimation
+                                class="ltr:right-0 bottom-full rtl:left-0 !mt-0 mb-1 whitespace-nowrap">
+                                <li><a href="javascript:;" *hlMenuItem="let menuItem" (click)="save('Cash')">{{'WithoutCashePrinter'|translate}}</a></li>
+                                <li><a href="javascript:;" *hlMenuItem="let menuItem" (click)="save('Kitchen')">{{'WithoutKitchenPrinter'|translate}}</a></li>
+                                <li><a href="javascript:;" *hlMenuItem="let menuItem" (click)="save('All')">{{'WithoutPrinters'|translate}}</a></li>
+                            </ul>
+                        </div>
+                        <button class="w-28 btn btn-primary" (click)="save()">{{'Save'|translate}}</button>
+                    </div>
+                </div>
+                <div>
+                    <label>{{ 'InvoiceNote'| translate }} </label>
+                    <textarea class="form-input" rows="1" [(ngModel)]="componentData.orderDetails.notes"></textarea>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</modal>
+
+
+<ng-template #CartItemView let-order="order">
+    <app-cart-items [orderDetails]="order"
+        [style]="{textSize:'text-md',itemsView:1,totalsView:1,spaceYaxis:1,masterClasses:''}"></app-cart-items>
+</ng-template>

@@ -1,0 +1,121 @@
+<div>
+    <div class="absolute inset-0">
+        <img src="assets/images/auth/bg-gradient.png" alt="image" class="w-full h-full object-cover" />
+    </div>
+    <div
+        class="relative flex justify-center items-center bg-[url(/assets/images/auth/map.png)] dark:bg-[#060818] bg-cover bg-no-repeat bg-center px-6 sm:px-16 py-10 min-h-screen">
+        <img src="assets/images/auth/coming-soon-object1.png" alt="image"
+            class="top-1/2 left-0 absolute h-full max-h-[893px] -translate-y-1/2" />
+        <img src="assets/images/auth/coming-soon-object2.png" alt="image"
+            class="top-0 left-24 md:left-[30%] absolute h-40" />
+        <img src="assets/images/auth/coming-soon-object3.png" alt="image" class="top-0 right-0 absolute h-[300px]" />
+        <img src="assets/images/auth/polygon-object.svg" alt="image" class="bottom-0 absolute end-[28%]" />
+
+        <div
+            class="relative flex lg:flex-row flex-col justify-between lg:gap-10 xl:gap-0 bg-white/60 dark:bg-black/50 backdrop-blur-lg rounded-md w-full max-w-[1502px] lg:min-h-[758px] overflow-hidden">
+
+            <div
+                class="hidden lg:inline-flex relative justify-center items-center bg-[linear-gradient(225deg,rgba(239,18,98,1)_0%,rgba(67,97,238,1)_100%)] xl:-ms-28 p-5 w-full lg:max-w-[835px] ltr:xl:skew-x-[14deg] rtl:xl:skew-x-[-14deg]">
+                <div
+                    class="ltr:-right-10 ltr:xl:-right-20 rtl:-left-10 rtl:xl:-left-20 absolute inset-y-0 ltr:bg-gradient-to-r rtl:bg-gradient-to-l from-primary/10 via-transparent to-transparent w-8 xl:w-16">
+                </div>
+                <div class="ltr:xl:-skew-x-[14deg] rtl:xl:skew-x-[14deg]">
+                    <a class="block flex items-center gap-5 ms-10 w-48 lg:w-72">
+                        <img class="inline rtl:-mr-1 ltr:-ml-1 w-20 w-8 h-20" src="assets/images/logo.svg" alt="" />
+                        <div class="text-5xl whitespace-nowrap">
+                            <span class="font-extrabold">N</span>ew<span class="ml-1 font-extrabold">C</span>lick
+                        </div>
+                    </a>
+                    <div class="hidden lg:block mt-24 w-full max-w-[430px]">
+                        <img src="assets/images/auth/login.svg" alt="Cover Image" class="w-full" />
+                    </div>
+                </div>
+            </div>
+            <div
+                class="relative flex flex-col justify-center items-center gap-6 px-4 sm:px-6 pt-6 pb-16 w-full lg:max-w-[667px]">
+                <div class="lg:top-6 lg:absolute flex items-center gap-2 w-full max-w-[440px] lg:max-w-full lg:end-6">
+                    <a class="lg:hidden block w-8">
+                        <img src="assets/images/logo.svg" alt="Logo" class="mx-auto w-10" />
+                    </a>
+                    <div class="top-6 absolute end-6">
+                        <div class="dropdown">
+                            <div hlMenu>
+                                <button type="button" hlMenuButton
+                                    class="flex items-center gap-2.5 bg-white dark:bg-black px-2 py-1.5 border border-white-dark/30 hover:border-primary rounded-lg text-white-dark hover:text-primary">
+                                    <div>
+                                        <img [src]="'assets/images/flags/'+ store.locale.toUpperCase() + '.svg'"
+                                            alt="image" class="rounded-full w-5 h-5 object-cover" />
+                                    </div>
+                                    <div class="font-bold text-base uppercase">{{ store.locale }}</div>
+                                    <span class="shrink-0">
+                                        <icon-caret-down />
+                                    </span>
+                                </button>
+                                <ul *hlMenuItems @toggleAnimation
+                                    class="top-11 ltr:-right-14 sm:ltr:-right-2 rtl:-left-14 sm:rtl:-left-2 gap-2 grid grid-cols-2 !px-2 w-[280px] font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
+                                    <li *ngFor="let item of store.languageList;">
+                                        <button *hlMenuItem="let menuItem" type="button"
+                                            class="w-full hover:text-primary"
+                                            [ngClass]="{ 'bg-primary/10 text-primary': translate.currentLang === item.code }"
+                                            (click)="changeLanguage(item)">
+                                            <img class="rounded-full w-5 h-5 object-cover"
+                                                [src]="'assets/images/flags/'+ item.code.toUpperCase() + '.svg'"
+                                                alt="" />
+                                            <span class="rtl:mr-3 ltr:ml-3">{{ item.name }}</span>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:mt-16 w-full max-w-[440px]">
+                    <div class="mb-10">
+                        <h1 class="font-extrabold text-primary text-3xl md:text-4xl uppercase !leading-snug">{{ 'SignIn' | translate }}
+                        </h1>
+                        <p class="font-bold text-white-dark text-base leading-normal">{{'EnterEmailAndPassword'|translate}}</p>
+                    </div>
+                    <form class="space-y-5 dark:text-white" [formGroup]="form" (ngSubmit)="login()">
+                        <div>
+                            <label for="Email">{{ 'Email' | translate }}</label>
+                            <div class="relative text-white-dark">
+                                <input id="Email" type="email" formControlName="userName" placeholder="{{ 'EnterEmail' | translate }}"
+                                    class="ps-10 placeholder:text-white-dark form-input" />
+                                <span class="top-1/2 absolute -translate-y-1/2 start-4">
+                                    <icon-mail [fill]="true" />
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between">
+                                <label for="Password">{{ 'Password' | translate }}</label>
+                                <p class="text-blue-500 underline cursor-pointer" (click)="switchLogin()"> {{ 'SwitchLogin' | translate }} {{ '?' | translate }}</p>
+                            </div>
+                            <div class="relative text-white-dark">
+                                <input id="Password" type="password" formControlName="password"
+                                    placeholder="{{ 'EnterPassword' | translate }}" class="ps-10 placeholder:text-white-dark form-input" />
+                                <span class="top-1/2 absolute -translate-y-1/2 start-4">
+                                    <icon-lock-dots [fill]="true" />
+                                </span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" class="bg-white dark:bg-black form-checkbox" />
+                                <span class="text-white-dark">{{ 'RememberMe' | translate }}</span>
+                            </label>
+                        </div>
+                        <button [disabled]="form.invalid" type="submit"
+                            class="shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] !mt-6 border-0 w-full uppercase btn btn-gradient">
+                            {{ 'SignIn' | translate }}
+                        </button>
+                    </form>
+
+
+                </div>
+                <p class="bottom-6 absolute w-full dark:text-white text-center">© {{ currYear }}.New Click All Rights
+                    Reserved.</p>
+            </div>
+        </div>
+    </div>
+</div>

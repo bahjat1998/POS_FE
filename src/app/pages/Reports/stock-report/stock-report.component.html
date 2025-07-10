@@ -1,0 +1,76 @@
+<div class="gap-y-4 grid">
+    <div class="panel">
+        <div class="gap-2 lg:gap-4 grid grid-cols-2 lg:grid-cols-3">
+            <div class="col-span-2 md:col-span-1">
+                <label class="w-40">{{ 'BaseUnit' | translate }}:</label>
+                <ng-select class="w-full form-control" [items]="lstLkps['ItemUnits']" bindLabel="label"
+                    bindValue="value" [(ngModel)]="params['unitId']">
+                </ng-select>
+            </div>
+            <div class="col-span-2 md:col-span-1">
+                <label for="gender" class="gen-label">{{ 'Branch' | translate }}</label>
+                <ng-select class="form-control" [items]="lstLkps['Branch']" bindLabel="label"
+                    bindValue="value" [(ngModel)]="params.branchId">
+                </ng-select>
+            </div>
+            <div class="flex gap-x-2">
+                <div class="flex items-end">
+                    <label class="inline-flex">
+                        <input type="checkbox" class="form-checkbox" [(ngModel)]="params['minAlarm']" />
+                        <span>{{ 'ExceedMin' | translate }}</span>
+                    </label>
+                </div>
+                <div class="flex items-end">
+                    <label class="inline-flex">
+                        <input type="checkbox" class="form-checkbox" [(ngModel)]="params['maxAlarm']" />
+                        <span>{{ 'ExceedMax' | translate }}</span>
+                    </label>
+                </div>
+            </div>
+            <div class="flex justify-end gap-x-3 col-span-2 lg:col-span-3">
+                <a (click)="search()" class="gap-2 cursor-pointer btn btn-secondary">
+                    <icon-search *ngIf="!loading" />
+                    <span *ngIf="loading"
+                        class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+
+                    {{ 'Search' | translate }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-x-scroll panel">
+        <div class="flex justify-between">
+            <h5 class="mb-4 font-semibold dark:text-white-light text-lg">{{ 'ItemsStocks' | translate }}</h5>
+            <!-- <h5 class="font-semibold text-lg" *ngIf="data">{{'Total'|translate}}: {{data.finalRemaining | number}}</h5> -->
+        </div>
+        <div class="datatable" *ngIf="cols">
+            <ng-datatable [rows]="lstData" [columns]="cols" [sortable]="true" [loading]="loading"
+                [totalRows]="params.rowsCount" [isServerMode]="true" [pageSize]="params.ps"
+                [pageSizeOptions]="[10, 15, 30, 50]" paginationInfo="{0} to {1} of {2}"
+                (changeServer)="changeServer($event)" skin="whitespace-nowrap bh-table-hover"
+                [sortColumn]="'createDate'" [sortDirection]="'desc'">
+
+                <ng-template slot="id" let-r="data">
+                    <strong class="text-info cursor-pointer" (click)="showDetails(r)">#{{ r.id }}</strong>
+                </ng-template>
+                <ng-template slot="quantity" let-r="data">
+                    <strong class="font-bold">{{ (r.quantity / (r.unitCount ?? 1)) |number:'1.2-2'}}</strong>
+                </ng-template>
+
+                <ng-template slot="actions" let-r="data">
+                    <div class="flex justify-center items-center gap-4">
+                        <a [routerLink]="'/visits/cu/'+r.id" class="hover:text-info c-p" *ngIf="r['editable']">
+                            <icon-edit class="w-5 h-5" />
+                        </a>
+
+                        <button type="button" class="hover:text-danger">
+                            <icon-trash-lines class="w-5 h-5" />
+                        </button>
+                    </div>
+                </ng-template>
+
+            </ng-datatable>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+.floor-b {
+    padding: 10px;
+    padding-top: 0;
+}
+
+.floor-b>button {
+    width: 100%;
+    margin-bottom: 5px;
+    height: 100px;
+}

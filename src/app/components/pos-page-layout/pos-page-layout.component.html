@@ -1,0 +1,181 @@
+<modal #PosStyleSetup class="modal-top rounded extra-large-modal lg no-select">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'POSSetup' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="flex justify-between">
+            <div>
+                <label>{{ 'Layout' | translate }}</label>
+                <input type="number" [(ngModel)]="model.GeneralZoomOut" class="form-input" (change)="styleChanged()"
+                    step="0.01" />
+            </div>
+            <div>
+
+                <button type="button" class="gap-x-2 btn btn-success" (click)="ReloadItems()">
+                    <span *ngIf="reloadItems"
+                        class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+                    {{'ReloadItems'|translate}}</button>
+            </div>
+        </div>
+        <div class="mb-2">
+            <ul class="flex flex-wrap">
+                <li *ngFor="let r of tabs">
+                    <a href="javascript:"
+                        class="block hover:bg-primary ltr:mr-2 -mb-[1px] rtl:ml-2 p-3.5 py-2 rounded hover:text-white"
+                        [ngClass]="{'bg-primary text-white' : selectedTab.value === r.value}"
+                        (click)="selectTab(r)">{{r.label |
+                        translate}}</a>
+                </li>
+            </ul>
+        </div>
+        <ng-container [ngTemplateOutlet]="Cat">
+        </ng-container>
+        <ng-container [ngTemplateOutlet]="Items">
+        </ng-container>
+        <ng-container [ngTemplateOutlet]="Cart">
+        </ng-container>
+        <ng-container [ngTemplateOutlet]="ShortCuts">
+        </ng-container>
+    </ng-template>
+
+    <ng-template #modalFooter>
+        <div class="flex justify-between w-full">
+            <div>
+
+            </div>
+            <div class="flex justify-end">
+                <button type="button" (click)="close()" class="btn-outline-danger btn">{{
+                    'Discard' |
+                    translate
+                    }}</button>
+                <button type="button" (click)="save()" class="rtl:mr-4 ltr:ml-4 btn btn-success">{{ 'Save' | translate
+                    }}</button>
+            </div>
+        </div>
+    </ng-template>
+</modal>
+
+
+<ng-template #Cat>
+    <div *ngIf="selectedTab.value == 0" class="gap-3 grid grid-cols-4">
+        <div>
+            <label>{{ 'Layout' | translate }}</label>
+            <ng-select class="form-control" [items]="lstCatLayout" bindLabel="label" bindValue="value"
+                [(ngModel)]="model.category.layout" [clearable]="false" (change)="styleChanged()">
+            </ng-select>
+        </div>
+        <div>
+            <label>{{ 'Cols' | translate }}</label>
+            <input type="number" [(ngModel)]="model.category.cols" class="form-input" (change)="styleChanged()" />
+        </div>
+        <div>
+            <label>{{ 'BoxHeight' | translate }}</label>
+            <input type="number" [(ngModel)]="model.category.boxHeight" class="form-input" (change)="styleChanged()" />
+        </div>
+        <div>
+            <label class="inline-flex">
+                <input type="checkbox" class="form-checkbox" [(ngModel)]="model.category.withImage"
+                    (change)="styleChanged()" />
+                <span>{{ 'WithImage' | translate }}</span>
+            </label>
+        </div>
+        <div>
+            <label>{{ 'Width' | translate }}</label>
+            <input type="number" [(ngModel)]="model.category.width" class="form-input" (change)="styleChanged()" />
+        </div>
+        <div>
+            <label>{{ 'Height' | translate }}</label>
+            <input type="number" [(ngModel)]="model.category.height" class="form-input" (change)="styleChanged()" />
+        </div>
+        <div>
+            <label>{{ 'Color' | translate }}</label>
+            <input type="text" [(ngModel)]="model.category.color" class="form-input" (change)="styleChanged()" />
+        </div>
+        <div>
+            <label>{{ 'Background' | translate }}</label>
+            <input type="text" [(ngModel)]="model.category.background" class="form-input" (change)="styleChanged()" />
+        </div>
+    </div>
+</ng-template>
+<ng-template #Items>
+    <div *ngIf="selectedTab.value == 1" class="gap-3 grid grid-cols-4">
+        <div>
+            <label>{{ 'Layout' | translate }}</label>
+            <ng-select class="form-control" [items]="lstItmLayout" bindLabel="label" bindValue="value"
+                [(ngModel)]="model.Items.style" [clearable]="false" (change)="styleChanged()">
+            </ng-select>
+        </div>
+        <div>
+            <label>{{ 'Cols' | translate }}</label>
+            <input type="number" [(ngModel)]="model.Items.cols" class="form-input" (change)="styleChanged()" />
+        </div>
+        <div>
+            <label>{{ 'BoxHeight' | translate }}</label>
+            <input type="number" [(ngModel)]="model.Items.boxHeight" class="form-input" (change)="styleChanged()" />
+        </div>
+        <div>
+            <label>{{ 'BoxInnerHeight' | translate }}</label>
+            <input type="number" [(ngModel)]="model.Items.boxHeightInner" class="form-input"
+                (change)="styleChanged()" />
+        </div>
+        <div>
+            <label class="inline-flex">
+                <input type="checkbox" class="form-checkbox" [(ngModel)]="model.Items.withImage"
+                    (change)="styleChanged()" />
+                <span>{{ 'WithImage' | translate }}</span>
+            </label>
+        </div>
+        <div>
+            <label>{{ 'Width' | translate }}</label>
+            <input type="number" [(ngModel)]="model.Items.width" class="form-input" (change)="styleChanged()" />
+        </div>
+        <div>
+            <label>{{ 'Height' | translate }}</label>
+            <input type="number" [(ngModel)]="model.Items.height" class="form-input" (change)="styleChanged()" />
+        </div>
+
+    </div>
+</ng-template>
+<ng-template #Cart>
+    <div *ngIf="selectedTab.value == 2" class="gap-3 grid grid-cols-4">
+        <div>
+            <label>{{ 'itemsBoxHeight' | translate }}</label>
+            <input type="number" [(ngModel)]="model.cart.itemsBoxHeight" class="form-input" (change)="styleChanged()" />
+        </div>
+    </div>
+</ng-template>
+
+
+<ng-template #ShortCuts>
+    <div *ngIf="selectedTab.value == 3">
+        <div class="flex justify-end items-end">
+            <button type="button" (click)="resetKeys()" class="btn-outline-danger btn">{{ 'Reset' |
+                translate
+                }}</button>
+        </div>
+        <table class="table-hover w-full">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>{{ 'Action' | translate }}</th>
+                    <th>{{ 'RelatedShortCut' | translate }} </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let r of model.lstShortCutsActionsLkp; let i = index">
+                    <td class="text-primary"> {{i +1 }} </td>
+                    <td>
+                        <ng-select class="form-control" [items]="lstShortCutsActionsLkp" bindLabel="label"
+                            bindValue="value" [(ngModel)]="r['action']" disabled>
+                        </ng-select>
+                    </td>
+                    <td>
+                        <ng-select class="form-control" [items]="lstShortCutsKeysLkp" bindLabel="label"
+                            bindValue="value" [(ngModel)]="r['key']">
+                        </ng-select>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ng-template>

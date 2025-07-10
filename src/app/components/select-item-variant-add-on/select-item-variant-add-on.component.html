@@ -1,0 +1,93 @@
+<modal #PosSelectItemDetails class="modal-top rounded extra-large-modal lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'SelectDetails' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="space-y-2 pb-1">
+            <div *ngIf="componentData.lstVariants && componentData.lstVariants.length > 0">
+                <!-- <p>{{ 'SelectVariant' | translate }}</p> -->
+                <div class="gap-3 grid grid-cols-8">
+                    <div class="gap-3 grid grid-cols-4 col-span-6">
+                        <ng-container *ngFor="let r of componentData.lstVariants">
+                            <ng-container [ngTemplateOutlet]="SelectBox" [ngTemplateOutletContext]="{detail:r,type:0}">
+                            </ng-container>
+                        </ng-container>
+
+                        <div class="col-span-6">
+                            <label>{{'ItemNote' | translate }} </label>
+                            <textarea class="form-input" rows="2" [(ngModel)]="otherData.note"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-span-2">
+                        <input type="text" class="mb-2 p-0.5 text-danger text-lg text-center form-input"
+                            [(ngModel)]="otherData.variantQty" disabled>
+                        <app-calc (bindVal)="updateVariantQuantity($event)" [ResetCounter]="currentCounter"
+                            [style]="{padding:'p-3'}"></app-calc>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="componentData.lstItemAddOns && componentData.lstItemAddOns.length > 0">
+                <p>{{ 'SelectAddOn' | translate }}</p>
+                <div class="gap-3 grid grid-cols-8">
+                    <div class="gap-3 grid grid-cols-5 col-span-6">
+                        <ng-container *ngFor="let r of componentData.lstItemAddOns">
+                            <ng-container [ngTemplateOutlet]="SelectBox" [ngTemplateOutletContext]="{detail:r,type:1}">
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                    <div class="col-span-2">
+                        <app-calc (bindVal)="updateCalc($event)" [ResetCounter]="currentCounter"
+                            [style]="{padding:'p-3'}"></app-calc>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </ng-template>
+    <ng-template #modalFooter>
+        <div class="flex justify-end w-full">
+            <div class="flex justify-end">
+                <button type="button" (click)="closeSelectItemVariantAddOn()" class="btn-outline-danger btn">{{
+                    'Discard' |
+                    translate
+                    }}</button>
+                <button type="button" (click)="closeSelectItemVariantAddOn(1)"
+                    class="rtl:mr-4 ltr:ml-4 btn btn-primary">{{
+                    'Save'
+                    | translate }}</button>
+            </div>
+        </div>
+    </ng-template>
+</modal>
+
+
+<ng-template #SelectBox let-detail="detail" let-type="type">
+    <!-- -->
+    <div class="flex flex-col flex-1 rounded-lg w-full md:min-h-[155px] md:max-h-[155px] bx-1"
+        (click)="selectBox(type,detail)" (dblclick)="selectBox(type,detail,true)" [ngClass]="{'selected':detail.selected}">
+        <div class="flex flex-col w-full grow">
+            <div class="grow" *ngIf="detail.img">
+                <div class="mg" [style.backgroundImage]="'url(' + detail.img + ')'"></div>
+            </div>
+            <p class="flex justify-center items-end" [ngClass]="{'grow':!detail.img}">
+                <ng-container *ngIf="type == 0">{{detail.name}}</ng-container>
+                <ng-container *ngIf="type == 1">{{common.currLang == 'en' ? detail.nameEn :
+                    detail.nameAr}}</ng-container>
+            </p>
+            <div class="flex justify-end items-end" [ngClass]="{'grow':!detail.img}">
+                <ng-container *ngIf="type == 0">
+                    <p class="pri">
+                        {{(detail.price) | number}}
+                    </p>
+                </ng-container>
+                <ng-container *ngIf="type == 1">
+                    <div class="flex w-full" [ngClass]="{'justify-between':detail.qty,'justify-end':!detail.qty}">
+                        <span *ngIf="detail.qty">{{detail.qty}} X {{detail.price}}</span>
+                        <span class="pri"> {{(detail.total ?? detail.price) | number}} </span>
+                    </div>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</ng-template>

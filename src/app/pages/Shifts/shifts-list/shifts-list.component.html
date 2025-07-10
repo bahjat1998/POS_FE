@@ -1,0 +1,90 @@
+<div class="gap-y-4 grid">
+    <div class="panel">
+        <div class="gap-4 grid sm:grid-cols-2 md:grid-cols-5">
+            <div class="col-span-1">
+                <label for="name">{{ 'strSearch' | translate }}</label>
+                <input id="name" type="text" class="form-input" [(ngModel)]="params.strSearch"
+                    (ngModelChange)="search()" />
+            </div>
+            <div class="col-span-1">
+                <label for="name">{{ 'FromDate' | translate }}</label>
+                <input type="date" class="form-input" [(ngModel)]="params.fromDate" (ngModelChange)="search()" />
+            </div>
+            <div class="col-span-1">
+                <label for="name">{{ 'ToDate' | translate }}</label>
+                <input type="date" class="form-input" [(ngModel)]="params.toDate" (ngModelChange)="search()" />
+            </div>
+            <div class="col-span-1">
+                <label for="name">{{ 'OpenedByUser' | translate }}</label>
+                <ng-select [items]="lstLkps['_Account_1']" bindLabel="label" bindValue="value"
+                    [(ngModel)]="params.openedByUserId" (ngModelChange)="search()">
+                </ng-select>
+            </div>
+            <div class="col-span-1">
+                <label for="name">{{ 'ClosedByUser' | translate }}</label>
+                <ng-select [items]="lstLkps['_Account_1']" bindLabel="label" bindValue="value"
+                    [(ngModel)]="params.ClosedByUserId" (ngModelChange)="search()">
+                </ng-select>
+            </div>
+            <!-- <div class="flex justify-end items-end">
+                <a [routerLink]="'/stock/items/cu'" class="gap-2 h-10 btn btn-primary">
+                    <icon-plus />
+                    {{ 'NewItem' | translate }}
+                </a>
+            </div> -->
+        </div>
+    </div>
+
+    <div class="overflow-x-scroll panel">
+        <div class="flex justify-between">
+            <h5 class="mb-4 font-semibold dark:text-white-light text-lg">{{ 'ShiftsList' | translate }}</h5>
+            <div class="flex justify-end gap-5">
+                <label class="inline-flex">
+                    <input type="radio" name="ia" class="peer outline-primary form-radio" [value]="'1'"
+                        (ngModelChange)="search()" [(ngModel)]="params.isActive" />
+                    <span class="peer-checked:text-primary">{{ 'Active' | translate }}</span>
+                </label>
+                <label class="inline-flex">
+                    <input type="radio" name="ia" class="peer outline-danger form-radio" [value]="'0'"
+                        (ngModelChange)="search()" [(ngModel)]="params.isActive" />
+                    <span class="peer-checked:text-danger">{{ 'Closed' | translate }}</span>
+                </label>
+            </div>
+        </div>
+        <div class="datatable" *ngIf="cols">
+            <ng-datatable [rows]="lstData" [columns]="cols" [sortable]="true" [loading]="loading"
+                [totalRows]="params.rowsCount" [isServerMode]="true" [pageSize]="params.ps"
+                [pageSizeOptions]="[10, 15, 30, 50]" paginationInfo="{0} to {1} of {2}"
+                (changeServer)="changeServer($event)" skin="whitespace-nowrap bh-table-hover" [sortColumn]="params.OB"
+                [sortDirection]="params.acs == true ? 'asc' : 'desc'">
+
+                <ng-template slot="id" let-r="data">
+                    <strong class="text-info">#{{ r.id }}</strong>
+                </ng-template>
+
+                <ng-template slot="closeUserName" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.closeUserName ?? 'NotClosedYet' | translate}}
+                    </div>
+                </ng-template>
+                <ng-template slot="totalSales" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.totalSales | number}}
+                    </div>
+                </ng-template>
+                <ng-template slot="Times" let-r="data">
+                    <p>{{'StartAt'|translate}} : <span class="font-bold">{{ r.startTime | date:'dd/MM/yyyy • h:mm a'}}</span></p>
+                    <p>{{'EndedAt'|translate}} : <span class="font-bold">{{ r.endTime | date:'dd/MM/yyyy • h:mm a'}}</span></p>
+                </ng-template>
+                <ng-template slot="actions" let-r="data">
+                    <div class="flex justify-center items-center gap-4">
+                        <a [routerLink]="'/shifts/cu/'+r.id" class="hover:text-info">
+                            <icon-edit class="w-4.5 h-4.5" />
+                        </a>
+                    </div>
+                </ng-template>
+
+            </ng-datatable>
+        </div>
+    </div>
+</div>

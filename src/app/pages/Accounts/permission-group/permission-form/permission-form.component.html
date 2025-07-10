@@ -1,0 +1,35 @@
+<div>
+    <h2 class="mb-1">{{ 'GeneralPermissions' | translate }}:</h2>
+    <div class="grid grid-cols-4">
+        <ng-container *ngFor="let r of common.lstPermissions">
+            <div class="col-lg-2" *ngIf="!r.isPos">
+                <label class="inline-flex">
+                    <input type="checkbox" class="peer form-checkbox" [(ngModel)]="permission._permissions[r.value]" />
+                    <span class="peer-checked:text-primary">{{ r.label | translate }}</span>
+                </label>
+            </div>
+        </ng-container>
+    </div>
+</div>
+<div *ngIf="permission._permissions['POS']">
+    <h2 class="mb-1">{{ 'POSPermissions' | translate }}:</h2>
+    <div class="grid grid-cols-4">
+        <div class="grid grid-cols-3 col-span-3">
+            <ng-container *ngFor="let r of lstPosPermissions">
+                <div class="col-lg-2" *ngIf="r.isPos">
+                    <label class="inline-flex">
+                        <input type="checkbox" class="peer form-checkbox" [(ngModel)]="permission._permissions[r.value]" (change)="ch()" />
+                        <span class="peer-checked:text-primary">{{ r.label | translate }}</span>
+                    </label>
+                </div>
+            </ng-container>
+        </div>
+        <div class="space-y-2 grid grid-cols-2">
+            <div *ngIf="permission._permissions['ChangeDiscount']">
+                <label class="mb-1">{{ 'MaximumDiscount' | translate }}</label>
+                <input [(ngModel)]="permission._permissions['MaximumDiscount']" type="number" class="form-input" (change)="ch()"/>
+            </div>
+        </div>
+    </div>
+
+</div>

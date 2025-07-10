@@ -1,0 +1,126 @@
+<div class="gap-y-4 grid">
+    <div class="panel">
+        <div class="gap-4 grid grid-cols-2 lg:grid-cols-3">
+            <div>
+                <label>{{ 'FromDate' | translate }}</label>
+                <input type="date" class="form-input" [(ngModel)]="params.fromDate" />
+            </div>
+            <div>
+                <label>{{ 'ToDate' | translate }}</label>
+                <input type="date" class="form-input" [(ngModel)]="params.toDate" />
+            </div>
+            <div class="flex justify-end items-end gap-x-3 col-span-2 lg:col-span-1">
+                <a (click)="reset()" class="gap-2 h-9 cursor-pointer btn btn-danger">
+                    <icon-refresh *ngIf="!loading" />
+
+                    <span *ngIf="loading"
+                        class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+                    {{ 'Reset' | translate }}
+                </a>
+                <a (click)="search()" class="gap-2 h-9 cursor-pointer btn btn-secondary">
+                    <icon-search *ngIf="!loading" />
+                    <span *ngIf="loading"
+                        class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+
+                    {{ 'Search' | translate }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="gap-2 grid grid-cols-1 lg:grid-cols-2">
+        <div class="gap-4 grid grid-cols-2 lg:grid-cols-4 col-span-1 lg:col-span-2 mb-4 text-white">
+            <ng-container *ngFor="let r of lstData">
+                <div class="{{r.color}} panel" *ngIf="r.flag == 'asCard' || r.extraFlag == 'asCard'">
+                    <div class="flex justify-between">
+                        <div class="ltr:mr-1 rtl:ml-1 font-semibold text-md">{{r.label | translate}}</div>
+                    </div>
+                    <div class="flex items-center mt-5">
+                        <div class="ltr:mr-3 rtl:ml-3 font-bold text-3xl">{{r.value | number}}</div>
+                        <div class="bg-white/30 badge">NIS</div>
+                    </div>
+                    <div class="flex items-center mt-5 font-semibold" *ngIf="r.value1">
+                        <icon-eye />
+                        <span class="mx-2">{{(r.subLabel ?? 'Remaining') | translate}}</span> <span
+                            class="mx-1 font-bold text-black">{{r.value1 |
+                            number}} NIS</span>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+
+
+        <div class="panel">
+            <h5 class="mb-4 font-semibold text-lg dark:text-white-light">{{ 'VisitsReport' | translate }} - All</h5>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="ltr:rounded-l-md rtl:rounded-r-md">Name</th>
+                            <th class="ltr:rounded-r-md rtl:rounded-l-md text-center">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let r of lstData">
+                            <tr *ngIf="r.flag == 'Visit'">
+                                <td class="font-bold">{{r.label | translate}}</td>
+                                <td class="font-bold text-center"
+                                    [ngClass]="{'text-red-600':r.label == 'totalPatientDebits'}">{{r.value |
+                                    number}} <span class="font-bold">NIS</span></td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h5 class="mb-4 font-semibold text-lg dark:text-white-light">{{ 'InvoicesReport' | translate }}</h5>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="ltr:rounded-l-md rtl:rounded-r-md">Name</th>
+                            <th class="ltr:rounded-r-md rtl:rounded-l-md text-center">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let r of lstData">
+                            <tr *ngIf="r.flag == 'inv'">
+                                <td class="font-bold">{{r.label | translate}}</td>
+                                <td class="font-bold text-center">{{r.value | number}} <span
+                                        class="font-bold">NIS</span></td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- <div class="panel">
+            <h5 class="mb-4 font-semibold text-lg dark:text-white-light">{{ 'DebtsTotals' | translate }}</h5>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="ltr:rounded-l-md rtl:rounded-r-md">Name</th>
+                            <th class="ltr:rounded-r-md rtl:rounded-l-md text-center">Total Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <ng-container *ngFor="let r of lstData">
+                            <tr *ngIf="r.flag == 'Debts'">
+                                <td class="font-bold">{{r.label | translate}}</td>
+                                <td class="font-bold text-center text-red-500">{{r.value | number}} <span
+                                        class="font-bold">NIS</span></td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div> -->
+    </div>
+
+</div>

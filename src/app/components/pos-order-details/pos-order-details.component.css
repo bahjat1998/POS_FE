@@ -1,0 +1,23 @@
+.tb1 {
+    width: 100%;
+    @apply w-full flex justify-end
+}
+.tb1_1{
+    width: 150px;
+    @apply flex justify-end
+}
+.tb1 .p1 {
+    @apply font-bold
+}
+
+.tb1 .s1 {
+    @apply font-bold text-primary;
+}
+.tb1 .s2 {
+    @apply px-2 font-bold text-secondary;
+}
+.icsd{
+    max-height: 57vh;
+    min-height: 57vh;
+    overflow: auto;
+}

@@ -1,0 +1,11 @@
+
+<div class="gap-1 grid grid-cols-3">
+    <button *ngFor="let key of keys" (click)="onKeyPress(key)" class="{{style.padding}} btn-outline-dark text-lg btn btn-lg">
+        <ng-container *ngIf="key !== 'backspace'; else backspaceIcon">
+            {{ key }}
+        </ng-container>
+        <ng-template #backspaceIcon>
+            ←
+        </ng-template>
+    </button>
+</div>

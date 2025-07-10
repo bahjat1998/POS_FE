@@ -1,0 +1,46 @@
+<div class="gap-y-4 grid">
+    <div class="panel">
+
+        <div class="flex justify-between items-center">
+            <h5 class="mb-4 font-semibold dark:text-white-light text-lg">{{ 'PermissionGroups' | translate }} </h5>
+            <div class="flex gap-x-2">
+                <div class="flex justify-end items-end">
+                    <a (click)="AddNewGroup()" class="gap-2 h-10 btn btn-primary">
+                        <icon-plus />
+                        {{ 'NewGroup' | translate }}
+                    </a>
+                </div>
+                <div class="flex justify-end items-end">
+                    <a (click)="save()" class="gap-2 h-10 btn btn-success">
+                        <icon-plus />
+                        {{ 'Save' | translate }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <div class="space-y-2 font-semibold panel">
+            <div class="border border-[#d3d3d3] dark:border-[#1b2e4b] rounded"
+                *ngFor="let g of lstGroups; let i = index">
+                <button type="button" class="flex items-center dark:bg-[#1b2e4b] p-4 w-full text-white-dark"
+                    [ngClass]="{ '!text-primary': selectedGroup == getGid(g)}" (click)="selectGroup(g)">
+                    <icon-bolt class="w-6 h-6" [ngClass]="{ 'text-primary': 1}" />
+                    <p class="font-bold text-lg">{{g.name ?? 'NameNotDefined'}} #{{i+1}}</p>
+                    <div class="rtl:mr-auto ltr:ml-auto" [ngClass]="{ 'rotate-180': selectedGroup == getGid(g) }">
+                        <icon-caret-down class="w-6 h-6" [ngClass]="{ 'text-primary': 1}" />
+                    </div>
+                </button>
+                <div [@slideDownUp]="selectedGroup != getGid(g)" class="accordion-content">
+                    <div class="space-y-3 p-3">
+                        <input type="text" class="w-1/3 min-w-40 form-input" [(ngModel)]="g.name">
+                        <app-permission-form [setPermission]="g"></app-permission-form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="text-primary"></p>

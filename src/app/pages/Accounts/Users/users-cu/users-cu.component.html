@@ -1,0 +1,308 @@
+<div>
+    <div class="pt-1">
+        <div class="flex justify-between items-center" *ngIf="!isModal">
+            <h5 class="font-semibold dark:text-white-light text-lg">{{ 'UserInfo' | translate }} </h5>
+
+            <div class="flex gap-x-2">
+                <a (click)="back()" class="gap-2 cursor-pointer btn btn-secondary">
+                    <icon-arrow-backward />
+                    {{ 'Back' | translate }}
+                </a>
+                <a (click)="save()" class="gap-2 cursor-pointer btn btn-primary">
+                    <icon-save *ngIf="!saving" />
+                    <span *ngIf="saving"
+                        class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+
+                    {{ 'Save' | translate }}
+                </a>
+            </div>
+        </div>
+        <div class="flex mb-5 border-[#ebedf2] dark:border-[#191e3a] border-b overflow-y-auto whitespace-nowrap"
+            *ngIf="!isModal">
+
+            <a href="javascript:;" *ngFor="let tab of tabs" (click)="selectTab(tab)"
+                class="flex gap-2 p-4 hover:border-primary border-transparent border-b !outline-none hover:text-primary"
+                [ngClass]="{ '!border-primary text-primary':  selectedTab.value === tab.value}">
+                <ng-container *ngTemplateOutlet="tabsIcons; context: { tab: tab }">
+                </ng-container>
+
+                {{tab.label| translate}}
+            </a>
+            <ng-template #tabsIcons let-tab="tab">
+                <ng-container *ngIf="tab.value == 0">
+                    <icon-user class="w-6 h-6" />
+                </ng-container>
+                <ng-container *ngIf="tab.value == 1">
+                    <icon-airplay class="w-6 h-6" />
+                </ng-container>
+                <ng-container *ngIf="tab.value == 2">
+                    <icon-menu-datatables class="w-6 h-6" />
+                </ng-container>
+            </ng-template>
+
+
+        </div>
+        <div class="container" [ngClass]="[isModal ? 'px-2':'lg:px-16']">
+            <div *ngIf="selectedTab.value == 0">
+                <div class="mb-5"
+                    [ngClass]="isModal ? '' : ' rounded-md border border-[#ebedf2] bg-white p-4 dark:border-[#191e3a] dark:bg-[#0e1726]'">
+                    <h6 class="mb-5 font-bold text-lg" *ngIf="!isModal">{{ 'MainInfo' | translate }}</h6>
+                    <div class="flex sm:flex-row flex-col">
+                        <div class="ltr:sm:mr-4 mb-5 rtl:sm:ml-4 w-full sm:w-2/12" *ngIf="!isModal">
+                            <!-- <img src="{{model.profilePicUrl}}" alt=""
+                                class="mx-auto rounded-full w-20 md:w-32 h-20 md:h-32 object-cover">
+
+                            <div class="mr-3 pt-4">
+                                <label for="cpn">{{ 'ProfilePicture' | translate }}</label>
+                                <label class="block">
+                                    <span class="sr-only">{{ 'ChooseFile' | translate }}</span>
+                                    <app-file-picker (Updated)="updateProfilePicture($event)"></app-file-picker>
+                                </label>
+                            </div> -->
+                            <app-file-upload [image]="model.profilePic" [height]="'350px'"
+                                (imageSelected)="model.profilePic = $event"></app-file-upload>
+                        </div>
+                        <div class="flex-1 grid grid-cols-1 sm:grid-cols-2" [ngClass]="[isModal ? 'gap-1':'gap-5']">
+                            <div>
+                                <label for="id">{{ 'ID' | translate }}</label>
+                                <input id="id" disabled type="text" [(ngModel)]="model['id']"
+                                    class="disabled:bg-[#eee] dark:disabled:bg-[#1b2e4b] form-input" />
+                            </div>
+                            <div class="flex items-end">
+                                <label class="inline-flex">
+                                    <input type="checkbox" class="form-checkbox" [(ngModel)]="model['isActive']" />
+                                    <span>{{ 'Active' | translate }}</span>
+                                </label>
+                            </div>
+                            <div [ngClass]="inputFailds.nameEn ? 'has-error' : ''">
+                                <label for="Code">{{ 'EnglishName' | translate }}</label>
+                                <input [(ngModel)]="model['nameEn']" type="text" class="form-input" />
+                            </div>
+                            <div [ngClass]="inputFailds.nameAr ? 'has-error' : ''">
+                                <label for="name">{{ 'ArabicName' | translate }}</label>
+                                <input [(ngModel)]="model['nameAr']" type="text" class="form-input" />
+                            </div>
+
+                            <div>
+                                <label>{{ 'Phone' | translate }}1</label>
+                                <input id="phn" type="text" [(ngModel)]="model['phone1']" class="form-input" />
+                            </div>
+                            <div *ngIf="!isModal">
+                                <label>{{ 'Phone' | translate }}2</label>
+                                <input id="phn" type="text" [(ngModel)]="model['phone2']" class="form-input" />
+                            </div>
+                            <div *ngIf="!isModal">
+                                <label for="Email">{{ 'Email' | translate }}</label>
+                                <input id="Email" type="text" [(ngModel)]="model['email']" placeholder=" "
+                                    class="form-input" />
+                            </div>
+
+                            <ng-container>
+                                <div>
+                                    <label>{{ 'Gender' | translate }}</label>
+                                    <ng-select class="form-control" [items]="lstLkps['Gender']" bindLabel="label"
+                                        bindValue="value" [(ngModel)]="model['genderId']">
+                                    </ng-select>
+                                </div>
+                                <div *ngIf="!isModal">
+                                    <label>{{ 'City' | translate }}</label>
+                                    <ng-select class="form-control" [items]="lstLkps['City']" bindLabel="label"
+                                        bindValue="value" [(ngModel)]="model['cityId']">
+                                    </ng-select>
+                                </div>
+                                <div *ngIf="!isModal">
+                                    <label>{{ 'IDNumber' | translate }}</label>
+                                    <input type="number" [(ngModel)]="model['idNumber']" placeholder=" "
+                                        class="form-input" />
+                                </div>
+                                <div>
+                                    <label>{{ 'Age' | translate }}</label>
+                                    <input type="text" [(ngModel)]="model['age']" class="form-input"
+                                        (change)="calculateBirthDate()" />
+                                </div>
+                                <div>
+                                    <label>{{ 'BirthDate' | translate }}</label>
+                                    <input type="date" [(ngModel)]="model['birthDate']" class="form-input" />
+                                </div>
+                            </ng-container>
+                            <div>
+                                <div class="form-group local-forms">
+                                    <label for="gender" class="gen-label">Branches</label>
+                                    <ng-select class="form-control" [items]="lstLkps['Branch']" [multiple]="true"
+                                        bindLabel="label" bindValue="value" [(ngModel)]="model._lstBranches">
+                                    </ng-select>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group local-forms">
+                                    <label for="gender" class="gen-label">Departments</label>
+                                    <ng-select class="form-control" [items]="lstLkps['Departments']" [multiple]="true"
+                                        bindLabel="label" bindValue="value" [(ngModel)]="model._lstDepartments">
+                                    </ng-select>
+                                </div>
+                            </div>
+
+
+                            <div *ngIf="!isModal ">
+                                <label>{{ 'RelatedPrice' | translate }}</label>
+                                <ng-select class="form-control" [items]="lstLkps['ItemsPricesLists']" bindLabel="label"
+                                    bindValue="value" [(ngModel)]="model['defaultPriceListId']">
+                                </ng-select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-white dark:bg-[#0e1726] mb-5 p-4 border border-[#ebedf2] dark:border-[#191e3a] rounded-md">
+                    <h6 class="mb-5 font-bold text-lg">{{ 'EmergencyInfo' | translate }}</h6>
+                    <div class="flex sm:flex-row flex-col">
+                        <div class="flex-1 gap-5 grid grid-cols-1 sm:grid-cols-2">
+                            <div>
+                                <label>{{ 'ContactName' | translate }}</label>
+                                <input type="text" [(ngModel)]="model['emergencyContactName']" placeholder=" "
+                                    class="form-input" />
+                            </div>
+                            <div>
+                                <label>{{ 'ContactPhone' | translate }}</label>
+                                <input type="text" [(ngModel)]="model['emergencyContactPhone']" placeholder=" "
+                                    class="form-input" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="selectedTab.value == 1">
+                <div
+                    class="bg-white dark:bg-[#0e1726] mb-5 p-4 border border-[#ebedf2] dark:border-[#191e3a] rounded-md">
+                    <h6 class="mb-5 font-bold text-lg">{{ 'AccountInfo' | translate }}</h6>
+                    <div class="flex sm:flex-row flex-col">
+                        <div class="flex-1 gap-5 grid grid-cols-1 sm:grid-cols-2">
+                            <div>
+                                <label>{{ 'UserType' | translate }}</label>
+                                <ng-select class="form-control" [items]="lstLkps['lstUserTypes']" [clearable]="false"
+                                    bindLabel="label" bindValue="value" [(ngModel)]="model['userType']">
+                                </ng-select>
+                            </div>
+                            <div>
+                                <label>{{ 'PermissionGroup' | translate }}</label>
+                                <div class="flex gap-x-2">
+                                    <ng-select class="w-full form-control" [items]="lstLkps['PermissionGroups']"
+                                        [clearable]="false" bindLabel="name" bindValue="id"
+                                        [(ngModel)]="model['permissionGroupId']">
+                                    </ng-select>
+                                    <button type="button" class="btn" *ngIf="model['permissionGroupId']"
+                                        [ngClass]="model._permissions ? 'btn-secondary':'btn-outline-secondary'"
+                                        (click)="enableCustomPermission()">{{'CustomPermission'|translate}}</button>
+                                </div>
+                            </div>
+                            <div *ngIf="model['userType'] == 6; else emptySpace">
+                                <label>{{ 'OtherUserType' | translate }}</label>
+                                <ng-select class="form-control" [items]="lstLkps['OtherUserType']" bindLabel="label"
+                                    bindValue="value" [(ngModel)]="model['subUserTypeId']">
+                                </ng-select>
+                            </div>
+
+                            <ng-template #emptySpace>
+                                <!-- <div>
+                                </div> -->
+                            </ng-template>
+
+                            <div>
+                                <label>{{ 'UserName' | translate }}</label>
+                                <input type="text" [(ngModel)]="model['userName']" class="form-input"
+                                    autocomplete="off" />
+                            </div>
+                            <div>
+                                <label>{{ 'Password' | translate }}</label>
+                                <input type="password" [(ngModel)]="model['password']" class="form-input"
+                                    autocomplete="off" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ng-container>
+                    <div class="panel" *ngIf="model && model._permissions">
+                        <h5 class="mb-4 font-semibold dark:text-white-light text-lg"> {{ 'Permissions' |
+                            translate }}</h5>
+
+                        <app-permission-form [setPermission]="model._permissions" (bindVal)="updateLocalPermissions($event)"></app-permission-form>
+
+                        <div class="">
+                            <!-- <div *ngFor="let r of lstPermissions">
+                                <label class="inline-flex">
+                                    <input type="checkbox" class="peer form-checkbox"
+                                        [(ngModel)]="model._permissions[r.value]" />
+                                    <span class="peer-checked:text-primary">{{r.label}}</span>
+                                </label>
+                            </div> -->
+                        </div>
+                    </div>
+                </ng-container>
+
+            </div>
+            <div *ngIf="selectedTab.value == 2">
+                <div class="bg-white dark:bg-[#0e1726] p-4 border border-[#ebedf2] dark:border-[#191e3a] rounded-md">
+                    <h6 class="mb-5 font-bold text-lg">{{ 'RelatedAttachments' | translate }}</h6>
+                    <div class="flex justify-end mb-3">
+                        <a (click)="addRow('lstAttachments')" class="gap-2 h-10 btn btn-primary">
+                            <icon-plus />
+                            {{ 'Add' | translate }}
+                        </a>
+                    </div>
+                    <div class="mb-16">
+                        <table class="table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>{{ 'AttachmentType' | translate }}</th>
+                                    <th>{{ 'Attachment' | translate }} </th>
+                                    <th>{{ 'Note' | translate }}</th>
+                                    <th class="text-center">{{ 'Actions' | translate }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let r of model.lstAttachments; let i = index">
+                                    <td class="text-primary"> {{i}} </td>
+                                    <td>
+                                        <ng-select class="form-control" [items]="lstLkps['AttachmentType']"
+                                            bindLabel="label" bindValue="value" [(ngModel)]="r['relatedLkpId']">
+                                        </ng-select>
+                                    </td>
+                                    <td>
+                                        <!-- <app-file-picker (Updated)="updateTblAttachment(r,$event)"></app-file-picker> -->
+
+                                        <app-file-upload [image]="model.relatedAttachment" [height]="'350px'"
+                                            (imageSelected)="model.relatedAttachment = $event"></app-file-upload>
+                                    </td>
+                                    <td>
+                                        <input type="text" [(ngModel)]="r.desc" class="form-input" />
+                                    </td>
+
+                                    <td class="text-center">
+                                        <button (click)="removeRow('lstAttachments',i)" type="button">
+                                            <icon-trash-lines />
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="isModal" class="flex justify-end gap-x-1">
+    <button type="button" (click)="closeDialog()" class="btn-outline-danger btn">{{ 'Discard' |
+        translate
+        }}</button>
+
+    <a (click)="save()" class="gap-2 cursor-pointer btn btn-secondary">
+        <icon-save *ngIf="!saving" />
+        <span *ngIf="saving" class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+
+        {{ 'Save' | translate }}
+    </a>
+</div>

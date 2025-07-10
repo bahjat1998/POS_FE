@@ -1,0 +1,77 @@
+<div class="gap-y-4 grid">
+    <div class="panel">
+        <div class="lg:gap-4 lg:grid grid-cols-2">
+            <div>
+                <label>{{ 'PatientName' | translate }}</label>
+                <input type="text" class="form-input" [(ngModel)]="params.strSearch" />
+            </div>
+            <div class="flex justify-end items-end gap-x-3">
+                <a (click)="reset()" class="gap-2 cursor-pointer btn btn-danger">
+                    <icon-refresh *ngIf="!loading" />
+
+                    <span *ngIf="loading"
+                        class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+                    {{ 'Reset' | translate }}
+                </a>
+                <a (click)="search()" class="gap-2 h-10 cursor-pointer btn btn-secondary">
+                    <icon-search *ngIf="!loading" />
+                    <span *ngIf="loading"
+                        class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+                    {{ 'Search' | translate }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-x-scroll panel">
+        <div class="flex justify-between">
+            <h5 class="mb-4 font-semibold text-lg dark:text-white-light">{{ 'DebitsList' | translate }}</h5>
+            <h5 class="font-semibold text-lg">Total: {{Total | number}}</h5>
+        </div>
+        <div class="datatable" *ngIf="cols">
+            <ng-datatable [rows]="lstData" [columns]="cols" [sortable]="true" [loading]="loading"
+                [totalRows]="params.rowsCount" [isServerMode]="true" [pageSize]="params.ps"
+                [pageSizeOptions]="[10, 15, 30, 50]" paginationInfo="{0} to {1} of {2}"
+                (changeServer)="changeServer($event)" skin="whitespace-nowrap bh-table-hover" [sortColumn]="params.OB"
+                [sortDirection]="params.acs == true ? 'asc' : 'desc'">
+
+                <ng-template slot="id" let-r="data">
+                    <strong class="text-info">#{{ r.accountId }}</strong>
+                </ng-template>
+                <ng-template slot="fromDate" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.fromDate | date:'dd/MM/yyyy'}}
+                    </div>
+                </ng-template>
+                <ng-template slot="lastDealDate" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.lastDealDate | date:'dd/MM/yyyy'}}
+                    </div>
+                </ng-template>
+                <ng-template slot="accountName" let-r="data">
+                    <div class="font-bold">
+                        {{ r.accountName}}
+                    </div>
+                </ng-template>
+                <ng-template slot="total" let-r="data">
+                    <div class="flex items-center gap-2 font-bold">
+                        <p class="text-danger">{{ r.total * -1 | number}}</p>
+                    </div>
+                </ng-template>
+
+                <ng-template slot="actions" let-r="data">
+                    <div class="flex justify-center items-center gap-4">
+                        <a [routerLink]="'/visits/cu/'+r.id" class="hover:text-info c-p" *ngIf="r['editable']">
+                            <icon-edit class="w-5 h-5" />
+                        </a>
+
+                        <button type="button" class="hover:text-danger">
+                            <icon-trash-lines class="w-5 h-5" />
+                        </button>
+                    </div>
+                </ng-template>
+
+            </ng-datatable>
+        </div>
+    </div>
+</div>

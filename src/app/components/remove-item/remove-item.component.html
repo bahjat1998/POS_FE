@@ -1,0 +1,30 @@
+<modal #PosRemoveItem class="modal-top rounded lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{'RemoveItem'|translate}} - {{componentData.name}}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div>
+            <div>
+                <label>{{ 'DeleteReason' |translate }} </label>
+                <div class="flex justify-between gap-x-2">
+                    <ng-select class="w-3/4 form-control" [items]="lstLkps['DeleteReason']" bindLabel="label"
+                        bindValue="value" [(ngModel)]="model.deleteReasonId">
+                    </ng-select>
+                    <input type="number" class="w-1/4 form-input" [(ngModel)]="model.qtyToDelete">
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #modalFooter>
+        <div class="flex justify-end w-full">
+            <div class="flex justify-end">
+                <button type="button" (click)="closeModel()" class="btn-outline-danger btn">{{
+                    'Discard' |
+                    translate
+                    }}</button>
+                <button type="button" (click)="save()" class="rtl:mr-4 ltr:ml-4 btn btn-success">{{ 'Save'
+                    | translate }}</button>
+            </div>
+        </div>
+    </ng-template>
+</modal>

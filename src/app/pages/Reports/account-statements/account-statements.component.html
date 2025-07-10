@@ -1,0 +1,135 @@
+<div class="gap-y-4 grid">
+    <div class="panel">
+        <div class="gap-2 lg:gap-4 grid grid-cols-2 lg:grid-cols-3">
+            <div class="col-span-2 md:col-span-1">
+                <label class="w-40">{{ 'AccountName' | translate }}:</label>
+                <ng-select class="w-full form-control" [items]="lstLkps['_Account_']" bindLabel="label"
+                    bindValue="value" [(ngModel)]="params['accountId']">
+                </ng-select>
+            </div>
+            <div>
+                <label>{{ 'FromDate' | translate }}</label>
+                <input type="date" class="form-input" [(ngModel)]="params.fromDate" />
+            </div>
+            <div>
+                <label>{{ 'ToDate' | translate }}</label>
+                <input type="date" class="form-input" [(ngModel)]="params.toDate" />
+            </div>
+            <div class="flex justify-end gap-x-3 col-span-2 lg:col-span-3">
+                <a (click)="print()" class="gap-2 cursor-pointer btn btn-success" *ngIf="params['accountId']">
+                    <icon-printer *ngIf="!printLoading" />
+                    <span *ngIf="printLoading"
+                        class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+
+                    {{ 'Print' | translate }}
+                </a>
+                <a (click)="search()" class="gap-2 cursor-pointer btn btn-secondary">
+                    <icon-search *ngIf="!loading" />
+                    <span *ngIf="loading"
+                        class="inline-block bg-white ltr:mr-4 rtl:ml-4 rounded-full w-3 h-3 animate-ping"></span>
+
+                    {{ 'Search' | translate }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-x-scroll panel">
+        <div class="flex justify-between">
+            <h5 class="mb-4 font-semibold dark:text-white-light text-lg">{{ 'AccountStatement' | translate }}</h5>
+            <h5 class="font-semibold text-lg" *ngIf="data">{{'Total'|translate}}: {{data.finalRemaining | number}}</h5>
+        </div>
+        <div class="datatable" *ngIf="cols">
+            <ng-datatable [rows]="lstData" [columns]="cols" [sortable]="true" [loading]="loading"
+                [totalRows]="params.rowsCount" [isServerMode]="true" [pageSize]="params.ps"
+                [pageSizeOptions]="[10, 15, 30, 50]" paginationInfo="{0} to {1} of {2}"
+                (changeServer)="changeServer($event)" skin="whitespace-nowrap bh-table-hover"
+                [sortColumn]="'createDate'" [sortDirection]="'desc'">
+
+                <ng-template slot="id" let-r="data">
+                    <strong class="text-info cursor-pointer" (click)="showDetails(r)">#{{ r.id }}</strong>
+                </ng-template>
+                <ng-template slot="createDate" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.createDate}}
+                    </div>
+                </ng-template>
+                <ng-template slot="TransType" let-r="data">
+                    <div class="flex items-center gap-2 font-bold text-{{r.TransTypeColor}}">
+                        {{ r.TransType}}
+                    </div>
+                </ng-template>
+                <ng-template slot="TransDetails" let-r="data">
+                    <div class="grid font-bold">
+                        <ng-container *ngIf="r['treatmentId']">
+                            <div>
+                                {{ 'For' | translate }} : {{r['treatmentProcedureName']}}
+                            </div>
+                        </ng-container>
+                        <ng-container *ngIf="r['voucherId']">
+                            <div>
+                                {{ 'PaymentType' | translate }} : {{PaymentMethodMap[r['paymentType']]}}
+                            </div>
+                            <div *ngIf="r.reasonName">
+                                {{ 'Reason' | translate }} : {{r['reasonName']}}
+                            </div>
+                            <ng-container *ngIf="r.voucherTypeCode == 'Cheque'">
+                                <div>
+                                    {{ 'ChequeBankName' | translate }} : {{r['chequeBankName']}}
+                                </div>
+                                <div>
+                                    {{ 'ChequeDate' | translate }} : {{r['chequeDate'] | date:'dd/MM/yyyy'}}
+                                </div>
+                                <div>
+                                    {{ 'ChequeNumber' | translate }} : {{r['chequeNumber']}}
+                                </div>
+                            </ng-container>
+                            <div *ngIf="r.note">
+                                {{ 'Note' | translate }} : {{r['note']}}
+                            </div>
+                        </ng-container>
+
+
+                        <ng-container *ngIf="r['invoiceId']">
+                            <div>
+                                {{ 'Total' | translate }} : {{r['invFinalTotal'] |number}}
+                            </div>
+                            <div>
+                                {{ 'Paid' | translate }} : {{r['invPaid'] |number}}
+                            </div>
+                            <div>
+                                {{ 'Remaining' | translate }} : {{r['invRemaining'] |number}}
+                            </div>
+                        </ng-container>
+                    </div>
+                </ng-template>
+                <ng-template slot="total" let-r="data">
+                    <div class="flex items-center gap-2 font-bold">
+                        <ng-container *ngIf="r.total < 0">
+                            <p class="text-danger">{{ r.total * -1 | number}}</p>
+                        </ng-container>
+                        <ng-container *ngIf="r.total > 0">
+                            <p class="text-success">{{ r.total | number}}</p>
+                        </ng-container>
+                    </div>
+                </ng-template>
+                <!-- <ng-template slot="createDate" let-r="data">
+                    <p>Last create at: <span class="font-bold text-info">{{r.createDate | date:'dd/MM/yyyy'}}</span></p>
+                    <p>Last create by: <span class="font-bold">{{r.createByName}}</span></p>
+                </ng-template> -->
+                <ng-template slot="actions" let-r="data">
+                    <div class="flex justify-center items-center gap-4">
+                        <a [routerLink]="'/visits/cu/'+r.id" class="hover:text-info c-p" *ngIf="r['editable']">
+                            <icon-edit class="w-5 h-5" />
+                        </a>
+
+                        <button type="button" class="hover:text-danger">
+                            <icon-trash-lines class="w-5 h-5" />
+                        </button>
+                    </div>
+                </ng-template>
+
+            </ng-datatable>
+        </div>
+    </div>
+</div>

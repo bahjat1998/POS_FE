@@ -1,0 +1,9 @@
+.btnlogin {
+    background-image: linear-gradient(to right, var(--tw-gradient-stops));
+    --tw-gradient-from: #EF1262 var(--tw-gradient-from-position);
+    --tw-gradient-to: rgb(239 18 98 / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+    --tw-gradient-to: #4361EE var(--tw-gradient-to-position);
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity));
+}

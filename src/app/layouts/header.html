@@ -1,0 +1,441 @@
+﻿<div class="z-40 shadow-sm"
+    [ngClass]="{ 'hidden':screenTitle.display == 'none','dark text-white-dark': store.semidark && store.menu === 'horizontal'}">
+    <div class="relative flex items-center bg-white dark:bg-[#0e1726] px-5 py-2.5 w-full" id="topSlider">
+        <div class="lg:hidden flex justify-between items-center ltr:mr-2 rtl:ml-2 horizontal-logo">
+            <a routerLink="/" class="flex items-center main-logo shrink-0">
+                <img class="inline rtl:-mr-1 ltr:-ml-1 w-8" src="assets/images/logo.svg" alt="" />
+                <span
+                    class="hidden md:inline rtl:mr-1.5 ltr:ml-1.5 font-semibold dark:text-white-light text-2xl align-middle transition-all duration-300">
+                    <span class="font-extrabold">N</span>ew<span class="ml-1 font-extrabold">C</span>lick
+                </span>
+            </a>
+
+            <a href="javascript:;"
+                class="lg:hidden collapse-icon flex flex-none bg-white-light/40 hover:bg-white-light/90 dark:hover:bg-dark/60 dark:bg-dark/40 rtl:mr-2 ltr:ml-2 p-2 rounded-full hover:text-primary dark:hover:text-primary dark:text-[#d0d2d6]"
+                (click)="storeData.dispatch({type: 'toggleSidebar'})">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 7L4 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    <path opacity="0.5" d="M20 12L4 12" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" />
+                    <path d="M20 17L4 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+            </a>
+        </div>
+        <div class="hidden sm:block ltr:mr-2 rtl:ml-2">
+            <ul class="flex items-center space-x-2 rtl:space-x-reverse dark:text-[#d0d2d6]">
+                <!-- <li>
+                    <img *ngIf="common.logo" style=" height: 53px; " src="{{common.logo}}" alt="">
+                </li> -->
+                <h1 class="font-bold text-lg">{{screenTitle.title| translate}}</h1>
+            </ul>
+        </div>
+        <div
+            class="flex sm:flex-1 items-center space-x-1.5 rtl:space-x-reverse lg:space-x-2 rtl:mr-auto sm:rtl:mr-0 ltr:ml-auto ltr:sm:ml-0 dark:text-[#d0d2d6]">
+            <div class="sm:ltr:mr-auto sm:rtl:ml-auto">
+                <form
+                    class="hidden sm:block top-1/2 sm:top-0 z-10 absolute sm:relative inset-x-0 mx-4 sm:mx-0 -translate-y-1/2 sm:translate-y-0"
+                    [ngClass]="{ '!block': search }" (submit.prevent)="search = false">
+                    <div class="relative">
+                        <!-- <input type="text"
+                            class="peer bg-gray-100 sm:bg-transparent ltr:pr-9 ltr:sm:pr-4 rtl:pr-9 ltr:pl-9 rtl:pl-9 rtl:sm:pl-4 placeholder:tracking-widest form-input"
+                            placeholder="Search..." />
+                        <button type="button"
+                            class="ltr:right-auto rtl:left-auto absolute inset-0 w-9 h-9 peer-focus:text-primary appearance-none">
+                            <svg class="mx-auto" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5"
+                                    opacity="0.5" />
+                                <path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5"
+                                    stroke-linecap="round" />
+                            </svg>
+                        </button> -->
+                        <button type="button"
+                            class="sm:hidden block top-1/2 ltr:right-2 rtl:left-2 absolute hover:opacity-80 -translate-y-1/2"
+                            (click)="search = false">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" />
+                                <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor"
+                                    stroke-width="1.5" stroke-linecap="round" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+                <button type="button"
+                    class="sm:hidden bg-white-light/40 hover:bg-white-light/90 dark:hover:bg-dark/60 dark:bg-dark/40 p-2 rounded-full search_btn"
+                    (click)="search = !search">
+                    <svg class="mx-auto w-4.5 h-4.5 dark:text-[#d0d2d6]" width="20" height="20" viewBox="0 0 24 24"
+                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11.5" cy="11.5" r="9.5" stroke="currentColor" stroke-width="1.5" opacity="0.5" />
+                        <path d="M18.5 18.5L22 22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+                </button>
+            </div>
+            <!-- <div>
+                <a href="javascript:;" *ngIf="store.theme === 'light'"
+                    class="flex items-center bg-white-light/40 hover:bg-white-light/90 dark:hover:bg-dark/60 dark:bg-dark/40 p-2 rounded-full hover:text-primary"
+                    (click)="storeData.dispatch({type: 'toggleTheme', payload:'dark'})">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="1.5" />
+                        <path d="M12 2V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        <path d="M12 20V22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        <path d="M4 12L2 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        <path d="M22 12L20 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        <path opacity="0.5" d="M19.7778 4.22266L17.5558 6.25424" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" />
+                        <path opacity="0.5" d="M4.22217 4.22266L6.44418 6.25424" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" />
+                        <path opacity="0.5" d="M6.44434 17.5557L4.22211 19.7779" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" />
+                        <path opacity="0.5" d="M19.7778 19.7773L17.5558 17.5551" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+                </a>
+                <a href="javascript:;" *ngIf="store.theme === 'dark'"
+                    class="flex items-center bg-white-light/40 hover:bg-white-light/90 dark:hover:bg-dark/60 dark:bg-dark/40 p-2 rounded-full hover:text-primary"
+                    (click)="storeData.dispatch({type: 'toggleTheme', payload:'system'})">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M21.0672 11.8568L20.4253 11.469L21.0672 11.8568ZM12.1432 2.93276L11.7553 2.29085V2.29085L12.1432 2.93276ZM21.25 12C21.25 17.1086 17.1086 21.25 12 21.25V22.75C17.9371 22.75 22.75 17.9371 22.75 12H21.25ZM12 21.25C6.89137 21.25 2.75 17.1086 2.75 12H1.25C1.25 17.9371 6.06294 22.75 12 22.75V21.25ZM2.75 12C2.75 6.89137 6.89137 2.75 12 2.75V1.25C6.06294 1.25 1.25 6.06294 1.25 12H2.75ZM15.5 14.25C12.3244 14.25 9.75 11.6756 9.75 8.5H8.25C8.25 12.5041 11.4959 15.75 15.5 15.75V14.25ZM20.4253 11.469C19.4172 13.1373 17.5882 14.25 15.5 14.25V15.75C18.1349 15.75 20.4407 14.3439 21.7092 12.2447L20.4253 11.469ZM9.75 8.5C9.75 6.41182 10.8627 4.5828 12.531 3.57467L11.7553 2.29085C9.65609 3.5593 8.25 5.86509 8.25 8.5H9.75ZM12 2.75C11.9115 2.75 11.8077 2.71008 11.7324 2.63168C11.6686 2.56527 11.6538 2.50244 11.6503 2.47703C11.6461 2.44587 11.6482 2.35557 11.7553 2.29085L12.531 3.57467C13.0342 3.27065 13.196 2.71398 13.1368 2.27627C13.0754 1.82126 12.7166 1.25 12 1.25V2.75ZM21.7092 12.2447C21.6444 12.3518 21.5541 12.3539 21.523 12.3497C21.4976 12.3462 21.4347 12.3314 21.3683 12.2676C21.2899 12.1923 21.25 12.0885 21.25 12H22.75C22.75 11.2834 22.1787 10.9246 21.7237 10.8632C21.286 10.804 20.7293 10.9658 20.4253 11.469L21.7092 12.2447Z"
+                            fill="currentColor" />
+                    </svg>
+                </a>
+                <a href="javascript:;" *ngIf="store.theme === 'system'"
+                    class="flex items-center bg-white-light/40 hover:bg-white-light/90 dark:hover:bg-dark/60 dark:bg-dark/40 p-2 rounded-full hover:text-primary"
+                    (click)="storeData.dispatch({type: 'toggleTheme', payload:'light'})">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M3 9C3 6.17157 3 4.75736 3.87868 3.87868C4.75736 3 6.17157 3 9 3H15C17.8284 3 19.2426 3 20.1213 3.87868C21 4.75736 21 6.17157 21 9V14C21 15.8856 21 16.8284 20.4142 17.4142C19.8284 18 18.8856 18 17 18H7C5.11438 18 4.17157 18 3.58579 17.4142C3 16.8284 3 15.8856 3 14V9Z"
+                            stroke="currentColor" stroke-width="1.5" />
+                        <path opacity="0.5" d="M22 21H2" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" />
+                        <path opacity="0.5" d="M15 15H9" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" />
+                    </svg>
+                </a>
+            </div> -->
+
+            <div class="dropdown shrink-0">
+                <div hlMenu>
+                    <button type="button" hlMenuButton
+                        class="block bg-white-light/40 hover:bg-white-light/90 dark:hover:bg-dark/60 dark:bg-dark/40 p-2 rounded-full hover:text-primary">
+                        <img [src]="'assets/images/flags/'+ store.locale.toUpperCase() + '.svg'" alt="flag"
+                            class="rounded-full w-5 h-5 object-cover" />
+                    </button>
+                    <ul *hlMenuItems @toggleAnimation
+                        class="top-11 ltr:-right-14 sm:ltr:-right-2 rtl:-left-14 sm:rtl:-left-2 gap-2 grid grid-cols-2 !px-2 w-[280px] font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
+                        <li *ngFor="let item of store.languageList;">
+                            <button *hlMenuItem="let menuItem" type="button" class="w-full hover:text-primary"
+                                [ngClass]="{ 'bg-primary/10 text-primary': translate.currentLang === item.code }"
+                                (click)="changeLanguage(item)">
+                                <img class="rounded-full w-5 h-5 object-cover"
+                                    [src]="'assets/images/flags/'+ item.code.toUpperCase() + '.svg'" alt="" />
+                                <span class="rtl:mr-3 ltr:ml-3">{{ item.name }}</span>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 
+            <div class="dropdown shrink-0">
+                <div hlMenu>
+                    <button type="button" hlMenuButton
+                        class="block bg-white-light/40 hover:bg-white-light/90 dark:hover:bg-dark/60 dark:bg-dark/40 p-2 rounded-full hover:text-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M22 10C22.0185 10.7271 22 11.0542 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H13"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                            <path
+                                d="M6 8L8.1589 9.79908C9.99553 11.3296 10.9139 12.0949 12 12.0949C13.0861 12.0949 14.0045 11.3296 15.8411 9.79908"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                            <circle cx="19" cy="5" r="3" stroke="currentColor" stroke-width="1.5" />
+                        </svg>
+                    </button>
+                    <ul *hlMenuItems @toggleAnimation
+                        class="top-11 ltr:-right-16 sm:ltr:-right-2 rtl:-left-16 sm:rtl:-left-2 !py-0 w-[300px] sm:w-[375px] text-dark dark:text-white-dark text-xs">
+                        <li class="mb-5">
+                            <div class="relative !p-5 rounded-t-md overflow-hidden text-white">
+                                <div
+                                </div>
+                                <h4 class="z-10 relative font-semibold text-lg">Messages</h4>
+                            </div>
+                        </li>
+                        <li *ngFor="let msg of messages">
+                            <div class="flex items-center px-5 py-3">
+                                <div [innerHTML]="msg.image"></div>
+                                <span class="px-3 dark:text-gray-500">
+                                    <div class="font-semibold dark:text-white-light/90 text-sm">{{msg.title}}</div>
+                                    <div>{{msg.message}}</div>
+                                </span>
+                                <span
+                                    class="bg-white-dark/20 ltr:mr-2 rtl:mr-auto ltr:ml-auto rtl:ml-2 px-1 rounded font-semibold text-dark/60 dark:text-white-dark whitespace-pre">{{msg.time}}</span>
+                                <button type="button" class="text-neutral-300 hover:text-danger"
+                                    (click)="$event.stopPropagation();removeMessage(msg.id)">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor"
+                                            stroke-width="1.5" />
+                                        <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor"
+                                            stroke-width="1.5" stroke-linecap="round" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </li>
+                        <li *ngIf="messages.length"
+                            class="mt-5 border-white-light dark:border-white/10 border-t text-center">
+                            <div class="group flex justify-center items-center px-5 py-4 font-semibold text-primary dark:text-gray-400 cursor-pointer"
+                                *hlMenuItem="let menuItem">
+                                <span class="ltr:mr-1 rtl:ml-1 group-hover:underline">VIEW ALL ACTIVITIES</span>
+
+                                <svg class="rtl:mr-1 ltr:ml-1 w-4 h-4 transition group-hover:translate-x-1 duration-300"
+                                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 12H20M20 12L14 6M20 12L14 18" stroke="currentColor" stroke-width="1.5"
+                                        stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                            </div>
+                        </li>
+                        <li *ngIf="!messages.length" class="mb-5">
+                            <div class="place-content-center !grid hover:!bg-transparent min-h-[200px] text-lg">
+                                <div class="mx-auto mb-4 rounded-full ring-4 ring-primary/30 text-primary">
+                                    <svg width="40" height="40" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path opacity="0.5"
+                                            d="M20 10C20 4.47715 15.5228 0 10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20C15.5228 20 20 15.5228 20 10Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M10 4.25C10.4142 4.25 10.75 4.58579 10.75 5V11C10.75 11.4142 10.4142 11.75 10 11.75C9.58579 11.75 9.25 11.4142 9.25 11V5C9.25 4.58579 9.58579 4.25 10 4.25Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M10 15C10.5523 15 11 14.5523 11 14C11 13.4477 10.5523 13 10 13C9.44772 13 9 13.4477 9 14C9 14.5523 9.44772 15 10 15Z"
+                                            fill="currentColor" />
+                                    </svg>
+                                </div>
+                                No data available.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dropdown shrink-0">
+                <div hlMenu>
+                    <button type="button" hlMenuButton
+                        class="block relative bg-white-light/40 hover:bg-white-light/90 dark:hover:bg-dark/60 dark:bg-dark/40 p-2 rounded-full hover:text-primary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M19.0001 9.7041V9C19.0001 5.13401 15.8661 2 12.0001 2C8.13407 2 5.00006 5.13401 5.00006 9V9.7041C5.00006 10.5491 4.74995 11.3752 4.28123 12.0783L3.13263 13.8012C2.08349 15.3749 2.88442 17.5139 4.70913 18.0116C9.48258 19.3134 14.5175 19.3134 19.291 18.0116C21.1157 17.5139 21.9166 15.3749 20.8675 13.8012L19.7189 12.0783C19.2502 11.3752 19.0001 10.5491 19.0001 9.7041Z"
+                                stroke="currentColor" stroke-width="1.5" />
+                            <path d="M7.5 19C8.15503 20.7478 9.92246 22 12 22C14.0775 22 15.845 20.7478 16.5 19"
+                                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                            <path d="M12 6V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                        </svg>
+
+                        <span class="top-0 ltr:right-0 rtl:left-0 absolute flex w-3 h-3">
+                            <span
+                                class="inline-flex -top-[3px] rtl:-right-[3px] ltr:-left-[3px] absolute bg-success/50 opacity-75 rounded-full w-full h-full animate-ping"></span>
+                            <span class="inline-flex relative bg-success rounded-full w-[6px] h-[6px]"></span>
+                        </span>
+                    </button>
+                    <ul *hlMenuItems @toggleAnimation
+                        class="top-11 ltr:-right-2 rtl:-left-2 !py-0 divide-y dark:divide-white/10 w-[300px] sm:w-[350px] text-dark dark:text-white-dark">
+                        <li>
+                            <div class="flex justify-between items-center px-4 py-2 font-semibold">
+                                <h4 class="text-lg">Notification</h4>
+                                <span *ngIf="notifications.length" class="bg-primary/80 badge">{{notifications.length +
+                                    'New'}}</span>
+                            </div>
+                        </li>
+                        <li *ngFor="let notification of notifications" class="dark:text-white-light/90">
+                            <div class="group flex items-center px-4 py-2">
+                                <div class="place-content-center grid rounded">
+                                    <div class="relative w-12 h-12">
+                                        <img class="rounded-full w-12 h-12 object-cover"
+                                            [src]="'assets/images/' + notification.profile" alt="" />
+                                        <span
+                                            class="block right-[6px] bottom-0 absolute bg-success rounded-full w-2 h-2"></span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-auto rtl:pr-3 ltr:pl-3">
+                                    <div class="ltr:pr-3 rtl:pl-3">
+                                        <h6 [innerHTML]="notification.message"></h6>
+                                        <span
+                                            class="block font-normal dark:text-gray-500 text-xs">{{notification.time}}</span>
+                                    </div>
+                                    <button type="button"
+                                        class="opacity-0 group-hover:opacity-100 rtl:mr-auto ltr:ml-auto text-neutral-300 hover:text-danger"
+                                        (click)="$event.stopPropagation();removeNotification(notification.id)">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <circle opacity="0.5" cx="12" cy="12" r="10" stroke="currentColor"
+                                                stroke-width="1.5" />
+                                            <path d="M14.5 9.50002L9.5 14.5M9.49998 9.5L14.5 14.5" stroke="currentColor"
+                                                stroke-width="1.5" stroke-linecap="round" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </li>
+                        <li *ngIf="notifications.length">
+                            <div class="p-4">
+                                <button type="button" class="block w-full btn btn-primary btn-small"
+                                    *hlMenuItem="let menuItem">Read All Notifications</button>
+                            </div>
+                        </li>
+                        <li *ngIf="!notifications.length">
+                            <div class="place-content-center !grid hover:!bg-transparent min-h-[200px] text-lg">
+                                <div class="mx-auto mb-4 rounded-full ring-4 ring-primary/30 text-primary">
+                                    <svg width="40" height="40" viewBox="0 0 20 20" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path opacity="0.5"
+                                            d="M20 10C20 4.47715 15.5228 0 10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20C15.5228 20 20 15.5228 20 10Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M10 4.25C10.4142 4.25 10.75 4.58579 10.75 5V11C10.75 11.4142 10.4142 11.75 10 11.75C9.58579 11.75 9.25 11.4142 9.25 11V5C9.25 4.58579 9.58579 4.25 10 4.25Z"
+                                            fill="currentColor" />
+                                        <path
+                                            d="M10 15C10.5523 15 11 14.5523 11 14C11 13.4477 10.5523 13 10 13C9.44772 13 9 13.4477 9 14C9 14.5523 9.44772 15 10 15Z"
+                                            fill="currentColor" />
+                                    </svg>
+                                </div>
+                                No data available.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div> -->
+
+            <div class="dropdown shrink-0">
+                <div hlMenu class="!block">
+                    <button type="button" hlMenuButton class="group block relative">
+                        <img class="saturate-50 group-hover:saturate-100 rounded-full w-9 h-9 object-cover"
+                            src="assets/images/user-profile.jpeg" alt="" />
+                    </button>
+                    <ul *hlMenuItems @toggleAnimation
+                        class="top-11 ltr:right-0 rtl:left-0 !py-0 w-[270px] font-semibold text-dark dark:text-white-dark dark:text-white-light/90">
+                        <li>
+                            <div class="flex items-center px-4 py-4">
+                                <div class="flex-none">
+                                    <img class="rounded-md w-10 h-10 object-cover"
+                                        src="assets/images/user-profile.jpeg" alt="" />
+                                </div>
+                                <div class="rtl:pr-4 ltr:pl-4 truncate">
+                                    <h4 class="text-base">
+                                        <!-- {{currentUser|json}} -->
+                                        {{currentUser.name}}
+                                        <!-- <span class="bg-success-light ltr:ml-2 rtl:ml-2 px-1 rounded text-success text-xs">{{currentUser.type}}</span> -->
+                                    </h4>
+                                    <a class="bg-success-light text-black/60 text-success hover:text-primary dark:hover:text-white dark:text-dark-light/60"
+                                        href="javascript:;">{{currentUser.email}}</a>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <a *hlMenuItem="let menuItem" class="dark:hover:text-white cursor-pointer"
+                                (click)="modal20?.open()">
+                                <icon-lock-dots class="ltr:mr-2 rtl:ml-2 w-4.5 h-4.5" />
+                                {{ 'ChangePassword' | translate }}
+                            </a>
+                        </li>
+                        <!-- <li>
+                            <a routerLink="/apps/mailbox" *hlMenuItem="let menuItem" class="dark:hover:text-white">
+                                <icon-inbox class="ltr:mr-2 rtl:ml-2 w-4.5 h-4.5" />
+                                Inbox
+                            </a>
+                        </li> -->
+                        <!-- <li>
+                            <a routerLink="/auth/boxed-lockscreen" *hlMenuItem="let menuItem"
+                                class="dark:hover:text-white">
+                                <icon-logout class="ltr:mr-2 rtl:ml-2 w-4.5 h-4.5" />
+
+
+                                Lock Screen
+                            </a>
+                        </li> -->
+                        <li class="border-white-light dark:border-white-light/10 border-t">
+                            <a (click)="logout()" routerLink="/login" *hlMenuItem="let menuItem"
+                                class="!py-3 text-danger">
+
+                                <icon-login class="ltr:mr-2 rtl:ml-2 w-4.5 h-4.5" />
+
+                                {{ 'SignOut' | translate }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- horizontal menu -->
+    <ul
+        class="hidden rtl:space-x-reverse lg:space-x-1.5 xl:space-x-8 bg-white dark:bg-[#0e1726] px-6 py-1.5 border-[#ebedf2] dark:border-[#191e3a] border-t font-semibold text-black dark:text-white-dark horizontal-menu">
+
+
+        <ng-container *ngFor="let n of navs">
+            <li class="relative menu nav-item" *ngIf="!n.child">
+                <a routerLink="{{n.route}}" routerLinkActive="active" class="nav-link">
+                    <div class="flex items-center">
+                        <icon-menu-elements class="w-6 h-6" />
+                        <span class="px-2">{{n.label | translate}}</span>
+                    </div>
+                </a>
+            </li>
+
+            <li class="relative menu nav-item" *ngIf="n.child">
+                <a routerLink="{{n.route}}" routerLinkActive="active" class="nav-link">
+                    <div class="flex items-center">
+                        <icon-menu-elements class="w-6 h-6" />
+                        <span class="px-2">{{n.label | translate}}</span>
+                    </div>
+                    <div class="right_arrow">
+                        <svg class="w-4 h-4 rotate-90" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path d="M9 5L15 12L9 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                </a>
+                <ul class="sub-menu">
+                    <li *ngFor="let subN of n.child">
+                        <a routerLink="{{subN.route}}" routerLinkActive="active"> {{subN.label | translate}}</a>
+                    </li>
+                </ul>
+            </li>
+        </ng-container>
+
+    </ul>
+</div>
+
+
+<modal #modal20 class="modal-top large-modal">
+    <ng-template #modalHeader>
+        <div class="!py-5">{{ 'ResetPassword' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div>
+            <div class="relative mb-4">
+                <span class="top-1/2 rtl:right-3 ltr:left-3 absolute dark:text-white-dark -translate-y-1/2">
+                    <icon-lock class="w-5 h-5" />
+                </span>
+                <input type="password" placeholder="{{ 'LastPassword' | translate}}"
+                    class="rtl:pr-10 ltr:pl-10 form-input" />
+            </div>
+            <div class="relative mb-4">
+                <span class="top-1/2 rtl:right-3 ltr:left-3 absolute dark:text-white-dark -translate-y-1/2">
+                    <icon-lock class="w-5 h-5" />
+                </span>
+                <input type="password" placeholder="{{ 'NewPassword' | translate}}"
+                    class="rtl:pr-10 ltr:pl-10 form-input" />
+            </div>
+            <div class="relative mb-4">
+                <span class="top-1/2 rtl:right-3 ltr:left-3 absolute dark:text-white-dark -translate-y-1/2">
+                    <icon-lock class="w-5 h-5" />
+                </span>
+                <input type="password" placeholder="{{ 'ConfirmPassword' | translate}}"
+                    class="rtl:pr-10 ltr:pl-10 form-input" />
+            </div>
+            <button type="button" class="w-full btn btn-primary">{{ 'ResetPassword' | translate }}</button>
+        </div>
+    </ng-template>
+</modal>

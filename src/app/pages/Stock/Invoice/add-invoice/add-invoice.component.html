@@ -1,0 +1,264 @@
+<div class="space-y-2">
+    <div class="flex justify-between panel">
+        <div>
+            <a (click)="back()" class="gap-2 cursor-pointer btn btn-secondary">
+                <icon-arrow-backward />
+                {{ 'Back' | translate }}
+            </a>
+        </div>
+        <div>
+            <div class="flex justify-end text-black dark:text-white shrink-0">
+                <img src="assets/images/logo.svg" alt="image" class="w-10">
+            </div>
+        </div>
+    </div>
+    <div class="grid grid-cols-8">
+        <div class="col-span-6 panel">
+            <div class="flex justify-between gap-x-3">
+                <div class="space-y-2 w-full lg:w-1/2">
+                    <div class="flex items-center" [ngClass]="{'has-error' : inputFailds.accountId}">
+                        <label class="w-1/4">{{ 'Account' | translate }}</label>
+                        <ng-select class="w-3/4 form-control" (ngModelChange)="accountChanged(modal,true)"
+                            [items]="lstLkps['_Account_']" bindLabel="label" bindValue="value"
+                            [(ngModel)]="modal['accountId']" [clearable]="false">
+                        </ng-select>
+                    </div>
+                    <div class="flex items-center">
+                        <label class="w-1/4">{{ 'Referance' | translate }}</label>
+                        <input type="text" class="w-3/4 form-input" [(ngModel)]="modal.code">
+                    </div>
+                </div>
+                <div class="space-y-2 w-full lg:w-1/2">
+                    <div class="flex items-center">
+                        <label class="w-1/4">{{ 'Branch' | translate }}</label>
+                        <ng-select class="w-3/4 form-control" [items]="lstLkps['Branch']" bindLabel="label"
+                            bindValue="value" [(ngModel)]="modal['branchId']">
+                        </ng-select>
+                    </div>
+                    <div class="flex items-center">
+                        <label class="w-1/4">{{ 'Department' | translate }}</label>
+                        <ng-select class="w-3/4 form-control" [items]="lstLkps['Departments']" bindLabel="label"
+                            bindValue="value" [(ngModel)]="modal['branchId']">
+                        </ng-select>
+                    </div>
+                </div>
+
+            </div>
+            <hr class="my-6 border-[#e0e6ed] dark:border-[#1b2e4b]">
+            <div class="mt-8">
+                <ng-container *ngIf="selectedTab.value == 0">
+                    <ng-container [ngTemplateOutlet]="ItemsList" [ngTemplateOutletContext]="{lstItems:modal.lstItems}">
+                    </ng-container>
+                </ng-container>
+                <ng-container *ngIf="selectedTab.value == 1">
+                    <ng-container [ngTemplateOutlet]="ItemsList"
+                        [ngTemplateOutletContext]="{lstItems:modal.lstItemsDeleted}">
+                    </ng-container>
+                </ng-container>
+                <div class="flex sm:flex-row flex-col justify-between mt-6 px-4">
+                    <div class="mb-6 sm:mb-0">
+                        <a (click)="newRow('lstItems')" class="flex space-x-2 h-10 text-primary cursor-pointer">
+                            <icon-plus />
+                            {{ 'Add' | translate }}
+                        </a>
+                        <a (click)="selectTabByVal(1)" *ngIf="modal.lstItemsDeleted && modal.lstItemsDeleted.length > 0 && selectedTab.value == 0"
+                            class="flex space-x-2 h-10 text-danger cursor-pointer">
+                            <icon-trash />
+                            {{ 'DeletedItem' | translate }} ({{modal.lstItemsDeleted.length}})
+                        </a>
+                        <a (click)="selectTabByVal(0)" *ngIf="selectedTab.value == 1"
+                            class="flex space-x-2 h-10 text-primary cursor-pointer">
+                            <icon-trash />
+                            {{ 'ItemsList' | translate }}
+                        </a>
+                    </div>
+                    <div class="mb-6 sm:mb-0">
+
+                    </div>
+                    <div class="sm:w-2/5">
+                        <div class="flex justify-between items-center">
+                            <div>{{ 'Total' | translate }}</div>
+                            <div class="font-bold">{{modal.totalBeforeDiscount | number}}</div>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <div>{{ 'Discount' | translate }} (<span class="font-bold">{{(modal.discPer ??
+                                    0)|number}}{{modal.discPer? '%':''}}</span>)</div>
+                            <div class="font-bold">{{modal.discAmount|number}}</div>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <div>{{ 'Service' | translate }} (<span class="font-bold">{{(modal.serPer??
+                                    0)|number}}{{modal.serPer? '%':''}}</span>)</div>
+                            <div class="font-bold">{{modal.serAmount|number}}</div>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <div>{{ 'Delivery' | translate }} </div>
+                            <div class="font-bold">{{modal.deliveryCost|number}}</div>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <div>{{ 'FinalTotal' | translate }}</div>
+                            <div class="font-bold">{{modal.finalTotal | number}}</div>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <div>{{ 'Paid' | translate }}</div>
+                            <div class="font-bold text-primary">{{modal.paid | number}}</div>
+                        </div>
+                        <div class="flex justify-between items-center mt-4">
+                            <div>{{ 'Remaining' | translate }}</div>
+                            <div class="font-bold text-danger">{{(modal.remaining??0) | number}}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-2 px-4">
+                <div>
+                    <label>{{ 'Notes' | translate }}</label>
+                    <textarea class="min-h-[80px] form-textarea" [(ngModel)]="modal.notes"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-span-2 rtl:pr-2 ltr:pl-2">
+            <div class="mb-5 panel">
+                <div>
+                    <label>{{ 'Other' | translate }}</label>
+                </div>
+                <div class="mt-4">
+                    <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
+                        <div>
+                            <label>{{ 'Discount' | translate }}(F) </label>
+                            <input type="number" class="form-input" placeholder="Amount"
+                                [(ngModel)]="modal['discAmount']" (ngModelChange)="changeInvoiceTotals('discAmount')">
+                        </div>
+                        <div>
+                            <label>{{ 'Discount' | translate }}(%) </label>
+                            <input type="number" class="form-input" placeholder="%" [(ngModel)]="modal['discPer']"
+                                (ngModelChange)="changeInvoiceTotals('discPer')">
+                        </div>
+                    </div>
+                    <div class="gap-4 grid grid-cols-1 sm:grid-cols-2">
+                        <div>
+                            <label>{{ 'Service' | translate }}(F) </label>
+                            <input type="number" class="form-input" placeholder="Amount"
+                                [(ngModel)]="modal['serAmount']" (ngModelChange)="changeInvoiceTotals('serAmount')">
+                        </div>
+                        <div>
+                            <label>{{ 'Service' | translate }}(%) </label>
+                            <input type="number" class="form-input" placeholder="%" [(ngModel)]="modal['serPer']"
+                                (ngModelChange)="changeInvoiceTotals('serPer')">
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label>{{ 'PaymentMethod' | translate }}</label>
+                    <ng-select class="form-control" [items]="lstLkps['lstPaymentTypes']" bindLabel="label"
+                        bindValue="value" [(ngModel)]="modal['paymentType']">
+                    </ng-select>
+                </div>
+                <div class="mt-4">
+                    <label>{{ 'Paid' | translate }}</label>
+                    <input type="number" (ngModelChange)="invoicePaidChange()" class="form-input"
+                        [(ngModel)]="modal['paid']">
+                </div>
+            </div>
+            <div class="panel">
+                <div class="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-1">
+                    <button type="button" class="gap-2 w-full btn btn-success" (click)="save()">
+                        <icon-save />
+                        {{ 'Save' | translate }}
+                    </button>
+
+                    <button type="button" class="gap-2 w-full btn btn-secondary" (click)="print()">
+                        <icon-send />
+                        {{ 'Print' | translate }}
+                    </button>
+                    <!-- <button type="button" class="gap-2 w-full btn btn-info">
+                        <icon-send />
+                        Send Invoice
+                    </button>
+
+                    <a href="apps-invoice-preview.html" class="gap-2 w-full btn btn-primary">
+                        <icon-eye />
+                        Preview
+                    </a>
+
+                    <button type="button" class="gap-2 w-full btn btn-secondary">
+                        <icon-eye />
+                        Download
+                    </button> -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ng-template #ItemExtraDetailsView let-item="item">
+    <span class="bg-primary m-0 badge" *ngIf="item.variantName">{{item.variantName}}</span>
+    <ng-container *ngIf="item.lstAddOns">
+        <ng-container *ngFor="let ad of item.lstAddOns">
+            <span class="bg-info m-0 badge" *ngIf="ad">{{ad.addOnName}} X {{ad.qty}}</span>
+        </ng-container>
+    </ng-container>
+</ng-template>
+
+<ng-template #ItemsList let-lstItems="lstItems">
+    <div class="table-responsive sm-tbl">
+        <table class="w-full text-gray-500 dark:text-gray-400 text-sm text-left rtl:text-right">
+            <thead class="text-gray-700 dark:text-gray-400 text-xs uppercase">
+                <tr>
+                    <th class="bg-gray-50 dark:bg-gray-800 lg-col">
+                        {{ 'ItemName' | translate }}
+                    </th>
+                    <th class="sm-col">
+                        {{ 'Unit' | translate }}
+                    </th>
+                    <th class="sm-col">
+                        {{ 'Price' | translate }}
+                    </th>
+                    <th class="sm-col">
+                        {{ 'Quantity' | translate }}
+                    </th>
+                    <th class="sm-col">
+                        {{ 'Total' | translate }}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-gray-200 dark:border-gray-700 border-b"
+                    *ngFor="let r of lstItems; let i = index" [ngClass]="{'bg-danger-light' : r.hasError}">
+                    <td class="px-1 py-1">
+                        <ng-select [items]="lstLkps['lstItemsLkp']" bindLabel="label" bindValue="id"
+                            [(ngModel)]="r.itemId" (ngModelChange)="itemChanged(i,r)" [clearable]="false">
+                        </ng-select>
+                        <div class="mt-1 extraDetail">
+                            <ng-container [ngTemplateOutlet]="ItemExtraDetailsView"
+                                [ngTemplateOutletContext]="{item:r}">
+                            </ng-container>
+                        </div>
+                    </td>
+                    <td class="px-1 py-1">
+                        <ng-select *ngIf="r['selectedItemObj']" [items]="r['selectedItemObj']['lstUnits']"
+                            bindLabel="unitName" bindValue="unitId" [(ngModel)]="r.unitId"
+                            (ngModelChange)="unitChanged(r)" [clearable]="false">
+                        </ng-select>
+                        <p *ngIf="!r['selectedItemObj']">
+                            SelectItemFirst
+                        </p>
+                    </td>
+                    <td class="px-1 py-1">
+                        <input type="number" class="form-input" [(ngModel)]="r.price"
+                            (ngModelChange)="itemsListChanged()">
+                    </td>
+                    <td class="px-1 py-1">
+                        <input type="number" class="form-input" [(ngModel)]="r.quantity"
+                            (ngModelChange)="itemsListChanged()">
+                    </td>
+                    <td class="flex justify-between items-center px-1 py-1 min-h-16">
+                        <span class="font-bold text-blue-900">{{r.total}}</span>
+                        <button (click)="deleteRow('lstItems',i)" class="rtl:mr-auto ltr:ml-auto hover:text-danger" type="button">
+                            <icon-trash-lines class="w-4.5 h-4.5" />
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ng-template>
+<app-select-item-variant-add-on></app-select-item-variant-add-on>

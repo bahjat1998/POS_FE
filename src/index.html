@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8" />
+    <title>New Click - Pos System</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Favicon -->
+    <link rel="icon" type="icon" href="assets/images/favicon.png" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+</head>
+
+<body>
+    <app-root> </app-root>
+</body>
+<script>
+    (function () {
+        function attachRippleEffect(el) {
+            if (el._rippleBound) return;
+            el._rippleBound = true;
+
+            el.addEventListener('click', function (e) {
+                const rect = el.getBoundingClientRect();
+                const ripple = document.createElement('div');
+                ripple.classList.add('wave');
+
+                // Center ripple using click position inside element
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                ripple.style.left = `${x}px`;
+                ripple.style.top = `${y}px`;
+
+                el.appendChild(ripple);
+
+                // Animate it
+                requestAnimationFrame(() => ripple.classList.add('wave-ani'));
+
+                // Remove after animation
+                setTimeout(() => {
+                    if (el.contains(ripple)) el.removeChild(ripple);
+                }, 1500);
+            });
+
+            el.addEventListener('mousedown', () => el.classList.add('btn-active'));
+            el.addEventListener('mouseup', () => el.classList.remove('btn-active'));
+        }
+
+        function bindAllWaves() {
+            document.querySelectorAll('.toWave').forEach(attachRippleEffect);
+        }
+
+        bindAllWaves();
+
+        new MutationObserver(bindAllWaves).observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+    })();
+</script>
+
+</html>

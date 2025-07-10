@@ -1,0 +1,50 @@
+.cartView {
+    background-color: white;
+
+    .itemsList {
+        overflow-y: auto;
+    }
+}
+
+.CartTotalsView0 {
+    input {
+        height: 28px;
+        padding: 2px;
+    }
+
+    input:disabled {
+        background: #efefef;
+    }
+}
+
+.CartTotalsView1 {
+    .tb2 {
+        width: 100%;
+        @apply w-full flex
+    }
+
+    .tb2_1 {
+        width: 150px;
+        @apply flex
+    }
+
+    .tb2 .p1 {
+        min-width: 130px;
+        font-size: 13px;
+        @apply font-bold
+    }
+
+    .tb2 .s1 {
+        @apply font-bold text-primary;
+    }
+
+    .tb2 .s2 {
+        @apply pr-2 font-bold text-secondary;
+    }
+
+    .icsd {
+        max-height: 57vh;
+        min-height: 57vh;
+        overflow: auto;
+    }
+}

@@ -1,0 +1,151 @@
+<div class="gap-y-4 grid">
+    <div class="panel">
+        <div class="gap-4 grid grid-cols-4">
+            <div class="col-span-1">
+                <label for="name">{{ 'strSearch' | translate }}</label>
+                <input id="name" type="text" class="form-input" [(ngModel)]="params.strSearch"
+                    (ngModelChange)="search()" />
+            </div>
+            <div class="col-span-1">
+                <label for="name">{{ 'InvoiceCategory' | translate }}</label>
+                <ng-select class="form-control" [items]="lstLkps['InvoiceCategories']" bindLabel="label"
+                    bindValue="value" [(ngModel)]="params.invoiceCategoryId" (ngModelChange)="search()">
+                </ng-select>
+            </div>
+            <div class="col-span-1">
+                <label for="name">{{ 'PaymentMethod' | translate }}</label>
+                <ng-select class="form-control" [items]="lstLkps['PaymentMethod']" bindLabel="label" bindValue="str1"
+                    [(ngModel)]="params.paymentType" (ngModelChange)="search()">
+                </ng-select>
+            </div>
+            <div class="flex justify-between items-end">
+                <label class="inline-flex">
+                    <input type="checkbox" class="outline-success form-checkbox" [(ngModel)]="params.employeeInvoicesOnly"
+                        (ngModelChange)="search()" />
+                    <span>{{ 'EmployeeInvoicesOnly' | translate }}</span>
+                </label>
+            </div>
+        </div>
+        <div class="gap-4 grid grid-cols-4">
+            <div class="md:col-span-1">
+                <label class="w-40">{{ 'AccountName' | translate }}:</label>
+                <ng-select class="w-full form-control" [items]="lstLkps['_Account_4']" bindLabel="label"
+                    bindValue="value" [(ngModel)]="params['accountId']" (ngModelChange)="search()">
+                </ng-select>
+            </div>
+            <div>
+                <label>{{ 'FromDate' | translate }}</label>
+                <input type="date" class="form-input" [(ngModel)]="params.fromDate" (ngModelChange)="search()" />
+            </div>
+            <div>
+                <label>{{ 'ToDate' | translate }}</label>
+                <input type="date" class="form-input" [(ngModel)]="params.toDate" (ngModelChange)="search()" />
+            </div>
+            <div class="flex justify-between items-end">
+                <label class="inline-flex">
+                    <input type="checkbox" class="outline-danger form-checkbox" [(ngModel)]="params.deletedOnly"
+                        (ngModelChange)="search()" />
+                    <span>{{ 'DeletedInvoices' | translate }}</span>
+                </label>
+                <div class="flex justify-end items-end">
+                    <div hlMenu class="dropdown" *ngIf="extraParams.canAdd">
+                        <button type="button" hlMenuButton class="btn btn-info dropdown-toggle">
+                            AddNew
+                            <icon-caret-down class="inline-block rtl:mr-1 ltr:ml-1" />
+                        </button>
+                        <ul *hlMenuItems @toggleAnimation class="ltr:right-0 rtl:left-0 whitespace-nowrap">
+                            <li *ngFor="let r of lstLkps['InvoiceCategories']"><a href="javascript:;"
+                                    *hlMenuItem="let menuItem"
+                                    [routerLink]="'/stock/invoices/c/'+r.value">{{r.label}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-x-scroll panel">
+        <div class="flex justify-between">
+            <h5 class="mb-4 font-semibold dark:text-white-light text-lg">{{ 'InvoicesList' | translate }}</h5>
+            <div class="flex justify-end gap-5">
+                <div class="flex justify-between items-center gap-x-3 p-2 w-full font-semibold">
+                    <div>
+                        {{ 'Totals' | translate }}: {{ otherData.total | number }}
+                    </div>
+                    <div>
+                        {{ 'TotalPayments' | translate }}: {{ otherData.totalPaid | number}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="datatable" *ngIf="cols">
+            <ng-datatable [rows]="lstData" [columns]="cols" [sortable]="true" [loading]="loading"
+                [totalRows]="params.rowsCount" [isServerMode]="true" [pageSize]="params.ps"
+                [pageSizeOptions]="[10, 15, 30, 50]" paginationInfo="{0} to {1} of {2}"
+                (changeServer)="changeServer($event)" skin="whitespace-nowrap bh-table-hover" [sortColumn]="params.OB"
+                [sortDirection]="params.acs == true ? 'asc' : 'desc'">
+
+                <ng-template slot="id" let-r="data">
+                    <strong class="text-info">#{{ r.id }}</strong>
+                </ng-template>
+
+                <ng-template slot="accountName" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.accountName}}
+                    </div>
+                </ng-template>
+
+                <ng-template slot="storeName" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.storeName}}
+                    </div>
+                </ng-template>
+                <ng-template slot="invoiceCategoryName" let-r="data">
+                    <div class="flex items-center gap-x-1">
+                        <p>{{ r.invoiceCategoryName}}</p>
+                        <span class="bg-primary p-1 rounded badge"
+                            *ngIf="(r.invoicePosType || r.invoicePosType == 0) && r.invoiceTypes == 1">
+                            {{(r.invoicePosType == 2 ? r.posTableName : ('invStat'+r.invoicePosType)) |
+                            translate}}
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template slot="finalTotal" let-r="data">
+                    <p class="font-bold">{{'FinalTotal'|translate}} : <span>{{ r.finalTotal| number}}</span></p>
+                    <p>{{'Paid'|translate}} : <span class="font-bold">{{ r.paid| number}}</span> <span
+                            class="font-bold text-success">{{' ' + PaymentMethodMap[r['paymentType']]}}</span></p>
+                    <p>{{'Remaining'|translate}} : <span class="font-bold">{{ r.remaining| number}}</span></p>
+                </ng-template>
+                <ng-template slot="createBy" let-r="data">
+                    <p class="font-bold">{{'C'|translate}} : <span>{{ r.createByName}}</span></p>
+                    <p>{{'ON'|translate}} : <span class="font-bold">{{ r.createDate| date:'dd/MM/yyyy • h:mm a'}}</span>
+                    </p>
+                </ng-template>
+                <!-- <ng-template slot="paid" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r. | number}}
+                    </div>
+                </ng-template>
+                <ng-template slot="remaining" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.| number}}
+                    </div>
+                </ng-template> -->
+                <ng-template slot="actions" let-r="data">
+                    <div class="flex justify-center items-center gap-4">
+                        <a [routerLink]="'/stock/invoices/cu/'+r.id" class="hover:text-info">
+                            <icon-edit class="w-4.5 h-4.5" />
+                        </a>
+                        <button type="button" class="hover:text-danger" (click)="deleteInvoice(r.id)"
+                            *ngIf="permissions['ADI']">
+                            <icon-trash-lines />
+                        </button>
+                    </div>
+                </ng-template>
+
+            </ng-datatable>
+
+        </div>
+    </div>
+</div>

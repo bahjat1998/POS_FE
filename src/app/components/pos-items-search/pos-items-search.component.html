@@ -1,0 +1,63 @@
+<modal #PosItmSrchop class="modal-top rounded large-modal lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'ItemsSearch' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="flex justify-between">
+            <div class="flex gap-x-3 grow">
+                <div class="relative grow">
+                    <input type="text" placeholder="{{'Search'|translate}}..." [(ngModel)]="params.strSearch"
+                        (ngModelChange)="search()"
+                        class="peer bg-gray-100 sm:bg-transparent ltr:pr-9 ltr:sm:pr-4 rtl:pr-9 ltr:pl-9 rtl:pl-9 rtl:sm:pl-4 placeholder:tracking-widest form-input">
+                    <button type="button"
+                        class="ltr:right-auto rtl:left-auto absolute inset-0 mx-2 w-9 h-9 peer-focus:text-primary appearance-none">
+                        <icon-search />
+                    </button>
+                </div>
+                <button type="button" class="gap-x-2 btn btn-primary" (click)="search()">
+                    <icon-search />
+                </button>
+            </div>
+        </div>
+        <div class="pb-2">
+            <div class="mt-2 datatable sm-tbl">
+                <ng-datatable [rows]="lstData" [columns]="cols" [loading]="loading" [totalRows]="params.totalCount"
+                    [isServerMode]="false" [pageSize]="params.ps" [pageSizeOptions]="[50,75,100]"
+                    paginationInfo="{0} to {1} of {2}" (changeServer)="changeServer($event)"
+                    skin="whitespace-nowrap bh-table-hover"
+                    noDataContent="{{(params.strSearch && params.strSearch.length >= 3 ? 'NoItemsBasedSearch' : 'TypeToSearch') | translate}}">
+
+                    <ng-template slot="id" let-r="data">
+                        <div (click)="addItem(r)">
+                            <strong class="text-info cursor-pointer">#{{ r.id }}</strong>
+                        </div>
+                    </ng-template>
+                    <ng-template slot="nameAr" let-r="data">
+                        <div (click)="addItem(r)" class="min-w-[150px] text-black dark:text-white">
+                            <div class="flex items-center">
+                                <img src="{{r.img}}" alt="avatar"
+                                    class="ltr:mr-3 rtl:ml-3 rounded-md w-10 h-10 object-cover">
+                                <p class="font-bold text-lg whitespace-nowrap">{{r.nameAr}}
+                                </p>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template slot="Units" let-r="data">
+                        <div class="flex gap-x-1">
+                            <h5 class="bg-primary m-0 badge" *ngFor="let v of r.lstUnits">{{v.unitName}}</h5>
+                        </div>
+                    </ng-template>
+                    <ng-template slot="Variants" let-r="data">
+                        <div class="flex flex-wrap gap-1">
+                            <h5 class="bg-primary m-0 badge" *ngFor="let v of r.lstVariants">{{v.name}}</h5>
+                        </div>
+                    </ng-template>
+                    <ng-template slot="category" let-r="data">
+                        <strong (click)="addItem(r)" class="text-primary cursor-pointer" *ngIf="lstLkps['ItemGroupskv']">{{ lstLkps['ItemGroupskv'][r.groupId] }}</strong>
+                    </ng-template>
+
+                </ng-datatable>
+            </div>
+        </div>
+    </ng-template>
+</modal>

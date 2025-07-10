@@ -1,0 +1,119 @@
+<div class="space-y-2 p-2 shiftDetails">
+    <div class="gap-3 grid grid-cols-5">
+        <div class="col-span-4 panel">
+            <h5 class="mb-4 font-semibold dark:text-white-light text-lg"> {{ 'ShiftDetails' |
+                translate }} {{modal.id ? '#'+modal.id:""}}</h5>
+
+            <div class="gap-2 grid grid-cols-3 col-span-3">
+                <div class="r">
+                    <label>{{'UserName' | translate}}:</label>
+                    <p>{{modal.createByName}}</p>
+                </div>
+                <div class="r">
+                    <label>{{'BranchName' | translate}}:</label>
+                    <p>{{modal.branchName}}</p>
+                </div>
+                <div class="r">
+                    <label>{{'OnDate' | translate}}:</label>
+                    <p>{{modal.startTime| date:'dd/MM/yyyy • h:mm a'}}</p>
+                </div>
+                <div class="r">
+                    <label>{{'ClosingDate' | translate}}:</label>
+                    <p>{{modal.endTime| date:'dd/MM/yyyy • h:mm a'}}</p>
+                </div>
+
+                <div class="r">
+                    <label>{{'StartCash' | translate}}:</label>
+                    <p>{{modal.startCash}}</p>
+                </div>
+                <div class="r">
+                    <label>{{'EndCash' | translate}}:</label>
+                    <p>{{modal.endCash}}</p>
+                </div>
+
+                <div class="r">
+                    <label>{{'TotalSalesInvoicesToEmployeeAccount' | translate}}:</label>
+                    <p>{{modal.totalSalesInvoicesToEmployeeAccount}}</p>
+                </div>
+                <div class="r">
+                    <label>{{'TotalBuyInvoices' | translate}}:</label>
+                    <p>{{modal.totalBuyInvoices}}</p>
+                </div>
+                <div class="r">
+                    <label>{{'TotalBuyInvoicesPaid' | translate}}:</label>
+                    <p>{{modal.totalBuyInvoicesPaid}}</p>
+                </div>
+                <div class="r">
+                    <label>{{'TotalExpenses' | translate}}:</label>
+                    <p>{{modal.totalExpenses}}</p>
+                </div>
+                <div class="r">
+                    <label>{{'TotalSales' | translate}}:</label>
+                    <p>{{modal.totalSales| number}}</p>
+                </div>
+
+                <div class="r">
+                    <label>{{'FinalCashShouldEqual' | translate}}:</label>
+                    <p>{{modal.finalCashShouldEqual| number}}</p>
+                </div>
+                <div class="r">
+                    <label>{{'Differance' | translate}}:</label>
+                    <p
+                        [ngClass]="{'text-success':modal.diffBtOpenAndCloseCache > 0,'text-danger':modal.diffBtOpenAndCloseCache < 0}">
+                        {{modal.diffBtOpenAndCloseCache ?? 0}}</p>
+                </div>
+                <div class="col-span-2 r">
+                    <label>{{'ClosingNotes' | translate}}:</label>
+                    <p>{{modal.closingNotes}}</p>
+                </div>
+                <div class="col-span-2 r">
+                    <label>{{'DeviceKey' | translate}}:</label>
+                    <p>{{modal.deviceKey}}</p>
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <div class="panel">
+            <table>
+                <tr>
+                    <th style=" text-align: start; ">{{'PaymentMethod'|translate}}</th>
+                    <th style=" text-align: start; ">{{'Total'|translate}}</th>
+                </tr>
+                <tr *ngFor="let r of modal.lstPaymentTotals">
+                    <td class="font-bold">{{PaymentMethodMap[r.paymentMethod]}}</td>
+                    <td class="font-bold text-primary text-lg">{{r.total | number}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="panel">
+        <ul class="flex flex-wrap">
+            <li *ngFor="let r of lstTabs">
+                <a href="javascript:"
+                    class="block hover:bg-primary ltr:mr-2 -mb-[1px] rtl:ml-2 p-3.5 py-2 rounded hover:text-white"
+                    [ngClass]="{'bg-primary text-white' : selectedTab.value === r.value}"
+                    (click)="selectTab(r)">{{r.label |
+                    translate}}</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="p-0 panel" *ngIf="selectedTab.value == 0">
+        <app-invoices-list [extraParams]="{ShiftId:Id}"></app-invoices-list>
+    </div>
+    <div class="p-0 panel" *ngIf="selectedTab.value == 1">
+        <app-vochers-list
+            [extraParams]="{customParams:{ShiftId:Id},namedType:'payment',asInner:true}"></app-vochers-list>
+    </div>
+
+
+    <div class="panel">
+        <div class="flex justify-end">
+            <a (click)="back()" class="me-2 mt-1 btn btn-danger">{{'Discard' | translate}}</a>
+            <!-- <a (click)="save()" class="mt-1 btn btn-success">{{'Save' | translate}}</a> -->
+        </div>
+    </div>
+</div>

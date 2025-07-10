@@ -1,0 +1,434 @@
+<div class="gap-x-2 grid grid-cols-4">
+    <div class="col-span-1">
+        <div class="panel">
+            <div class="my-2">
+                <div class="gap-y-3">
+                    <h3 class="font-semibold text-lg">{{'Groups'|translate}}</h3>
+                    <div class="flex justify-between gap-x-2">
+                        <input class="form-input" placeholder="{{'SearchHere' | translate}} ..."
+                            [formControl]="searchCategoryStr">
+                        <button class="btn btn-primary" (click)="openAddCategory()">
+                            <icon-plus />
+                        </button>
+                    </div>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>{{'Name'|translate}}</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- (dblclick)="openAddCategory(r)" -->
+                            <!-- | paginate: {id:paggingManager.id, itemsPerPage: paggingManager.itemsPerPage, currentPage: paggingManager.currentPage, totalItems: paggingManager.totalItems } -->
+                            <tr *ngFor="let r of lstCategories"
+                                [ngClass]="{'s-td':selectedCategory ? selectedCategory.id == r.id : false}"
+                                (click)="selectCategory(r)">
+                                <td class="font-bold">{{r.nameEn}}</td>
+                                <td class="flex justify-end">
+                                    <button class="mr-1 btn btn-icon btn-success" (click)="openAddCategory(r)">
+                                        <icon-edit />
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- <pagination-controls id="x" (pageChange)="pageChanged($event)"
+                        (pageBoundsCorrection)="pageChanged($event)" [maxSize]="5" [directionLinks]="true"
+                        [responsive]="true" screenReaderPaginationLabel="Pagination" class="my-pagination"
+                        [previousLabel]="''" [nextLabel]="''">
+                    </pagination-controls> -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-span-3">
+        <div class="panel">
+            <div class="gap-y-3">
+                <h3 class="font-semibold text-lg">{{'GroupItems' | translate}}
+                    <span>- {{(selectedCategory ? selectedCategory.nameEn : 'PleaseSelectGroup') |
+                        translate}}</span>
+                </h3>
+                <div class="flex justify-between gap-x-2">
+                    <input class="form-input" placeholder="{{'SearchHere' | translate}} ...">
+
+                    <button *ngIf="selectedCategory" class="btn btn-primary" (click)="openAddLookup()">
+                        <icon-plus />
+                    </button>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <ng-container *ngIf="selectedCategory.code == 'PaymentType'">
+                                <th>{{'Code' | translate}}</th>
+                            </ng-container>
+                            <th>{{'EnglishName' | translate}}</th>
+                            <th>{{'ArabicName' | translate}}</th>
+                            <ng-container *ngIf="selectedCategory.code == 'InvoiceCategories'">
+                                <th>{{'RelatedCategorySetup' | translate}}</th>
+                                <th>{{'IsForPosBuyInvoices' | translate}}</th>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'ItemsPricesLists'">
+                                <th>{{'PriceCode' | translate}}</th>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'VisitStatus'">
+                                <th>{{'IsInitialStatus' | translate}}</th>
+                                <th>{{'InProgressStatus' | translate}}</th>
+                                <th>{{'ClosedStatus' | translate}}</th>
+                                <th>{{'StatusColor' | translate}}</th>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'AppointmentStatus'">
+                                <th>{{'_IsInitialStatus' | translate}}</th>
+                                <th>{{'_IsFinishedStatus' | translate}}</th>
+                                <th>{{'StatusColor' | translate}}</th>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'Procedure'">
+                                <th>{{'Price' | translate}}</th>
+                                <!-- <th>{{'K1' | translate}}</th>
+                                <th>{{'K2' | translate}}</th> -->
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'SvgGroups'">
+                                <th>{{'Svg' | translate}}</th>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'ItemGroups'">
+                                <th>{{'PrinterName' | translate}}</th>
+                                <th>{{'Order' | translate}}</th>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'PaymentMethod'">
+                                <th>{{'EnumBinding-(PaymentTypes)' | translate}}</th>
+                            </ng-container>
+                            <th *ngIf="selectedCategory.code == 'Permissions'">كود الصلاحية</th>
+                            <ng-container *ngIf="selectedCategory.code == 'DeliveryAreas'">
+                                <th>{{'DeliveryCost' | translate}}</th>
+                            </ng-container>
+                            <th> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let r of lstLookups;let i= index" (dblclick)="openAddLookup(r)">
+                            <td>{{i+1}}</td>
+                            <ng-container *ngIf="selectedCategory.code == 'PaymentType'">
+                                <td class="{{'text-'+r.str1}}">
+                                    {{r.code}}
+                                </td>
+                            </ng-container>
+                            <td>{{r.nameEn}}</td>
+                            <td>{{r.nameAr}}</td>
+                            <ng-container *ngIf="selectedCategory.code == 'InvoiceCategories'">
+                                <td>
+                                    {{r.str1}}
+                                </td>
+                                <td>
+                                    <label class="inline-flex">
+                                        <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r.bool1"
+                                            disabled />
+                                        <span class="peer-checked:text-primary"></span>
+                                    </label>
+                                </td>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'ItemsPricesLists'">
+                                <td>
+                                    {{r.str1}}
+                                </td>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'VisitStatus'">
+                                <td>
+                                    <label class="inline-flex">
+                                        <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r.bool1"
+                                            disabled />
+                                        <span class="peer-checked:text-primary"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label class="inline-flex">
+                                        <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r.bool2"
+                                            disabled />
+                                        <span class="peer-checked:text-primary"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label class="inline-flex">
+                                        <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r.bool3"
+                                            disabled />
+                                        <span class="peer-checked:text-primary"></span>
+                                    </label>
+                                </td>
+                                <td class="{{'text-'+r.str1}}">
+                                    {{r.str1}}
+                                </td>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'AppointmentStatus'">
+                                <td>
+                                    <label class="inline-flex">
+                                        <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r.bool1"
+                                            disabled />
+                                        <span class="peer-checked:text-primary"></span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <label class="inline-flex">
+                                        <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r.bool2"
+                                            disabled />
+                                        <span class="peer-checked:text-primary"></span>
+                                    </label>
+                                </td>
+                                <td class="{{'text-'+r.str1}}">
+                                    {{r.str1}}
+                                </td>
+                            </ng-container>
+                            <td *ngIf="selectedCategory.code == 'Permissions'">
+                                {{r.code}}
+                            </td>
+                            <ng-container *ngIf="selectedCategory.code == 'Procedure'">
+                                <td> {{r.decimal1}}</td>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'SvgGroups'">
+                                <td>{{r.str1 ? 'T' : 'F'}}</td>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'ItemGroups'">
+                                <td>{{(r.str2 ? r.str2 : 'Default Printer')}}</td>
+                                <td>{{(r.str3 ? r.str3 : 'Not Ordered')}}</td>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'PaymentMethod'">
+                                <td>{{(r.str1 ? r.str1 : 'No Binding, Will not appear')}}</td>
+                            </ng-container>
+                            <ng-container *ngIf="selectedCategory.code == 'DeliveryAreas'">
+                                <td>{{(r.decimal1 ? r.decimal1 : 'Not setted')}}</td>
+                            </ng-container>
+
+                            <td class="flex justify-end">
+                                <button class="mr-1 btn btn-icon btn-success" (click)="openAddLookup(r)">
+                                    <icon-edit />
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<modal #addLookupModal class="modal-top large-modal">
+    <ng-template #modalHeader>
+        <div class="!py-5">{{addLookupFormControls.id.value ? 'Edit' : 'Add'}} {{'Item' | translate}}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <form [formGroup]="addLookupForm">
+            <div class="gap-y-3">
+                <div class="form-group">
+                    <label for="name"> {{'BelongToGroup' | translate}}<span class="text-red">*</span></label>
+                    <input class="form-input" type="text" formControlName="baseCategoryName">
+                </div>
+                <div class="form-group">
+                    <label for="name"> {{'EnglishName' | translate}} <span class="text-red">*</span></label>
+                    <input class="form-input" type="text" formControlName="nameEn">
+                </div>
+                <div class="form-group">
+                    <label for="name"> {{'ArabicName' | translate}}<span class="text-red">*</span></label>
+                    <input class="form-input" type="text" formControlName="nameAr">
+                </div>
+                <ng-container *ngIf="selectedCategory.code == 'InvoiceCategories'">
+                    <div class="form-group">
+                        <label for="name"> {{'RelatedCategorySetup' | translate}}<span class="text-red">*</span></label>
+                        <ng-select class="form-control" [items]="lstLkps['lstInvoiceType']" bindLabel="label"
+                            bindValue="value" formControlName="str1">
+                        </ng-select>
+                    </div>
+                    <div>
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" formControlName="bool1" />
+                            <span class="peer-checked:text-primary">{{'IsForPosBuyInvoices' | translate}}</span>
+                        </label>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedCategory.code == 'ItemsPricesLists'">
+                    <div class="form-group">
+                        <label for="name"> {{'PriceCode' | translate}}<span class="text-red">*</span></label>
+                        <input class="form-input" type="text" formControlName="str1">
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedCategory.code == 'VisitStatus'">
+                    <div>
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" formControlName="bool1" />
+                            <span class="peer-checked:text-primary">{{'IsInitialStatus' | translate}}</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" formControlName="bool2" />
+                            <span class="peer-checked:text-primary">{{'InProgressStatus' | translate}}</span>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" formControlName="bool3" />
+                            <span class="peer-checked:text-primary">{{'ClosedStatus' | translate}}</span>
+                        </label>
+                    </div>
+
+
+                    <div>
+                        <label for="name"> {{'StatusColor' | translate}}</label>
+                        <ng-select class="form-control" [items]="lstLkps['lstColors']" bindLabel="label"
+                            bindValue="value" formControlName="str1">
+                        </ng-select>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedCategory.code == 'AppointmentStatus'">
+
+                    <div>
+                        <label for="name"> {{'StatusColor' | translate}}</label>
+                        <ng-select class="form-control" [items]="lstLkps['lstColors']" bindLabel="label"
+                            bindValue="value" formControlName="str1">
+                        </ng-select>
+                    </div>
+                    <div>
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" formControlName="bool1" />
+                            <span class="peer-checked:text-primary">{{'_IsInitialStatus' | translate}}</span>
+                        </label>
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" formControlName="bool2" />
+                            <span class="peer-checked:text-primary">{{'_IsFinishedStatus' | translate}}</span>
+                        </label>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedCategory.code == 'ItemGroups'">
+                    <div class="form-group">
+                        <label for="name"> {{'GroupImage' | translate}}</label>
+                        <app-file-upload [image]="addLookupForm.get('str1')?.value" [height]="'350px'"
+                            (imageSelected)="addLookupForm.get('str1')?.setValue($event)"></app-file-upload>
+                    </div>
+                    <div class="form-group">
+                        <label for="name"> {{'PrinterName' | translate}}<span class="text-red">*</span></label>
+                        <input class="form-input" type="text" formControlName="str2">
+                    </div>
+                    <div class="form-group">
+                        <label for="name"> {{'Order' | translate}}<span class="text-red">*</span></label>
+                        <input class="form-input" type="text" formControlName="str3">
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedCategory.code == 'PaymentMethod'">
+                    <div class="form-group">
+                        <label for="name"> {{'EnumBinding' | translate}}<span class="text-red">*</span></label>
+                        <input class="form-input" type="number" formControlName="str1">
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedCategory.code == 'DeliveryAreas'">
+                    <div class="form-group">
+                        <label for="name"> {{'DeliveryCost' | translate}}<span class="text-red">*</span></label>
+                        <input class="form-input" type="number" formControlName="decimal1">
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedCategory.code == 'PaymentType'">
+                    <div class="form-group">
+                        <label for="name"> {{'Code' | translate}}</label>
+                        <input class="form-input" type="text" formControlName="code">
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedCategory.code == 'Procedure'">
+                    <div class="form-group">
+                        <label for="name"> {{'Price' | translate}}</label>
+                        <input class="form-input" type="number" formControlName="decimal1">
+                    </div>
+                    <div class="form-group">
+                        <label for="name"> {{'Related SVG' | translate}}</label>
+                        <ng-select class="w-full form-control" [items]="common.lstBindTypes" bindLabel="label"
+                            bindValue="value" formControlName="str1">
+                        </ng-select>
+                    </div>
+                    <ng-container *ngIf="getRelatedBind(addLookupFormControls.str1.value)">
+                        <div class="form-group" *ngIf="getRelatedBind(addLookupFormControls.str1.value).showLowerColor">
+                            <label for="name"> {{'Lower part color' | translate}}</label>
+                            <input
+                                class="block bg-white dark:bg-neutral-900 disabled:opacity-50 p-1 border border-gray-200 dark:border-neutral-700 rounded-lg w-14 h-10 cursor-pointer disabled:pointer-events-none"
+                                type="color" formControlName="str2">
+                        </div>
+                        <div class="form-group" *ngIf="getRelatedBind(addLookupFormControls.str1.value).showUpperColor">
+                            <label for="name"> {{'Upper part color' | translate}}</label>
+                            <input
+                                class="block bg-white dark:bg-neutral-900 disabled:opacity-50 p-1 border border-gray-200 dark:border-neutral-700 rounded-lg w-14 h-10 cursor-pointer disabled:pointer-events-none"
+                                type="color" formControlName="str3">
+                        </div>
+                        <div class="form-group"
+                            *ngIf="getRelatedBind(addLookupFormControls.str1.value).showSurfaceColor">
+                            <label for="name"> {{'Surface part color' | translate}}</label>
+                            <input
+                                class="block bg-white dark:bg-neutral-900 disabled:opacity-50 p-1 border border-gray-200 dark:border-neutral-700 rounded-lg w-14 h-10 cursor-pointer disabled:pointer-events-none"
+                                type="color" formControlName="str4">
+                        </div>
+                    </ng-container>
+                    <div class="form-group">
+                        <label for="name"> {{'Next Procedure' | translate}}</label>
+                        <ng-select class="w-full form-control" [items]="lstLookups" bindLabel="nameEn" bindValue="id"
+                            formControlName="nextLookupId">
+                        </ng-select>
+                    </div>
+                    <div class="form-group" *ngIf="addLookupFormControls.nextLookupId.value">
+                        <label for="name"> {{'Next Label' | translate}}</label>
+                        <input class="form-input" type="text" formControlName="str5">
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="selectedCategory.code == 'SvgGroups'">
+                    <div class="form-group">
+                        <label for="name"> {{'Svg' | translate}}</label>
+                        <textarea class="form-input" formControlName="str1"></textarea>
+                        <!-- <input  type="text" > -->
+                    </div>
+                </ng-container>
+                <div *ngIf="selectedCategory.code == 'Permissions'">
+                    <label for="name">كود الصلاحية <span class="text-red">*</span></label>
+                    <input class="form-input" type="text" formControlName="code">
+                </div>
+            </div>
+        </form>
+    </ng-template>
+    <ng-template #modalFooter>
+        <button type="button" (click)="closeAddLookup()" class="btn-outline-danger btn">{{ 'Discard' | translate
+            }}</button>
+        <button type="button" (click)="closeAddLookup(true)" class="rtl:mr-4 ltr:ml-4 btn btn-primary">{{ 'Save' |
+            translate }}</button>
+    </ng-template>
+</modal>
+
+<modal #addCategoryModal class="modal-top large-modal">
+    <ng-template #modalHeader>
+        <h4 class="pull-left modal-title">{{addCategoryFormControls.id.value ? 'Edit' : 'Add'}} {{'Group'|translate}}
+        </h4>
+        <button type="button" class="pull-right btn-close close" aria-label="Close" (click)="closeAddCategory()">
+            <!--  -->
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+    </ng-template>
+
+
+    <ng-template #modalBody>
+        <form [formGroup]="addCategoryForm">
+            <div class="gap-y-3">
+                <div class="form-group">
+                    <label for="name"> {{'Code' | translate}}<span class="text-red">*</span></label>
+                    <input class="form-input" type="text" formControlName="code">
+                </div>
+                <div class="form-group">
+                    <label for="name"> {{'EnglishName' | translate}}<span class="text-red">*</span></label>
+                    <input class="form-input" type="text" formControlName="nameEn">
+                </div>
+                <div class="form-group">
+                    <label for="name"> {{'ArabicName' | translate}}<span class="text-red">*</span></label>
+                    <input class="form-input" type="text" formControlName="nameAr">
+                </div>
+            </div>
+        </form>
+    </ng-template>
+    <ng-template #modalFooter>
+        <button type="button" (click)="closeAddCategory()" class="btn-outline-danger btn">{{ 'Discard' | translate
+            }}</button>
+        <button type="button" (click)="closeAddCategory(true)" class="rtl:mr-4 ltr:ml-4 btn btn-primary">{{ 'Save' |
+            translate }}</button>
+    </ng-template>
+</modal>

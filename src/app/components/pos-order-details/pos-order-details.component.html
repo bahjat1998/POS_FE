@@ -1,0 +1,141 @@
+<modal #C_Pop class="modal-top rounded large-modal lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'OrdersDetails' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="grid grid-cols-2">
+            <div class="flex">
+                <p class="w-40">{{ 'Account' | translate }}:</p>
+                <p class="font-bold text-primary">{{model.accountName}}</p>
+            </div>
+            <div class="flex">
+                <p class="w-40">{{ 'Info' | translate }}:</p>
+                <p class="font-bold text-lg" *ngIf="model.invoicePosType || model.invoicePosType == 0">
+                    {{(model.invoicePosType == 2 ? model.posTableName : ('invStat'+model.invoicePosType)) |
+                    translate}}
+                </p>
+            </div>
+            <div class="flex col-span-2" *ngIf="model.notes">
+                <p class="w-40">{{ 'Notes' | translate }}:</p>
+                <p>{{model.notes}}</p>
+            </div>
+            <ng-container *ngIf="sourceDelivery">
+                <div class="flex col-span-2">
+                    <p class="font-bold">{{'DeliveryCustomer'| translate }}</p>
+                    <hr>
+                </div>
+                <div class="flex">
+                    <p class="w-40">{{ 'Name' | translate }}:</p>
+                    <p class="font-bold">{{sourceDelivery.name}}</p>
+                </div>
+                <div class="flex">
+                    <p class="w-40">{{ 'Delivery' | translate }}:</p>
+                    <p>{{sourceDelivery.phone1}}/{{sourceDelivery.phone2}}</p>
+                </div>
+                <div class="flex">
+                    <p class="w-40">{{ 'Address' | translate }}:</p>
+                    <p class="font-bold">{{sourceDelivery.address.address}}</p>
+                </div>
+            </ng-container>
+
+        </div>
+        <div class="pb-2">
+            <div class="mt-2 datatable sm-tbl">
+                <ng-datatable [rows]="model.lstItems" [columns]="cols" [sortable]="true"
+                    skin="whitespace-nowrap bh-table-hover" [pagination]="false">
+                    <ng-template slot="ID_" let-r="data">
+                        <strong class="items-center text-info">
+                            {{ r.id }}
+                        </strong>
+                    </ng-template>
+                    <ng-template slot="ItemName" let-r="data">
+                        <strong class="items-center text-primary">
+                            {{ r.name }}
+                        </strong>
+                    </ng-template>
+                    <ng-template slot="Details" let-r="data">
+                        <div>
+                            <div class="bg-primary m-0 text-sm badge" *ngIf="r.variantName">{{r.variantName}}</div>
+                            <ng-container *ngIf="r.lstAddOns">
+                                <div *ngFor="let ad of r.lstAddOns" class="bg-info m-0 my-1 text-sm badge">
+                                    {{ad.addOnName}} X {{ad.qty}}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ng-template>
+                    <ng-template slot="Quantity" let-r="data">
+                        <p class="font-bold">
+                            {{ r.quantity | number}}
+                        </p>
+                    </ng-template>
+                    <ng-template slot="Price" let-r="data">
+                        <p class="font-bold">
+                            {{ r.price | number}}
+                        </p>
+                    </ng-template>
+                    <ng-template slot="Total" let-r="data">
+                        <p class="font-bold">
+                            {{ r.total | number}}
+                        </p>
+                    </ng-template>
+                    <ng-template slot="Audit" let-r="data">
+                        <div>
+                            <strong class="items-center text-info">
+                                {{ r.createDate | date:'dd/MM/yyyy • h:mm a'}}
+                            </strong>
+                        </div>
+                        <p class="">
+                            {{ r.createByName}}
+                        </p>
+                    </ng-template>
+                </ng-datatable>
+            </div>
+        </div>
+
+
+        <div class="space-y-2">
+            <div class="flex justify-between">
+                <div *ngIf="model.posTableName" class="w-1/2">
+                    {{ 'Table'|translate}}: {{model.posTableName}}
+                </div>
+                <div class="tb1">
+                    <p class="p1">{{ 'TotalItems'|translate}} : </p>
+                    <div class="tb1_1"><span class="s1">{{model.totQty}}</span></div>
+                </div>
+            </div>
+            <hr>
+            <div class="tb1">
+                <p class="p1">{{ 'Total'|translate}} : </p>
+                <div class="tb1_1"><span class="s1">{{model.totalBeforeDiscount|number}}</span></div>
+            </div>
+            <div class="tb1" *ngIf="model.discAmount">
+                <p class="p1">{{ 'Discount'|translate}} : </p>
+                <div class="tb1_1"><span class="s2">{{model.discPer|number}}%</span> <span
+                        class="s1">{{model.discAmount|number}}</span></div>
+            </div>
+            <div class="tb1" *ngIf="model.serAmount">
+                <p class="p1">{{ 'Service'|translate}} : </p>
+                <div class="tb1_1"><span class="s2">{{model.serPer|number}}%</span> <span
+                        class="s1">{{model.serAmount|number}}</span></div>
+            </div>
+            <div class="tb1" *ngIf="model.deliveryCost">
+                <p class="p1">{{ 'Delivery'|translate}} : </p>
+                <div class="tb1_1"> <span class="s1">{{model.deliveryCost|number}}</span></div>
+            </div>
+            <div class="tb1">
+                <p class="p1">{{ 'FinalTotal'|translate}} : </p>
+                <div class="tb1_1"><span class="s1">{{model.finalTotal|number}}</span></div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #modalFooter>
+        <div class="flex justify-end w-full">
+            <div class="flex justify-end">
+                <button type="button" (click)="close()" class="btn-outline-danger btn">{{
+                    'Close' |
+                    translate
+                    }}</button>
+            </div>
+        </div>
+    </ng-template>
+</modal>

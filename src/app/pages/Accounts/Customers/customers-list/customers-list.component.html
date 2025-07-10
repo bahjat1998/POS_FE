@@ -1,0 +1,105 @@
+<div class="gap-y-4 grid">
+    <div class="panel">
+        <h5 class="mb-4 font-semibold dark:text-white-light text-lg">{{ 'CustomersList' | translate }} {{ 'Filters' |
+            translate }}</h5>
+        <div class="gap-4 grid grid-cols-3">
+            <div class="col-span-2">
+                <label for="name">{{ 'strSearch' | translate }}</label>
+                <input id="name" type="text" class="form-input" [(ngModel)]="params.strSearch"
+                    (ngModelChange)="search()" />
+            </div>
+            <div class="flex justify-end items-end">
+                <a [routerLink]="'./cu/'" class="gap-2 h-10 btn btn-primary">
+                    <icon-plus />
+                    {{ 'AddNew' | translate }}
+                </a>
+            </div>
+            <div>
+                <label for="name">{{ 'Gender' | translate }}</label>
+                <ng-select class="form-control" [items]="lstLkps['Gender']" bindLabel="label" bindValue="value"
+                    (ngModelChange)="search()" [(ngModel)]="params['genderId']">
+                </ng-select>
+            </div>
+            <div>
+                <label for="name">{{ 'City' | translate }}</label>
+                <ng-select class="form-control" [items]="lstLkps['City']" bindLabel="label" bindValue="value"
+                    (ngModelChange)="search()" [(ngModel)]="params['cityId']">
+                </ng-select>
+            </div>
+        </div>
+    </div>
+
+    <div class="overflow-x-scroll panel">
+        <div class="flex justify-between">
+            <h5 class="mb-4 font-semibold dark:text-white-light text-lg">{{ 'CustomersList' | translate }}</h5>
+
+            <div class="flex justify-between gap-5">
+                <label class="inline-flex">
+                    <input type="radio" name="ia" class="peer outline-primary form-radio" [value]="'1'"
+                        (ngModelChange)="search()" [(ngModel)]="params.isActive" />
+                    <span class="peer-checked:text-primary">{{ 'Active' | translate }}</span>
+                </label>
+                <label class="inline-flex">
+                    <input type="radio" name="ia" class="peer outline-danger form-radio" [value]="'0'"
+                        (ngModelChange)="search()" [(ngModel)]="params.isActive" />
+                    <span class="peer-checked:text-danger">{{ 'NotActive' | translate }}</span>
+                </label>
+            </div>
+        </div>
+        <div class="datatable" *ngIf="cols">
+            <ng-datatable [rows]="lstData" [columns]="cols" [sortable]="true" [loading]="loading"
+                [totalRows]="params.rowsCount" [isServerMode]="true" [pageSize]="params.ps"
+                [sortDirection]="params.asc ? 'asc' : 'desc'" [pageSizeOptions]="[10, 15, 30, 50]"
+                paginationInfo="{0} to {1} of {2}" (changeServer)="changeServer($event)"
+                skin="whitespace-nowrap bh-table-hover">
+
+                <ng-template slot="id" let-r="data">
+                    <strong class="text-info" (click)="accountdbClick(r)">#{{ r.id }}</strong>
+                </ng-template>
+                <ng-template slot="nameEn" let-r="data">
+                    <div class="flex items-center gap-2" (dblclick)="accountdbClick(r)">
+                        {{ r.nameEn}}
+                    </div>
+                </ng-template>
+                <ng-template slot="nameAr" let-r="data">
+                    <div class="flex items-center gap-2" (dblclick)="accountdbClick(r)">
+                        {{ r.nameAr}}
+                    </div>
+                </ng-template>
+                <ng-template slot="cityId" let-r="data">
+                    <div class="flex items-center gap-2" (dblclick)="accountdbClick(r)">
+                        <div>{{ r.cityName }}</div>
+                    </div>
+                </ng-template>
+                <ng-template slot="genderId" let-r="data">
+                    <div class="flex items-center gap-2" (dblclick)="accountdbClick(r)">
+                        <div>{{ r.genderName }}</div>
+                    </div>
+                </ng-template>
+                <ng-template slot="email" let-r="data">
+                    <a [href]="'mailto:' +r.email" class="text-primary hover:underline"
+                        (dblclick)="accountdbClick(r)">{{ r.email }}</a>
+                </ng-template>
+                <ng-template slot="startDate" let-r="data">
+                    <a class="font-bold text-primary" (dblclick)="accountdbClick(r)"> {{r.startDate |
+                        date:'dd/MM/yyyy'}}</a>
+                </ng-template>
+                <ng-template slot="phone1" let-r="data">
+                    <a class="text-primary hover:underline" (dblclick)="accountdbClick(r)">{{ r.phone1 }}</a>
+                </ng-template>
+                <ng-template slot="actions" let-r="data">
+                    <div class="flex justify-center items-center gap-4">
+                        <a [routerLink]="'./cu/'+r.id" class="hover:text-info">
+                            <icon-edit class="w-4.5 h-4.5" />
+                        </a>
+                        <button type="button" class="hover:text-danger" (click)="deleteAcc(r.id)">
+                            <icon-trash-lines />
+                        </button>
+                    </div>
+
+                </ng-template>
+
+            </ng-datatable>
+        </div>
+    </div>
+</div>

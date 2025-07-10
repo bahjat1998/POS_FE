@@ -1,0 +1,39 @@
+<modal #PosStockReportPop class="modal-top rounded large-modal lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'StockReport' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="flex justify-between">
+            <div class="flex gap-x-3 grow">
+                <button type="button" class="btn"
+                    [ngClass]="filters['selectedList'] == 0 ? 'btn-primary':'btn-outline-primary'"
+                    (click)="selectFilter(0)">{{'ExceedMin'|translate}}</button>
+                <button type="button" class="btn"
+                    [ngClass]="filters['selectedList'] == 1 ? 'btn-secondary':'btn-outline-secondary'"
+                    (click)="selectFilter(1)">{{'AllStockBalances'|translate}}</button>
+            </div>
+        </div>
+        <div class="pb-2">
+            <div class="mt-2 datatable sm-tbl">
+                <ng-datatable [rows]="lstData" [columns]="cols" [loading]="loading" [totalRows]="params.totalCount"
+                    [isServerMode]="true" [pageSize]="params.max" [pageSizeOptions]="[10, 15, 30, 50]"
+                    paginationInfo="{0} to {1} of {2}" (changeServer)="changeServer($event)"
+                    skin="whitespace-nowrap bh-table-hover">
+
+                    <ng-template slot="id" let-r="data">
+                        <strong class="text-info cursor-pointer">#{{ r.id }}</strong>
+                    </ng-template>
+                    <ng-template slot="nameAr" let-r="data">
+                        <p class="font-bold">
+                            {{ r.nameAr}}
+                        </p>
+                    </ng-template>
+                    <ng-template slot="quantity" let-r="data">
+                        <strong class="font-bold">{{ (r.quantity / (r.unitCount ?? 1)) |number:'1.2-2'}}</strong>
+                    </ng-template>
+
+                </ng-datatable>
+            </div>
+        </div>
+    </ng-template>
+</modal>

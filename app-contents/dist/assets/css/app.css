@@ -1,0 +1,224 @@
+@import 'tailwind.css';
+@import 'file-upload-with-preview/dist/style.css';
+@import 'file-upload-preview.css';
+@import '@ng-select/ng-select/themes/default.theme.css';
+@import 'sweetalert';
+
+
+.rtl td {
+    text-align: right !important;
+}
+
+
+@font-face {
+    font-family: dinNextArab;
+    src: url(../DINNextLTArabic-Regular-3.ttf) format("opentype");
+}
+
+.rtl * {
+    font-family: 'dinNextArab', 'arial', sans-serif;
+}
+
+.h-s {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.text-red {
+    color: #c21a1a !important;
+    margin: 0 5px;
+}
+
+a {
+    cursor: pointer;
+}
+
+.c-p {
+    cursor: pointer;
+}
+
+.modal .modal-dialog {
+    overflow: visible;
+}
+
+
+.bg-info {
+    background-color: #209CEE;
+    /* Default info color */
+}
+
+.bg-success {
+    background-color: #48BB78;
+    /* Default success color */
+}
+
+.bg-warning {
+    background-color: #F6E05E;
+    /* Default warning color */
+}
+
+.bg-danger {
+    background-color: #E53E3E;
+    /* Default danger color */
+}
+
+.bg-secondary {
+    background-color: #A0AEC0;
+    /* Default secondary color */
+}
+
+.bg-dark {
+    background-color: #2D3748;
+    /* Default dark color */
+}
+
+.form-input {
+    background-color: rgba(235, 235, 235, .2);
+
+    &:disabled {
+        background-color: rgba(235, 235, 235, .6);
+    }
+}
+
+.modal-header.py-0 {
+    .close {
+        top: 0;
+    }
+}
+
+tr.s-r {
+    background-color: #f5ebff !important;
+}
+
+.sm-tbl {
+    overflow: unset;
+
+    .sm-col {
+        width: 5rem;
+    }
+
+    .lg-col {
+        width: 10rem;
+    }
+
+    input {
+        padding: 5px;
+    }
+
+    td {
+        padding: 0.2rem !important;
+    }
+
+    th {
+        padding: 1rem 0.2rem !important;
+    }
+}
+
+.main-content-box {
+    padding: 1.5rem;
+}
+
+
+.modal-footer:empty {
+    padding: 0;
+    margin: 0;
+    height: 0;
+    display: none;
+}
+
+body {
+    max-height: 89vh;
+    overflow-y: scroll !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+body::-webkit-scrollbar {
+    display: none !important;
+}
+
+@media (max-width: 1024px) {
+    .main-content-box {
+        padding: 0.5rem;
+    }
+
+    .cutamizeM {
+        display: none;
+    }
+
+    .panel {
+        width: 100%;
+        overflow-y: scroll;
+        padding: 2px;
+    }
+
+    table,
+    table th,
+    table td {
+        padding: 5px 2px !important;
+    }
+
+    table.c {
+        width: 100%;
+        overflow-y: scroll;
+    }
+
+    .btn {
+        padding: 7px;
+    }
+
+    .modal-body {
+        padding: 7px !important;
+    }
+
+    .xxl .modal .modal-dialog {
+        min-width: unset;
+    }
+
+    .md .modal .modal-dialog {
+        min-width: unset;
+    }
+
+    .lg .modal .modal-dialog {
+        min-width: unset;
+    }
+}
+
+.discount-i {
+    background: #ff2100;
+    color: #FFF;
+    font-weight: bold;
+}
+
+.f-col {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    font-weight: 500;
+    color: #111827;
+    white-space: nowrap;
+    background-color: #f9fafb;
+}
+
+.dark .f-col {
+    color: #ffffff;
+    background-color: #1f2937;
+}
+
+.modal-top.rounded .modal-content, .modal-top.rounded .title {
+    border-radius: 10px;
+}
+
+.no-select {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.extraDetail {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+}

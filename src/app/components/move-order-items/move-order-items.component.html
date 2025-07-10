@@ -1,0 +1,140 @@
+<modal #PosMoveOrderItemsPopup class="modal-top rounded extra-large-modal lg no-select">
+    <!-- <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'MoveItems' | translate }}</div>
+    </ng-template> -->
+    <ng-template #modalBody>
+        <div class="flex justify-between pr-7">
+            <div class="flex gap-x-3">
+                <button type="button" class="btn" [ngClass]="mapper == 0 ? 'btn-primary':'btn-outline-primary'"
+                    (click)="selectMapper(0)">{{'PerItem'|translate}}</button>
+                <button type="button" class="btn" [ngClass]="mapper == 1 ? 'btn-secondary':'btn-outline-secondary'"
+                    (click)="selectMapper(1)">{{'PerQuantity'|translate}}</button>
+            </div>
+
+
+            <button type="button" class="btn" (click)="enableMultiple()"
+                [ngClass]="options['enableMultiple'] ? 'btn-dark':'btn-outline-dark'">{{'EnableMultiple'|translate}}</button>
+        </div>
+        <div class="py-2">
+            <div class="grid grid-cols-1 sm:grid-cols-2 icon-change"
+                [ngClass]="!options['enableMultiple'] ? 'gap-x-12':''">
+                <div class="flex">
+                    <div class="flex-1" [ngClass]="options['enableMultiple'] ? 'pr-2':''">
+                        <ul class="left" *ngIf="fromOrder">
+                            <div #leftContainer [sortablejs]="fromOrder.lstItems" [sortablejsOptions]="leftOptions"
+                                class="icsd">
+                                <ng-container [ngTemplateOutlet]="ItemsList"
+                                    [ngTemplateOutletContext]="{invoice:fromOrder}">
+                                </ng-container>
+                            </div>
+                        </ul>
+                        <ng-container [ngTemplateOutlet]="TotalsWidget" [ngTemplateOutletContext]="{invoice:fromOrder}">
+                        </ng-container>
+                    </div>
+
+                    <div class="flex justify-center items-center w-12" *ngIf="options['enableMultiple']">
+                        <div class="space-y-2">
+                            <button type="button" class="btn btn-info btn-sm" (click)="move('ltr')">
+                                <icon-arrow-left class="w-6 h-6" />
+                            </button>
+
+                            <button type="button" class="btn btn-info btn-sm" (click)="move('rtl')">
+                                <icon-arrow-left class="w-6 h-6 -rotate-180" />
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div [ngClass]="options['enableMultiple'] ? 'pl-2':''">
+                    <ul class="right" *ngIf="toOrder">
+                        <div #rightContainer [sortablejs]="toOrder.lstItems" [sortablejsOptions]="rightOptions"
+                            class="icsd">
+                            <ng-container [ngTemplateOutlet]="ItemsList" [ngTemplateOutletContext]="{invoice:toOrder}">
+                            </ng-container>
+                        </div>
+                    </ul>
+                    <ng-container [ngTemplateOutlet]="TotalsWidget" [ngTemplateOutletContext]="{invoice:toOrder}">
+                    </ng-container>
+                </div>
+            </div>
+
+        </div>
+    </ng-template>
+
+    <ng-template #modalFooter>
+        <div class="flex justify-between w-full">
+            <div>
+            </div>
+            <div class="flex justify-end">
+                <button type="button" (click)="closePosMoveOrderItemsPopup()" class="btn-outline-danger btn">{{
+                    'Discard' |
+                    translate
+                    }}</button>
+                <button type="button" (click)="handlePayAction()" *ngIf="componentData.buttons.PAY"
+                    class="rtl:mr-4 ltr:ml-4 btn btn-success">{{ 'Pay' | translate }}</button>
+                <button type="button" (click)="handleSaveAction()" *ngIf="componentData.buttons.save"
+                    class="rtl:mr-4 ltr:ml-4 btn btn-success">{{ 'Save' | translate }}</button>
+            </div>
+        </div>
+    </ng-template>
+</modal>
+
+
+<ng-template #ItemsList let-invoice="invoice">
+    <li class="mb-2 cursor-grab" *ngFor="let r of invoice.lstItems">
+        <div [ngClass]="{'bg-primary-light':r.selected,'bg-white':!r.selected}" (click)="selectItm(r)"
+            class="flex md:flex-row flex-col items-md-center bg-white dark:bg-[#1b2e4b] px-4 py-1 border border-white-light dark:border-dark rounded-md ltr:text-left rtl:text-right">
+            <div class="flex flex-1 justify-between items-center">
+                <div class="my-3 md:my-0 font-semibold">
+                    <div class="text-dark dark:text-[#bfc9d4] text-base">{{ r.name }}<span class="text-primary">
+                            ({{r.quantity|number}} X {{r.price|number}})</span>
+                    </div>
+                    <div class="flex gap-x-2">
+                        <span class="bg-primary badge" *ngIf="r.variantName">{{r.variantName}}</span>
+                        <ng-container *ngIf="r.lstAddOns">
+                            <ng-container *ngFor="let ad of r.lstAddOns">
+                                <span class="bg-info badge" *ngIf="ad">{{ad.addOnName}} X {{ad.qty}}</span>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+                <div class="text-white-dark">
+                    <span class="text-secondary">{{r.total}}</span>
+                </div>
+            </div>
+        </div>
+    </li>
+</ng-template>
+
+<ng-template #TotalsWidget let-invoice="invoice">
+    <div class="space-y-2" *ngIf="invoice">
+        <div class="flex justify-between">
+            <div *ngIf="invoice.posTableName" class="w-1/2">
+                {{ 'Table'|translate}}: {{invoice.posTableName}}
+            </div>
+            <div class="tb1">
+                <p class="p1">{{ 'TotalItems'|translate}} : </p>
+                <div class="tb1_1"><span class="s1">{{invoice.totQty}}</span></div>
+            </div>
+        </div>
+        <hr>
+        <div class="tb1">
+            <p class="p1">{{ 'Total'|translate}} : </p>
+            <div class="tb1_1"><span class="s1">{{invoice.totalBeforeDiscount|number}}</span></div>
+        </div>
+        <div class="tb1">
+            <p class="p1">{{ 'Discount'|translate}} : </p>
+            <div class="tb1_1"><span class="s2">{{invoice.discPer|number}}%</span> <span
+                    class="s1">{{invoice.discAmount|number}}</span></div>
+        </div>
+        <div class="tb1">
+            <p class="p1">{{ 'Service'|translate}} : </p>
+            <div class="tb1_1"><span class="s2">{{invoice.serPer|number}}%</span> <span
+                    class="s1">{{invoice.serAmount|number}}</span></div>
+        </div>
+        <div class="tb1">
+            <p class="p1">{{ 'FinalTotal'|translate}} : </p>
+            <div class="tb1_1"><span class="s1">{{invoice.finalTotal|number}}</span></div>
+        </div>
+    </div>
+</ng-template>

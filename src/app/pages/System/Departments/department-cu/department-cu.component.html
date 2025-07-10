@@ -1,0 +1,41 @@
+<div class="panel">
+    <h5 class="mb-4 font-semibold text-lg dark:text-white-light"> {{ 'DepartmentInfo' |
+        translate }}</h5>
+    <div class="gap-3 grid grid-cols-3">
+        <div>
+            <label>{{'ID' | translate}}</label>
+            <input type="text" class="form-input" [(ngModel)]="modal.id" disabled>
+        </div>
+        <div>
+            <label>{{'key' | translate}}</label>
+            <input type="text" class="form-input" [(ngModel)]="modal.key">
+        </div>
+        <div></div>
+        <div>
+            <label>{{'EnglishName' | translate}}</label>
+            <input type="text" class="form-input" [(ngModel)]="modal.nameEn"
+                [ngClass]="{'is-invalid':inputFailds.nameEn}">
+        </div>
+        <div>
+            <label>{{'ArabicName' | translate}}</label>
+            <input type="text" class="form-input" [(ngModel)]="modal.nameAr"
+                [ngClass]="{'is-invalid':inputFailds.nameAr}">
+        </div>
+        <div>
+            <div class="form-group local-forms">
+                <label for="gender" class="gen-label">{{'OnBranches' | translate}}</label>
+                <ng-select class="form-control" [items]="lstLkps['Branch']" [multiple]="true"
+                    bindLabel="label" bindValue="value" [(ngModel)]="modal._lstBranches">
+                </ng-select>
+            </div>
+        </div>
+        <div class="col-span-2">
+            <label class="form-label">{{'Description' | translate}}</label>
+            <textarea class="form-input" rows="6" [(ngModel)]="modal.desc"></textarea>
+        </div>
+    </div>
+    <div class="flex justify-end">
+        <a (click)="back()" class="mt-1 btn btn-danger me-2">{{'Discard' | translate}}</a>
+        <a (click)="save()" class="mt-1 btn btn-success">{{'Save' | translate}}</a>
+    </div>
+</div>

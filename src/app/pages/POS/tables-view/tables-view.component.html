@@ -1,0 +1,61 @@
+<div class="flex justify-between py-2 panel">
+    <div class="flex gap-x-3">
+        <button type="button" appShiftBlock class="w-36 btn btn-secondary"
+            (click)="showOrdersList()">{{'OrdersList'|translate}}</button>
+        <button type="button" appShiftBlock class="w-36 btn"
+            [ngClass]="{'btn-primary':!isMoveOrderEnabeld,'btn-dark':isMoveOrderEnabeld}"
+            (click)="enableMoveOrder()">{{'MoveOrder'|translate}}</button>
+
+
+        <button type="button" appShiftBlock class="w-36 btn"
+            [ngClass]="{'btn-success':!isPayEnabeld,'btn-dark':isPayEnabeld}"
+            (click)="PayOrder()">{{'Pay'|translate}}</button>
+
+
+        <button type="button" appShiftBlock class="w-36 btn"
+            [ngClass]="{'btn-info':!isPartiallyPayEnabeld,'btn-dark':isPartiallyPayEnabeld}"
+            (click)="partiallyPayOrder()">{{'PartiallyPay'|translate}}</button>
+
+    </div>
+    <div class="flex flex-wrap justify-center sm:justify-start items-center my-2">
+        <div class="flex items-center ltr:mr-4 rtl:ml-4" *ngFor="let r of lstLkps['lstTablesStatus']">
+            <div class="h-4 w-4 rounded-sm  ltr:mr-2 rtl:ml-2 {{r.color}}"></div>
+            <div class="">{{r.label|translate}}</div>
+        </div>
+    </div>
+</div>
+
+<div class="p-0 panel">
+    <div [ngClass]="{'grid grid-cols-12':lstFloors.length > 1}">
+        <div class="col-span-11" [ngClass]="{'col-span-11':lstFloors.length > 1}" id="svgBox" style="height: 92vh;">
+        </div>
+        <div class="flex flex-col justify-between col-span-1" style="height: 92vh;" *ngIf="lstFloors.length > 1">
+            <div *ngFor="let r of lstFloors" class="floor-b">
+                <button type="button" class="btn"
+                    [ngClass]="{'btn-outline-primary':selectedFloor.id != r.id,'btn-primary':selectedFloor.id == r.id}"
+                    (click)="selectFloor(r)">{{r.name}}</button>
+            </div>
+
+            <div class="mt-auto">
+                <div class="floor-b">
+                    <button type="button" class="text-lg btn btn-success"
+                        (click)="navigateToPos(0)">{{'TakeAway'|translate}}</button>
+                </div>
+                <div class="floor-b">
+                    <button type="button mt-2" class="text-lg btn btn-info"
+                        (click)="navigateToPos(1)">{{'Delivery'|translate}}</button>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<img [src]="comapnySetup.lockTableImg" id="lockico" style="display: none;">
+<img [src]="comapnySetup.selectTableImg" id="selectico" style="display: none;">
+
+<app-pos-orders-list></app-pos-orders-list>
+<app-move-order-items></app-move-order-items>
+<app-pay-order-popup></app-pay-order-popup>

@@ -1,0 +1,71 @@
+<div class="panel">
+    <h5 class="mb-4 font-semibold dark:text-white-light text-lg"> {{ 'FloorInfo' |
+        translate }}</h5>
+    <div class="gap-3 grid grid-cols-3">
+        <div class="space-y-2 col-span-1">
+            <div>
+                <label>{{'ID' | translate}}</label>
+                <input type="text" class="form-input" [(ngModel)]="modal.id" disabled>
+            </div>
+            <div>
+                <label>{{'Name' | translate}}</label>
+                <input type="text" class="form-input" [(ngModel)]="modal.name"
+                    [ngClass]="{'is-invalid':inputFailds.name}">
+            </div>
+
+            <div>
+                <label class="form-label">{{'Description' | translate}}</label>
+                <textarea class="form-input" rows="6" [(ngModel)]="modal.description"></textarea>
+            </div>
+        </div>
+        <div class="col-span-2">
+            <app-file-upload [image]="modal.img" [height]="'350px'"
+                (imageSelected)="modal.img = $event"></app-file-upload>
+        </div>
+    </div>
+</div>
+<div class="panel">
+    <div class="flex justify-end mb-2">
+        <a (click)="newRow('lstTables')" class="mt-1 btn btn-primary">{{'New' | translate}}</a>
+    </div>
+    <table class="w-full text-gray-500 dark:text-gray-400 text-sm text-left rtl:text-right">
+        <thead class="text-gray-700 dark:text-gray-400 text-xs uppercase">
+            <tr>
+                <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                    #
+                </th>
+                <th class="px-6 py-3">
+                    {{'Name' | translate}}
+                </th>
+                <th class="px-6 py-3">
+                    {{'Description' | translate}}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="border-gray-200 dark:border-gray-700 border-b" *ngFor="let r of modal.lstTables ; let i = index">
+                <th class="f-col">
+                    {{i+1}}
+                </th>
+                <td class="px-6 py-4">
+                    <input type="text" class="form-input" [(ngModel)]="r.name">
+                </td>
+                <td class="px-6 py-4">
+                    <input type="text" class="form-input" [(ngModel)]="r.description">
+                </td>
+                <td class="px-6 py-4">
+                    <button (click)="deleteRow('lstTables',i)" class="ml-auto hover:text-danger" type="button">
+                        <icon-trash-lines class="w-4.5 h-4.5" />
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="panel">
+    <div class="flex justify-end">
+        <a (click)="back()" class="me-2 mt-1 btn btn-danger">{{'Discard' | translate}}</a>
+        <a (click)="save()" class="mt-1 btn btn-success">{{'Save' | translate}}</a>
+    </div>
+</div>

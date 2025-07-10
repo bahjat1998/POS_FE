@@ -1,0 +1,96 @@
+<modal #PosOrdersListPopup class="modal-top rounded large-modal lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'OrdersList' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="flex justify-between">
+            <div class="flex gap-x-3 grow">
+                <button type="button" class="btn"
+                    [ngClass]="filters['invoiceStatus'] == 1 ? 'btn-primary':'btn-outline-primary'"
+                    (click)="selectFilter(1)">{{'PendingOrders'|translate}}</button>
+                <button type="button" class="btn"
+                    [ngClass]="filters['invoiceStatus'] == 4 ? 'btn-secondary':'btn-outline-secondary'"
+                    (click)="selectFilter(4)">{{'PaidOrders'|translate}}</button>
+            </div>
+            <div class="flex justify-between items-center gap-x-3 p-2 font-semibold">
+                <div>
+                    {{ 'Totals' | translate }}: {{ otherData.total | number }}
+                </div>
+                <div>
+                    {{ 'TotalPayments' | translate }}: {{ otherData.totalPaid | number}}
+                </div>
+            </div>
+        </div>
+        <div class="pb-2">
+            <div class="mt-2 datatable sm-tbl">
+                <ng-datatable [rows]="lstData" [columns]="cols" [loading]="loading" [totalRows]="params.totalCount"
+                    [isServerMode]="true" [pageSize]="params.max" [pageSizeOptions]="[10, 15, 30, 50]"
+                    paginationInfo="{0} to {1} of {2}" (changeServer)="changeServer($event)"
+                    skin="whitespace-nowrap bh-table-hover">
+
+                    <ng-template slot="OrderId" let-r="data">
+                        <div class="" (dblclick)="navTo(r)">
+                            <strong class="items-center text-info">
+                                {{ r.id }}
+                            </strong>
+                        </div>
+                    </ng-template>
+                    <ng-template slot="AccountName" let-r="data">
+                        <strong class="items-center text-primary">
+                            {{ r.accountName }}
+                        </strong>
+                    </ng-template>
+                    <ng-template slot="PosTypeLbl" let-r="data">
+                        <span class="badge badge-outline-{{r.InvoicePosTypeColor}}">
+                            {{ r.InvoicePosTypeLbl | translate}}
+                        </span>
+
+                        <p class="badge bg-{{r.InvoicePosTypeColor}}" *ngIf="r.invoicePosType == 2">
+                            {{r.posTableName}}
+                        </p>
+                        <p class="badge bg-{{r.InvoicePosTypeColor}}" *ngIf="r.invoicePosType == 1">
+                            {{r.accountName}}
+                        </p>
+                    </ng-template>
+                    <ng-template slot="Amount" let-r="data">
+                        <p class="font-bold" (dblclick)="navTo(r)">
+                            {{ r.finalTotal | number}} <span class="font-bold text-success">{{' ' +
+                                PaymentMethodMap[r['paymentType']]}}</span>
+                        </p>
+                    </ng-template>
+                    <ng-template slot="CreateDate" let-r="data">
+                        <div>
+                            <strong class="items-center text-info">
+                                {{ r.createDate }}
+                            </strong>
+                        </div>
+                    </ng-template>
+                    <ng-template slot="CreateByName" let-r="data">
+                        <p class="">
+                            {{ r.createByName}}
+                        </p>
+                    </ng-template>
+                    <ng-template slot="actions" let-r="data">
+                        <div class="flex justify-center items-center gap-2" *ngIf="filters['invoiceStatus'] == 1">
+                            <button type="button" *ngIf="buttons.Pay" (click)="listAction('Pay',r)"
+                                class="w-24 h-10 btn btn-success">{{'Pay' | translate}}</button>
+                            <button type="button" *ngIf="buttons.Pick" (click)="listAction('Pick',r)"
+                                class="w-24 h-10 btn btn-secondary">{{'Pick' | translate}}</button>
+                        </div>
+                        <div class="flex justify-center items-center gap-2" *ngIf="filters['invoiceStatus'] == 4">
+                            <button type="button" (click)="listAction('ShowOrderDetails',r)"
+                                class="btn-icon btn btn-success">
+                                <icon-list-check class="w-5 h-5" />
+                            </button>
+                            <!-- <button type="button" (click)="listAction('PrintOrder',r)"
+                                class="btn-icon btn btn-secondary">
+                                <icon-printer class="w-5 h-5" />
+                            </button> -->
+                        </div>
+                    </ng-template>
+
+                </ng-datatable>
+            </div>
+        </div>
+    </ng-template>
+</modal>

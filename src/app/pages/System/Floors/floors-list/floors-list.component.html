@@ -1,0 +1,52 @@
+<div class="gap-y-4 grid">
+    <div class="panel">
+        <div class="gap-4 grid grid-cols-3">
+            <div class="col-span-2">
+                <label for="name">{{ 'strSearch' | translate }}</label>
+                <input id="name" type="text" class="form-input" [(ngModel)]="params.strSearch"
+                    (ngModelChange)="search()" />
+            </div>
+            <div class="flex justify-end items-end">
+                <a [routerLink]="'/system/floors/cu'" class="gap-2 h-10 btn btn-primary">
+                    <icon-plus />
+                    {{ 'NewFloor' | translate }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <!-- <div class="flex justify-between"> -->
+        <h5 class="mb-4 font-semibold dark:text-white-light text-lg">{{ 'FloorsList' | translate }}</h5>
+        <!-- <div class="flex justify-end gap-5">
+                <label class="inline-flex">
+                    <input type="radio" name="ia" class="peer outline-primary form-radio" [value]="'1'"
+                        (ngModelChange)="search()" [(ngModel)]="params.isActive" />
+                    <span class="peer-checked:text-primary">{{ 'Active' | translate }}</span>
+                </label>
+                <label class="inline-flex">
+                    <input type="radio" name="ia" class="peer outline-danger form-radio" [value]="'0'"
+                        (ngModelChange)="search()" [(ngModel)]="params.isActive" />
+                    <span class="peer-checked:text-danger">{{ 'NotActive' | translate }}</span>
+                </label>
+            </div>
+        </div> -->
+        <div class="gap-5 grid grid-cols-4">
+            <div *ngFor="let r of lstData">
+                <div (click)="navToEdit(r)"
+                    class="bg-white dark:bg-[#191e3a] shadow-[4px_6px_10px_-3px_#bfc9d4] dark:shadow-none border border-[#e0e6ed] dark:border-[#1b2e4b] rounded w-full max-w-[22rem] cursor-pointer">
+                    <div class="px-6 py-7">
+                        <div class="-mx-6 -mt-7 mb-7 rounded-tl rounded-tr h-[260px] overflow-hidden">
+                            <img [src]="r.img" alt="" class="w-full h-full object-cover" />
+                        </div>
+                        <p class="mb-1.5 font-bold text-primary text-xs">{{'FloorId'|translate}} <span>{{r.id}}</span></p>
+                        <h5 class="mb-4 font-bold text-[#3b3f5c] text-[15px] dark:text-white-light">{{r.name}}</h5>
+                        <p class="text-white-dark">{{r.description}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>

@@ -1,0 +1,32 @@
+.bx-1 {
+    display: flex;
+    flex-direction: column;
+    padding: 5px;
+    padding-bottom: 10px;
+
+
+    color: rgb(67 97 238 / var(--tw-text-opacity));
+    border-color: rgb(67 97 238);
+    border-width: 1px;
+    .mg {
+        min-width: 85px;
+        height: 90px;
+        @apply bg-cover bg-center rounded
+    }
+
+    .pri {
+        font-size: 18px;
+        color: black;
+        font-weight: bold;
+    }
+}
+.bx-1:hover {
+    cursor: pointer;
+}
+.bx-1.selected {
+    color: white !important;
+    background-color: rgb(67 97 238) !important;
+    .pri {
+        color: white;
+    }
+}

@@ -1,0 +1,203 @@
+<div class="cartView {{style.masterClasses}}">
+    <div class="px-2">
+        <div class="flex justify-between">
+            <div class="pt-{{style.titlePt}} pb-1">
+                <!-- {{style.textSize}} -->
+                <p class="font-bold">{{model.accountName}} </p>
+                <p class="font-bold text-white-dark text-sm">{{'Order'|translate}} : #{{(model.id ??
+                    model.invName)|translate}} - <span class="text-primary cursor-pointer"
+                        (click)="openOrderNotes()">{{'Notes'|translate}}</span></p>
+                <p class="font-light text-white-dark">{{model.dateTime}}</p>
+            </div>
+            <div class="flex justify-center items-center">
+                <span class="bg-primary p-2 rounded-xl badge" [ngClass]="{'text-lg':model.invoicePosType == 2}">
+                    {{model.customLbl | translate}}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="px-{{style.spaceYaxis}}">
+        <hr>
+    </div>
+    <div class="flex justify-between items-center p-1">
+        <p class="font-bold {{style.textSize}} cursor-pointer text-info" (click)="openPosOrderDetails()">
+            {{'OrderDetails'|translate}}</p>
+        <p> <span class="bg-info m-0 badge">{{invStatus.label}}</span> ({{model.totQty ?? 0}}) {{'items'|translate}}</p>
+    </div>
+    <div class="itemsList {{style.extraItemsListClass}}" id="itemsList" style=" height: 35vh; ">
+        <ng-container *ngFor="let r of model.lstItems">
+            <ng-container *ngIf="style.itemsView == 0">
+                <ng-container [ngTemplateOutlet]="CartItemView0" [ngTemplateOutletContext]="{item:r}">
+                </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf="style.itemsView == 1">
+                <ng-container [ngTemplateOutlet]="CartItemView1" [ngTemplateOutletContext]="{item:r}">
+                </ng-container>
+            </ng-container>
+
+            <div class="px-{{style.spaceYaxis}}">
+                <hr>
+            </div>
+        </ng-container>
+    </div>
+    <ng-container *ngIf="style.totalsView == 0">
+        <ng-container [ngTemplateOutlet]="CartTotalsView0">
+        </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="style.totalsView == 1">
+        <ng-container [ngTemplateOutlet]="CartTotalsView1">
+        </ng-container>
+    </ng-container>
+</div>
+
+<!-- ?? (common.currLang == 'en' ? item.nameEn : item.nameAr)
+?? (common.currLang == 'en' ? item.nameEn : item.nameAr) -->
+<ng-template #CartItemView0 let-item="item">
+    <div class="mb-1 px-1" (click)="markItemAsSelected(item)">
+        <div class="flex justify-between items-center">
+            <div class="flex gap-1" [ngClass]="{'selectedItm':item.selected}">
+                <p class="{{style.textSize}}">{{item.name }} </p><span class="text-sm">{{item.price|number}} / <span
+                        class="font-bold text-primary text-lg">{{item.total|number}}</span></span>
+            </div>
+
+            <ng-container [ngTemplateOutlet]="QtyView" [ngTemplateOutletContext]="{item:item}">
+            </ng-container>
+        </div>
+        <div class="flex justify-between items-center">
+            <div class="extraDetail">
+                <div hlMenu class="dropdown"
+                    *ngIf="model.allowChangeUnit || (item.lstUnits && item.lstUnits.length >= 2)">
+                    <button type="button" hlMenuButton class="inline-flex btn-outline-info btn dropdown-toggle btn-sm">
+                        {{item.selectedUnit.unitName}}
+                    </button>
+                    <ul *hlMenuItems @toggleAnimation class="rtl:right-5 ltr:left-5 whitespace-nowrap">
+                        <li *ngFor="let u of item.lstUnits"><a href="javascript:;" *hlMenuItem="let menuItem"
+                                (click)="selectedUnitChanged(u,item)">{{u.unitName}}</a></li>
+                    </ul>
+                </div>
+
+                <span class="text-primary cursor-pointer" *ngIf="item.sentToKit">{{item.note}}</span>
+                <span class="text-primary cursor-pointer" (click)="openNotes(item)" *ngIf="!item.sentToKit">{{item.note
+                    ? item.note : 'Notes' | translate}}</span>
+
+                <ng-container [ngTemplateOutlet]="ItemExtraDetailsView" [ngTemplateOutletContext]="{item:item}">
+                </ng-container>
+            </div>
+            <div>
+                <button (click)="deleteItem(item)" class="ml-auto text-danger" type="button">
+                    <icon-trash-lines class="w-6 h-6" />
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #CartItemView1 let-item="item">
+    <div class="flex justify-between px-1">
+        <div class="flex gap-x-1">
+            <p>{{item.name }} </p><span class="font-bold text-primary">|</span>
+            <span class="text-primary" style=" direction: ltr; ">
+                {{item.quantity}} X
+                {{item.price}}</span>
+        </div>
+        <span class="font-bold">{{item.total}}</span>
+    </div>
+</ng-template>
+
+<ng-template #QtyView let-item="item">
+    <div class="flex items-center gap-x-2 bg-gray-100 py-1 rounded-full w-max">
+        <!-- Minus Button -->
+        <button
+            class="flex justify-center items-center bg-white hover:bg-gray-200 rounded-full w-6 h-6 text-black {{style.textSize}}"
+            (click)="plusMinQty(item,'-')">
+            −
+        </button>
+
+        <!-- Number -->
+        <span class="font-medium text-gray-800 text-lg">{{item.quantity}}</span>
+
+        <!-- Plus Button -->
+        <button
+            class="flex justify-center items-center hover:bg-blue-700 rounded-full w-6 h-6 hover:text-white {{style.textSize}}"
+            [ngClass]="item.qty ? 'bg-blue-600 text-white':'bg-white text-blue-700'" (click)="plusMinQty(item,'+')">
+            +
+        </button>
+    </div>
+</ng-template>
+
+<ng-template #ItemExtraDetailsView let-item="item">
+    <span class="bg-primary m-0 badge" *ngIf="item.variantName">{{item.variantName}}</span>
+    <ng-container *ngIf="item.lstAddOns">
+        <ng-container *ngFor="let ad of item.lstAddOns">
+            <span class="bg-info m-0 badge" *ngIf="ad">{{ad.addOnName}} X {{ad.qty}}</span>
+        </ng-container>
+    </ng-container>
+</ng-template>
+
+<ng-template #CartTotalsView0>
+    <div class="space-y-1 p-2 CartTotalsView0">
+        <div class="flex items-center">
+            <p class="min-w-20">{{ 'Total' | translate }} : </p>
+            <input type="text" class="w-full form-input" disabled [(ngModel)]="model.totalBeforeDiscount">
+        </div>
+
+        <div class="flex items-center">
+            <p class="min-w-20">{{ 'Discount' | translate }} : </p>
+            <div class="flex gap-x-2 w-full">
+                <input type="text" class="w-1/3 form-input" [(ngModel)]="model.discPer" [disabled]="!p.ChangeDiscount"
+                    (ngModelChange)="changeInvoiceTotals('discPer')">
+                <input type="text" class="w-2/3 form-input" [(ngModel)]="model.discAmount" [disabled]="!p.ChangeDiscount"
+                    (ngModelChange)="changeInvoiceTotals('discAmount')">
+            </div>
+        </div>
+
+
+        <div class="flex items-center">
+            <p class="min-w-20">{{ 'Service' | translate }} : </p>
+            <div class="flex gap-x-2 w-full">
+                <input type="text" class="w-1/3 form-input" [(ngModel)]="model.serPer" [disabled]="!p.ChangeService"
+                    (ngModelChange)="changeInvoiceTotals('serPer')">
+                <input type="text" class="w-2/3 form-input" [(ngModel)]="model.serAmount" [disabled]="!p.ChangeService"
+                    (ngModelChange)="changeInvoiceTotals('serAmount')">
+            </div>
+        </div>
+        <div class="flex items-center" *ngIf="model.deliveryCost">
+            <p class="min-w-20">{{ 'Delivery' | translate }} : </p>
+            <div class="flex gap-x-2 w-full">
+                <input type="text" class="w-full form-input" [(ngModel)]="model.deliveryCost">
+            </div>
+        </div>
+        <div class="flex items-center">
+            <p class="min-w-20">{{ 'FinalTotal' | translate }} : </p>
+            <input type="text" class="w-full form-input" disabled [(ngModel)]="model.finalTotal">
+        </div>
+    </div>
+</ng-template>
+<ng-template #CartTotalsView1 let-invoice="invoice">
+    <div class="px-1 CartTotalsView1">
+        <div class="tb2">
+            <p class="p1">{{ 'Total'|translate}} : </p>
+            <div class="tb2_1"><span class="s1">{{model.totalBeforeDiscount|number}}</span></div>
+
+        </div>
+        <div class="tb2">
+            <p class="p1">{{ 'Discount'|translate}} : </p>
+            <div class="tb2_1"><span class="s2">{{model.discPer|number}}%</span> <span
+                    class="s1">{{model.discAmount|number}}</span></div>
+        </div>
+        <div class="tb2">
+            <p class="p1">{{ 'Service'|translate}} : </p>
+            <div class="tb2_1"><span class="s2">{{model.serPer|number}}%</span> <span
+                    class="s1">{{model.serAmount|number}}</span></div>
+        </div>
+        <div class="tb2">
+            <p class="p1">{{ 'FinalTotal'|translate}} : </p>
+            <div class="tb2_1"><span class="s1">{{model.finalTotal|number}}</span></div>
+        </div>
+    </div>
+</ng-template>
+<app-invoice-item-note></app-invoice-item-note>
+<app-remove-item></app-remove-item>

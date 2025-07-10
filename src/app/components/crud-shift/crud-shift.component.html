@@ -1,0 +1,102 @@
+<ng-container *ngIf="ShowButtons">
+    <button *ngIf="!currentShiftId" type="button" class="w-full btn btn-primary" (click)="openShift()">{{ 'OpenShift' |
+        translate }}</button>
+    <button *ngIf="currentShiftId" type="button" class="w-full btn btn-danger" (click)="closeShift()">{{ 'CloseShift' |
+        translate }}</button>
+</ng-container>
+
+
+<modal #PosShiftOpen class="modal-top rounded lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'NewShift' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="grid grid-cols-8 pb-4">
+            <div class="col-span-8">
+                <div class="flex">
+                    <p class="font-bold">{{ 'StoreName' | translate }}: <span
+                            class="text-primary">{{model.branchName}}</span></p>
+                </div>
+
+                <div>
+                    <div>
+                        <label>{{'CashStart' | translate}}</label>
+                        <input type="number" class="form-input" [(ngModel)]="model.startCash"
+                            [ngClass]="{'is-invalid':inputFailds.startCash}">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #modalFooter>
+        <div class="flex justify-end w-full">
+            <div class="flex justify-end">
+                <button type="button" (click)="closeModel()" class="btn-outline-danger btn">{{
+                    'Discard' |
+                    translate
+                    }}</button>
+                <button type="button" (click)="CreateShiftSave()" class="rtl:mr-4 ltr:ml-4 btn btn-success">{{ 'OpenNow'
+                    | translate }}</button>
+            </div>
+        </div>
+    </ng-template>
+</modal>
+<modal #PosShiftClose class="modal-top rounded lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'CloseShift' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="grid grid-cols-8 pb-4">
+            <div class="col-span-8">
+                <div class="flex justify-between">
+                    <div>
+                        <div class="flex gap-x-2">
+                            <p class="font-bold">{{ 'StoreName' | translate }}:</p>
+                            <p class="font-bold text-primary">{{shiftDetails.branchName}}</p>
+                        </div>
+                        <div class="flex gap-x-2">
+                            <p class="font-bold">{{ 'StartCash' | translate }}:</p>
+                            <p class="font-bold text-primary">{{shiftDetails.startCash | number}}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex gap-x-2">
+                            <p class="font-bold">{{ 'CreatedBy' | translate }}:</p>
+                            <p class="font-bold text-primary">{{shiftDetails.createByName}}</p>
+                        </div>
+                        <div class="flex gap-x-2">
+                            <p class="font-bold">{{ 'CreatedAt' | translate }}:</p>
+                            <p class="font-bold">{{shiftDetails.startTime | date:'dd/MM/yyyy • h:mm a'}}</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div>
+                        <label>{{'EndCash' | translate}}</label>
+                        <input type="number" class="form-input" [(ngModel)]="model.endCash"
+                            [ngClass]="{'is-invalid':inputFailds.startCash}">
+                    </div>
+                    <div>
+                        <label>{{'ClosingNotes' | translate}}</label>
+                        <input type="text" class="form-input" [(ngModel)]="model.closingNotes"
+                            [ngClass]="{'is-invalid':inputFailds.startCash}">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #modalFooter>
+        <div class="flex justify-end w-full">
+            <div class="flex justify-end">
+                <button type="button" (click)="closeModel()" class="btn-outline-danger btn">{{
+                    'Discard' |
+                    translate
+                    }}</button>
+                <button type="button" (click)="CloseShiftSave()" class="rtl:mr-4 ltr:ml-4 btn btn-success">{{ 'CloseNow'
+                    | translate }}</button>
+            </div>
+        </div>
+    </ng-template>
+</modal>

@@ -1,0 +1,185 @@
+<div class="space-y-4">
+    <div class="panel">
+        <h5 class="mb-4 font-semibold dark:text-white-light text-lg"> {{ 'CompanyInfo' |
+            translate }}</h5>
+        <div class="gap-3 grid grid-cols-3">
+            <div>
+                <label>{{'CompanyEnglishName' | translate}}</label>
+                <input type="text" class="form-input" [(ngModel)]="modal.nameEn"
+                    [ngClass]="{'is-invalid':inputFailds.nameEn}">
+            </div>
+            <div>
+                <label>{{'CompanyArabicName' | translate}}</label>
+                <input type="text" class="form-input" [(ngModel)]="modal.nameAr"
+                    [ngClass]="{'is-invalid':inputFailds.nameAr}">
+            </div>
+            <div></div>
+            <div>
+                <label>{{'Phone' | translate}}1</label>
+                <input type="text" class="form-input" [(ngModel)]="modal.phone1"
+                    [ngClass]="{'is-invalid':inputFailds.nameEn}">
+            </div>
+            <div>
+                <label>{{'Phone' | translate}}2</label>
+                <input type="text" class="form-input" [(ngModel)]="modal.phone2"
+                    [ngClass]="{'is-invalid':inputFailds.nameAr}">
+            </div>
+            <div>
+                <label>{{'Email' | translate}}</label>
+                <input type="text" class="form-input" [(ngModel)]="modal.email"
+                    [ngClass]="{'is-invalid':inputFailds.nameAr}">
+            </div>
+            <div>
+                <label>{{'DefaultInvoicePos' | translate}}</label>
+                <ng-select [items]="lstLkps['InvoiceCategories']" bindLabel="label" bindValue="value"
+                    [(ngModel)]="modal['defaultInvoiceCategoryPosId']" [clearable]="false">
+                </ng-select>
+            </div>
+
+            <div class="col-span-2">
+                <label class="form-label">{{'Description' | translate}}</label>
+                <textarea class="form-input" rows="6" [(ngModel)]="modal.desc"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="panel">
+        <ul class="flex flex-wrap">
+            <li *ngFor="let r of lstTabs">
+                <a href="javascript:"
+                    class="block hover:bg-primary ltr:mr-2 -mb-[1px] rtl:ml-2 p-3.5 py-2 rounded hover:text-white"
+                    [ngClass]="{'bg-primary text-white' : selectedTab.value === r.value}"
+                    (click)="selectTab(r)">{{r.label |
+                    translate}}</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="panel" *ngIf="selectedTab.value == 0">
+        <div class="flex justify-end mb-2">
+            <a (click)="newRow('lstBranchesSetup')" class="mt-1 btn btn-primary">{{'New' | translate}}</a>
+        </div>
+        <table class="w-full text-gray-500 dark:text-gray-400 text-sm text-left rtl:text-right">
+            <thead class="text-gray-700 dark:text-gray-400 text-xs uppercase">
+                <tr>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        #
+                    </th>
+                    <th class="px-6 py-3">
+                        {{'Branch' | translate}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'ShiftType' | translate}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'SalesAccount' | translate}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'OtherAccounts' | translate}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'PosService' | translate}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'PosDiscount' | translate}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'FloorPos' | translate}}
+                    </th>
+                    <th class="px-6 py-3">
+                        {{'Logo' | translate}}
+                    </th>
+                    <td></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-gray-200 dark:border-gray-700 border-b"
+                    *ngFor="let r of modal.lstBranchesSetup ; let i = index">
+                    <th class="f-col">
+                        {{i+1}}
+                    </th>
+                    <td class="px-6 py-4">
+                        <ng-select [items]="lstLkps['Branch']" bindLabel="label" bindValue="value"
+                            [(ngModel)]="r['branchId']" [clearable]="false">
+                        </ng-select>
+                    </td>
+                    <td class="px-6 py-4">
+                        <ng-select [items]="lstLkps['lstShiftType']" bindLabel="label" bindValue="value"
+                            [(ngModel)]="r['shiftType']" [clearable]="false">
+                        </ng-select>
+                    </td>
+                    <td class="px-6 py-4">
+                        <ng-select [items]="lstLkps['_Account_4']" bindLabel="label" bindValue="value"
+                            [(ngModel)]="r['salesAccountId']" [clearable]="false">
+                        </ng-select>
+                    </td>
+                    <td class="px-6 py-4">
+                        <p>{{'ExpenseAccount'|translate}}</p>
+                        <ng-select [items]="lstLkps['_Account_4']" bindLabel="label" bindValue="value"
+                            [(ngModel)]="r['expensesAccountId']" [clearable]="false">
+                        </ng-select>
+                        <p>{{'AdjustmentAccount'|translate}}</p>
+                        <ng-select [items]="lstLkps['_Account_4']" bindLabel="label" bindValue="value"
+                            [(ngModel)]="r['adjustmentAccountId']" [clearable]="false">
+                        </ng-select>
+                        <p>{{'DisposalInvoiceCategory'|translate}}</p>
+                        <ng-select [items]="lstLkps['InvoiceCategories']" bindLabel="label" bindValue="value"
+                            [(ngModel)]="r['disposalInvoiceCatId']" [clearable]="false">
+                        </ng-select>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="number" class="block mb-1 w-28 form-input" placeholder="{{'Fixed'|translate}}"
+                                [(ngModel)]="r.serviceAmount">
+                            <input type="number" class="w-28 form-input" placeholder="{{'Percentage'|translate}}"
+                                [(ngModel)]="r.servicePercent">
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <input type="number" class="block mb-1 w-28 form-input" placeholder="{{'Fixed'|translate}}"
+                                [(ngModel)]="r.discountAmount">
+                            <input type="number" class="w-28 form-input" placeholder="{{'Percentage'|translate}}"
+                                [(ngModel)]="r.discountPercent">
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r['isFloorPos']" />
+                            <span class="peer-checked:text-primary">{{'EnableFloors'|translate}}</span>
+                        </label>
+                    </td>
+                    <td>
+                        LOGO
+                    </td>
+                    <td class="px-6 py-4">
+                        <button (click)="deleteRow('lstBranchesSetup',i)" class="ml-auto hover:text-danger"
+                            type="button">
+                            <icon-trash-lines class="w-4.5 h-4.5" />
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="panel" *ngIf="selectedTab.value == 1">
+        <h5 class="mb-4 font-semibold dark:text-white-light text-lg"> {{ 'ReportsSetup' |
+            translate }}</h5>
+        <div class="gap-3 grid grid-cols-3">
+            <div class="col-span-2">
+                <label>{{'PDFLetter' | translate}}</label>
+                <textarea class="form-input" rows="6" [(ngModel)]="modal.pdfLetter"></textarea>
+            </div>
+            <div>
+                <label>{{'PDFMargins' | translate}} (l, t, r, b)</label>
+                <input type="text" class="form-input" [(ngModel)]="modal.pdfMargins">
+            </div>
+        </div>
+    </div>
+    <div class="panel">
+
+        <div class="flex justify-end">
+            <a (click)="back()" class="me-2 mt-1 btn btn-danger">{{'Discard' | translate}}</a>
+            <a (click)="save()" class="mt-1 btn btn-success">{{'Save' | translate}}</a>
+        </div>
+    </div>
+</div>

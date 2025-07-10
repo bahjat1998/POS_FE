@@ -1,0 +1,86 @@
+<div class="grid gap-y-4">
+    <div class="panel">
+        <div class="grid grid-cols-3 gap-4">
+            <div class="col-span-2">
+                <label for="name">{{ 'strSearch' | translate }}</label>
+                <input id="name" type="text" class="form-input" [(ngModel)]="params.strSearch"
+                    (ngModelChange)="search()" />
+            </div>
+            <div class="flex justify-end items-end">
+                <a [routerLink]="'/system/departments/cu'" class="btn btn-primary gap-2 h-10">
+                    <icon-plus />
+                    {{ 'NewDepartment' | translate }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel  overflow-x-scroll">
+        <div class="flex justify-between">
+        <h5 class="text-lg font-semibold dark:text-white-light mb-4">{{ 'DepartmentsList' | translate }}</h5>
+        <div class="flex justify-end gap-5">
+                <label class="inline-flex">
+                    <input type="radio" name="ia" class="form-radio outline-primary peer" [value]="'1'"
+                        (ngModelChange)="search()" [(ngModel)]="params.isActive" />
+                    <span class="peer-checked:text-primary">{{ 'Active' | translate }}</span>
+                </label>
+                <label class="inline-flex">
+                    <input type="radio" name="ia" class="form-radio outline-danger peer" [value]="'0'"
+                        (ngModelChange)="search()" [(ngModel)]="params.isActive" />
+                    <span class="peer-checked:text-danger">{{ 'NotActive' | translate }}</span>
+                </label>
+            </div>
+        </div>
+        <div class="datatable" *ngIf="cols">
+            <ng-datatable [rows]="lstData" [columns]="cols" [sortable]="true" [loading]="loading"
+                [totalRows]="params.rowsCount" [isServerMode]="true" [pageSize]="params.ps"
+                [pageSizeOptions]="[10, 15, 30, 50]" paginationInfo="{0} to {1} of {2}"
+                (changeServer)="changeServer($event)" skin="whitespace-nowrap bh-table-hover">
+
+                <ng-template slot="id" let-r="data">
+                    <strong class="text-info">#{{ r.id }}</strong>
+                </ng-template>
+                <ng-template slot="nameEn" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.nameEn}}
+                    </div>
+                </ng-template>
+                <ng-template slot="nameAr" let-r="data">
+                    <div class="flex items-center gap-2">
+                        {{ r.nameAr}}
+                    </div>
+                </ng-template>
+                <ng-template slot="cityId" let-r="data">
+                    <div class="flex items-center gap-2">
+                        <div>{{ r.cityName }}</div>
+                    </div>
+                </ng-template>
+                <ng-template slot="genderId" let-r="data">
+                    <div class="flex items-center gap-2">
+                        <div>{{ r.genderName }}</div>
+                    </div>
+                </ng-template>
+                <ng-template slot="email" let-r="data">
+                    <a [href]="'mailto:' +r.email" class="text-primary hover:underline">{{ r.email }}</a>
+                </ng-template>
+                <ng-template slot="phone1" let-r="data">
+                    <a class="text-primary hover:underline">{{ r.phone1 }}</a>
+                </ng-template>
+                <ng-template slot="userType" let-r="data">
+                    <span class="badge {{r.type.color}}">{{r.type.label}}</span>
+                </ng-template>
+                <ng-template slot="actions" let-r="data">
+                    <div class="flex items-center justify-center gap-4">
+                        <a [routerLink]="'/system/departments/cu/'+r.id" class="hover:text-info">
+                            <icon-edit class="h-4.5 w-4.5" />
+                        </a>
+                        <button type="button" class="hover:text-danger">
+                            <icon-trash-lines />
+                        </button>
+                    </div>
+                </ng-template>
+
+            </ng-datatable>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,292 @@
+<div class="space-y-2 p-2">
+    <div class="gap-3 grid grid-cols-5">
+        <div class="col-span-4 panel">
+            <h5 class="mb-4 font-semibold dark:text-white-light text-lg"> {{ 'ItemDetails' |
+                translate }} {{modal.id ? '#'+modal.id:""}}</h5>
+            <div class="gap-3 grid grid-cols-4">
+                <div [ngClass]="{'has-error' : inputFailds.nameEn}">
+                    <label>{{'EnglishName' | translate}}</label>
+                    <input type="text" class="form-input" [(ngModel)]="modal.nameEn">
+                </div>
+                <div [ngClass]="{'has-error' : inputFailds.nameAr}">
+                    <label>{{'ArabicName' | translate}}</label>
+                    <input type="text" class="form-input" [(ngModel)]="modal.nameAr">
+                </div>
+                <!-- <div>
+                    <label>{{'key' | translate}}</label>
+                    <input type="text" class="form-input" [(ngModel)]="modal.code">
+                </div> -->
+                <div>
+                    <label>{{ 'ItemType' | translate }}</label>
+                    <ng-select class="form-control" [items]="lstLkps['lstItemType']" bindLabel="label" bindValue="value"
+                        [(ngModel)]="modal['itemType']">
+                    </ng-select>
+                </div>
+                <div [ngClass]="{'has-error' : inputFailds.defaultUnitId}">
+                    <label>{{'DefaultUnit' | translate}}</label>
+                    <ng-select class="form-control" [items]="lstLkps['ItemUnits']" bindLabel="label" bindValue="value"
+                        [(ngModel)]="modal['defaultUnitId']">
+                    </ng-select>
+                </div>
+                <div>
+                    <label>{{ 'ItemGroup' | translate }}</label>
+                    <ng-select class="form-control" [items]="lstLkps['ItemGroups']" bindLabel="label" bindValue="value"
+                        [(ngModel)]="modal['groupId']">
+                    </ng-select>
+                </div>
+                <div>
+                    <label>{{ 'SubItemGroup' | translate }}</label>
+                    <ng-select class="form-control" [items]="lstLkps['SubItemGroups']" bindLabel="label"
+                        bindValue="value" [(ngModel)]="modal['subGroupId']">
+                    </ng-select>
+                </div>
+                <div>
+                    <label>{{ 'StorePlace' | translate }}</label>
+                    <ng-select class="form-control" [items]="lstLkps['Stores']" bindLabel="label" bindValue="value"
+                        [(ngModel)]="modal['storeId']">
+                    </ng-select>
+                </div>
+
+
+                <div>
+                    <label>{{'QtyAlarm' | translate}}</label>
+                    <div class="flex gap-x-2">
+                        <input type="number" class="form-input" placeholder="{{'MinQtyAlarm' | translate}}"
+                            [(ngModel)]="modal.minQtyAlarm">
+                        <input type="number" class="form-input" placeholder="{{'MaxQtyAlarm' | translate}}"
+                            [(ngModel)]="modal.maxQtyAlarm">
+                    </div>
+                </div>
+
+                <div>
+                    <label>{{'OpeningBalanceQty' | translate}}</label>
+                    <input type="number" class="form-input" [(ngModel)]="modal.openingBalanceQty">
+                </div>
+                <div>
+                    <label>{{'OpeningBalanceUnitId' | translate}}</label>
+                    <ng-select class="form-control" [items]="lstLkps['ItemUnits']" bindLabel="label" bindValue="value"
+                        [(ngModel)]="modal['openingBalanceUnitId']">
+                    </ng-select>
+                </div>
+                <div class="col-span-2">
+                    <label class="form-label">{{'Description' | translate}}</label>
+                    <textarea class="form-input" rows="3" [(ngModel)]="modal.description"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-span-1">
+            <div>
+                <app-file-upload [image]="modal.img" [height]="'350px'"
+                    (imageSelected)="modal.img = $event"></app-file-upload>
+            </div>
+        </div>
+    </div>
+    <div class="panel">
+        <ul class="flex flex-wrap">
+            <li *ngFor="let r of lstTabs">
+                <a href="javascript:"
+                    class="block hover:bg-primary ltr:mr-2 -mb-[1px] rtl:ml-2 p-3.5 py-2 rounded hover:text-white"
+                    [ngClass]="{'bg-primary text-white' : selectedTab.value === r.value}"
+                    (click)="selectTab(r)">{{r.label |
+                    translate}}</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="panel" *ngIf="selectedTab.value == 0">
+        <div class="flex justify-end mb-2">
+            <a (click)="newRow('lstUnits')" class="mt-1 btn btn-primary">{{'New' | translate}}</a>
+        </div>
+        <table class="w-full text-gray-500 dark:text-gray-400 text-sm text-left rtl:text-right">
+            <thead class="text-gray-700 dark:text-gray-400 text-xs uppercase">
+                <tr>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        #
+                    </th>
+                    <th *ngIf="modal.itemType == 0" class="px-6 py-3">
+                        {{'Barcode' | translate}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'ItemNums' | translate}}
+                    </th>
+                    <!-- *ngIf="common.localUserInfo.otherSetup['useUnitsConfig']" -->
+                    <th class="px-6 py-3">
+                        {{'Unit' | translate}}
+                    </th>
+                    <th *ngFor="let price of lstLkps['ItemsPricesLists']">
+                        {{price.label}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-gray-200 dark:border-gray-700 border-b"
+                    *ngFor="let r of modal.lstUnits ; let i = index">
+                    <th class="f-col">
+                        {{i+1}}
+                    </th>
+                    <td class="px-6 py-4" *ngIf="modal.itemType == 0">
+                        <input type="text" class="form-input" [(ngModel)]="r.barcode">
+                    </td>
+                    <td class="bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                        <input type="number" class="form-input" [(ngModel)]="r.count">
+                    </td>
+                    <td class="px-6 py-4">
+                        <ng-select [items]="lstLkps['ItemUnits']" bindLabel="label" bindValue="value"
+                            [(ngModel)]="r['unitId']" [clearable]="false">
+                        </ng-select>
+                    </td>
+
+                    <td class="px-6 py-4" *ngFor="let price of lstLkps['ItemsPricesLists']">
+                        <input type="number" class="form-input" [(ngModel)]="r[price.str1]">
+                    </td>
+                    <td class="px-6 py-4">
+                        <button (click)="deleteRow('lstUnits',i)" class="ml-auto hover:text-danger" type="button">
+                            <icon-trash-lines class="w-4.5 h-4.5" />
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="panel" *ngIf="selectedTab.value == 1">
+        <div class="flex justify-end mb-2">
+            <a (click)="newRow('lstVariants')" class="mt-1 btn btn-primary">{{'New' | translate}}</a>
+        </div>
+        <table class="w-full text-gray-500 dark:text-gray-400 text-sm text-left rtl:text-right">
+            <thead class="text-gray-700 dark:text-gray-400 text-xs uppercase">
+                <tr>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        #
+                    </th>
+                    <th class="px-6 py-3">
+                        {{'Image' | translate}}
+                    </th>
+                    <th class="px-6 py-3">
+                        {{'Name' | translate}}
+                    </th>
+                    <th *ngFor="let price of lstLkps['ItemsPricesLists']">
+                        {{price.label}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'RepalceCurrentItemName' | translate}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'AsTotalPrice' | translate}}
+                    </th>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        {{'AffectItemQty' | translate}}
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-gray-200 dark:border-gray-700 border-b"
+                    *ngFor="let r of modal.lstVariants ; let i = index">
+                    <th class="f-col">
+                        {{i+1}}
+                    </th>
+                    <td class="px-6 py-4" style="width: 150px;">
+                        <app-file-upload [image]="r.img" (imageSelected)="r.img = $event"
+                            [height]="'100px'"></app-file-upload>
+                    </td>
+                    <td class="bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                        <input type="text" class="form-input" [(ngModel)]="r.name">
+                    </td>
+                    <!-- <td class="bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                        <input type="number" class="form-input" [(ngModel)]="r.price">
+                    </td> -->
+                    <td class="px-6 py-4" *ngFor="let price of lstLkps['ItemsPricesLists']">
+                        <input type="number" class="form-input" [(ngModel)]="r[price.str1]">
+                    </td>
+                    <td class="bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r.repalceCurrentItemName" />
+                            <span class="peer-checked:text-primary"></span>
+                        </label>
+                    </td>
+                    <td class="bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r.asTotalPrice" />
+                            <span class="peer-checked:text-primary"></span>
+                        </label>
+                    </td>
+                    <td class="bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                        <label class="inline-flex">
+                            <input type="checkbox" class="peer form-checkbox" [(ngModel)]="r.affectItemQty" />
+                            <span class="peer-checked:text-primary"></span>
+                        </label>
+                    </td>
+
+                    <!-- public bool?  { get; set; } -->
+                    <td class="px-6 py-4">
+                        <button (click)="deleteRow('lstVariants',i)" class="ml-auto hover:text-danger" type="button">
+                            <icon-trash-lines class="w-4.5 h-4.5" />
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="panel" *ngIf="selectedTab.value == 2">
+        <div class="flex justify-between mb-2">
+            <div>
+                <label class="inline-flex">
+                    <input type="checkbox" class="peer form-checkbox" [(ngModel)]="modal.isAddOnsMultiSelection" />
+                    <span class="peer-checked:text-primary">{{'isAddOnsMultiSelection' | translate}}</span>
+                </label>
+            </div>
+            <a (click)="newRow('lstItemAddOns')" class="mt-1 btn btn-primary">{{'New' | translate}}</a>
+
+        </div>
+
+        <table class="w-full text-gray-500 dark:text-gray-400 text-sm text-left rtl:text-right">
+            <thead class="text-gray-700 dark:text-gray-400 text-xs uppercase">
+                <tr>
+                    <th class="bg-gray-50 dark:bg-gray-800 px-6 py-3">
+                        #
+                    </th>
+                    <th class="px-6 py-3">
+                        {{'Name' | translate}}
+                    </th>
+                    <th *ngFor="let price of lstLkps['ItemsPricesLists']">
+                        {{price.label}}
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="border-gray-200 dark:border-gray-700 border-b"
+                    *ngFor="let r of modal.lstItemAddOns ; let i = index">
+                    <th class="f-col">
+                        {{i+1}}
+                    </th>
+                    <td class="px-6 py-4">
+                        <ng-select [items]="lstLkps['lstItemsLkp']" bindLabel="label" bindValue="value"
+                            [(ngModel)]="r['addOnId']" [clearable]="false">
+                        </ng-select>
+                    </td>
+                    <!-- <td class="bg-gray-50 dark:bg-gray-800 px-6 py-4">
+                        <input type="number" class="form-input" [(ngModel)]="r.extraPrice">
+                    </td> -->
+                    <td class="px-6 py-4" *ngFor="let price of lstLkps['ItemsPricesLists']">
+                        <input type="number" class="form-input" [(ngModel)]="r[price.str1]">
+                    </td>
+                    <td class="px-6 py-4">
+                        <button (click)="deleteRow('lstItemAddOns',i)" class="ml-auto hover:text-danger" type="button">
+                            <icon-trash-lines class="w-4.5 h-4.5" />
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="panel">
+        <div class="flex justify-end">
+            <a (click)="back()" class="me-2 mt-1 btn btn-danger">{{'Discard' | translate}}</a>
+            <a (click)="save()" class="mt-1 btn btn-success">{{'Save' | translate}}</a>
+        </div>
+    </div>
+</div>
