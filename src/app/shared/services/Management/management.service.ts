@@ -59,12 +59,16 @@ export class ManagementService {
       })
     );
   }
+  async ItemListWithDetailsForInvoice(req: any) {
+    let data = await this.cacheService.getItemsBasedSelectedItems(req);
+    return { lstData: data ?? null };
+  }
   async ItemListWithDetailsFromCache(req: any) {
-    let data = await this.cacheService.getItemsBasedGroupId(req);
+    let data = await this.cacheService.getItemsBasedFilter(req);
     return { lstData: data ?? null };
   }
   async ItemListWithDetailsSearchFromCache(req: any) {
-    let data = await this.cacheService.getItemsBasedGroupId(req);
+    let data = await this.cacheService.getItemsBasedFilter(req);
     return { lstData: data ?? null };
   }
   LoadAllItemsAndCacheIt(req: any): Observable<any> {
@@ -112,6 +116,9 @@ export class ManagementService {
   }
   InvoiceList(req: any): Observable<any> {
     return this.http.getWithObj(`${this.mainRoute}/InvoiceList`, req);
+  }
+  PosSoldItems(req: any): Observable<any> {
+    return this.http.getWithObj(`${this.mainRoute}/PosSoldItems`, req);
   }
   StockReport(req: any): Observable<any> {
     return this.http.getWithObj(`${this.mainRoute}/StockReport`, req);

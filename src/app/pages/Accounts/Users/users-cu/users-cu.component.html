@@ -226,7 +226,8 @@
                         <h5 class="mb-4 font-semibold dark:text-white-light text-lg"> {{ 'Permissions' |
                             translate }}</h5>
 
-                        <app-permission-form [setPermission]="model._permissions" (bindVal)="updateLocalPermissions($event)"></app-permission-form>
+                        <app-permission-form [setPermission]="model._permissions"
+                            (bindVal)="updateLocalPermissions($event)"></app-permission-form>
 
                         <div class="">
                             <!-- <div *ngFor="let r of lstPermissions">
@@ -240,6 +241,33 @@
                     </div>
                 </ng-container>
 
+
+
+                <div
+                    class="bg-white dark:bg-[#0e1726] mb-5 p-4 border border-[#ebedf2] dark:border-[#191e3a] rounded-md">
+                    <h6 class="mb-5 font-bold text-lg">{{ 'EmployeeDiscount' | translate }}</h6>
+                    <div class="flex sm:flex-row flex-col">
+                        <div class="flex-1 gap-5 grid grid-cols-1 sm:grid-cols-3">
+                            <div>
+                                <label>{{ 'DiscountLimits' | translate }}</label>
+                                <ng-select class="form-control" [items]="lstLkps['lstDiscountRenew']"
+                                    [clearable]="false" bindLabel="label" bindValue="value"
+                                    [(ngModel)]="model['discountRenew']">
+                                </ng-select>
+                            </div>
+                            <div>
+                                <label>{{ 'Amount' | translate }}</label>
+                                <input type="text" [(ngModel)]="model['discountAmount']" class="form-input"
+                                    (ngModelChange)="employeeDiscountChange('discountAmount')" />
+                            </div>
+                            <div>
+                                <label>{{ 'OrderPercentage' | translate }}</label>
+                                <input type="text" [(ngModel)]="model['discountPercentage']" class="form-input"
+                                    (ngModelChange)="employeeDiscountChange('discountPercentage')" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div *ngIf="selectedTab.value == 2">
                 <div class="bg-white dark:bg-[#0e1726] p-4 border border-[#ebedf2] dark:border-[#191e3a] rounded-md">

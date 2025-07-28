@@ -1,0 +1,9 @@
+<div class="relative w-full brc" [ngClass]="{'has-error':notFound}">
+    <input type="text" 
+        placeholder="{{'BarcodeSearch'|translate}}..." (keydown)="onInputKeyDown($event)" [(ngModel)]="barcode"
+        class="sm:bg-transparent ltr:pr-9 ltr:sm:pr-4 rtl:pr-9 ltr:pl-9 rtl:pl-9 rtl:sm:pl-4 placeholder:tracking-widest form-input">
+    <button type="button"
+        class="ltr:right-auto rtl:left-auto absolute inset-0 mx-2 w-9 h-9 peer-focus:text-primary appearance-none">
+        <icon-search />
+    </button>
+</div>

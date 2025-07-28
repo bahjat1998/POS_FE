@@ -12,6 +12,10 @@ export class GeneralTemplateOperations {
   openPosItemsSearch$ = new Subject()
   closePosItemsSearch$ = new Subject()
 
+
+  openPosReports$ = new Subject()
+  closePosReports$ = new Subject()
+
   openPosInvoiceItemNote$ = new Subject()
   newItemAddedToCart$ = new Subject()
   openPosDeliveryCustomer$ = new Subject()
@@ -31,6 +35,9 @@ export class GeneralTemplateOperations {
   openPosSelectAccount$ = new Subject()
   closePosSelectAccount$ = new Subject()
 
+  openApplyPosDiscount$ = new Subject()
+  closeApplyPosDiscount$ = new Subject()
+
   splitOrderPendingSourceIdArrived$ = new Subject()
   openPosMoveOrderItems$ = new Subject()
   closePosMoveOrderItems$ = new Subject()
@@ -48,6 +55,24 @@ export class GeneralTemplateOperations {
 
   openPosRemoveItem$ = new Subject()
   closePosRemoveItem$ = new Subject()
+
+
+
+  openPosRemoveInvoice$ = new Subject()
+  closePosRemoveInvoice$ = new Subject()
+
+
+  // finishAddTableOrder$ = new Subject()
+  lstProgressTables: any = {};
+  switchProgressTable(tId: any, tf: any) {
+    if (tf) {
+      this.lstProgressTables[tId] = true;
+    }
+    else {
+      delete this.lstProgressTables[tId]
+    }
+    console.log("Switch Progress Table",this.lstProgressTables)
+  }
   constructor(private storeManagementService: StoreManagementService) { }
 
   async getStyle() {
@@ -211,7 +236,10 @@ export class GeneralTemplateOperations {
       width: 'full',
       boxHeight: 700,
       boxHeightInner: 630,
-      cols: 4
+      cols: 5
+    },
+    setup: {
+      printMethod: "local"
     }
   }
 }

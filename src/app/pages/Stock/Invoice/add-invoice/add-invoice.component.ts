@@ -16,7 +16,7 @@ import { GeneralTemplateOperations } from 'src/app/shared/StateManagementService
 export class AddInvoiceComponent {
 
   lang = "labelEn"
-  modal: any = {}
+  modal: any;
   Id;
   invCategory;
 
@@ -25,8 +25,8 @@ export class AddInvoiceComponent {
     this.invCategory = this.common.getRouteParam(this.route, 'invCategory', 'num');
     this.selectTab(this.tabs[0])
     this.common.translateList(this.lstWords);
-    this.loadItems()
     this.subscribeToEvents()
+    this.fetchItemsFromRemote()
   }
   closePosSelectItemDetails!: Subscription;
   subscribeToEvents() {
@@ -57,12 +57,14 @@ export class AddInvoiceComponent {
     } else {
       this.modal = { isActive: 'true', lstItems: [{}], paymentType: 0, discount: 0 };
       this.fetchRouteInvCategory()
+      this.loadItems()
     }
   }
   GetDetails(Id: any) {
     this.managementService.InvoiceDetails({ id: Id }).subscribe(z => {
       this.modal = this.parseObjFromServer(z);
       this.fetchSelectedItemsForInv()
+      this.loadItems()
     })
   }
   lstKeysRequiredOnInventoryLookups = [];
@@ -255,8 +257,20 @@ export class AddInvoiceComponent {
       this.modal.lstItems.forEach((r: any) => r['selectedItemObj'] = this.common.getRelatedFromLkp(this.lstLkps['lstItemsLkp'], r['itemId'], 'id'));
     }
   }
-  loadItems() {
-    this.managementService.ItemListWithDetails({}).subscribe(z => {
+  itemsFetched = false;
+  fetchItemsFromRemote() {
+    this.managementService.LoadAllItemsAndCacheIt({}).subscribe(z => {
+      this.itemsFetched = true
+      this.loadItems()
+    })
+  }
+  async loadItems() {
+    if (this.itemsFetched && this.modal) {
+      let lstItemIds = [];
+      if (this.modal.lstItems && this.modal.lstItems.length > 0) {
+        lstItemIds = this.modal.lstItems.map((z: any) => z.itemId)
+      }
+      let z: any = await this.managementService.ItemListWithDetailsForInvoice({ lstItemIds: lstItemIds });
       this.common.fixImagesUrls(z.lstData, ['img'])
       z.lstData.forEach((i: any) => this.common.fixImagesUrls(i.lstVariants, ['img']));
       z.lstData.forEach((i: any) => this.common.fixImagesUrls(i.lstItemAddOns, ['img']));
@@ -264,7 +278,8 @@ export class AddInvoiceComponent {
       this.fixItemPrices()
       this.lstLkps['lstItemsLkp'] = z.lstData;
       this.fetchSelectedItemsForInv()
-    })
+    }
+
   }
 
   fixItemPrices() {

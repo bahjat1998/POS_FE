@@ -1,0 +1,97 @@
+<modal #PosReportsPopup class="modal-top rounded large-modal lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'PosReports' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="space-y-2">
+            <div class="flex justify-between">
+                <div class="flex gap-x-3 grow">
+                    <button type="button" class="btn" *ngFor="let r of tabs"
+                        [ngClass]="selectedTab.value === r.value ? 'btn-primary':'btn-outline-primary'"
+                        (click)="selectTab(r)">{{r.label | translate}}</button>
+                </div>
+
+                <div class="flex justify-between items-center gap-x-3 font-semibold">
+                    <div>
+                        {{ 'Totals' | translate }}: {{ otherData.totals | number }}
+                    </div>
+                    <button type="button" class="btn btn-danger" (click)="ResetFilters()">{{'Reset' |
+                        translate}}</button>
+                </div>
+            </div>
+            <div *ngIf="selectedTab.value === 0" class="gap-2 grid grid-cols-2">
+                <div class="flex items-center gap-x-2">
+                    <label class="w-32">{{ 'SelectCategory' | translate }}: </label>
+                    <ng-select class="w-full form-control" [items]="lstLkps['ItemGroups']" bindLabel="label"
+                        bindValue="value" [(ngModel)]="filters['groupIds']" [multiple]="true" (ngModelChange)="search()"
+                        placeholder="{{'SelectCategory'|translate}}">
+                    </ng-select>
+                </div>
+                <div class="flex items-center gap-x-2">
+                    <label class="w-36">{{ 'ItemsFilter' | translate }}: </label>
+                    <ng-select class="w-full form-control" [items]="lstLkps['ItemsFilter']" bindLabel="label"
+                        bindValue="value" [(ngModel)]="filters['ItemsSelector']" [clearable]="false"
+                        (ngModelChange)="search()" placeholder="{{'ItemsFilter'|translate}}">
+                    </ng-select>
+                </div>
+            </div>
+            <div class="datatable sm-tbl">
+                <ng-datatable [rows]="lstData" [columns]="cols" [loading]="loading" [totalRows]="params.totalCount"
+                    [isServerMode]="true" [pageSize]="params.max" [pageSizeOptions]="[10, 15, 30, 50]"
+                    paginationInfo="{0} to {1} of {2}" (changeServer)="changeServer($event)"
+                    skin="whitespace-nowrap bh-table-hover">
+
+                    <ng-template slot="InvoiceId" let-r="data">
+                        <div>
+                            <strong class="items-center text-info">
+                                {{ r.invoiceId }}
+                            </strong>
+                        </div>
+                    </ng-template>
+                    <ng-template slot="Name" let-r="data">
+                        <strong class="items-center text-primary">
+                            {{ r.name }}
+                        </strong>
+                    </ng-template>
+                    <ng-template slot="Details" let-r="data">
+                        <div>
+                            <div class="bg-primary m-0 text-sm badge" *ngIf="r.variantName">{{r.variantName}}</div>
+                            <ng-container *ngIf="r.lstAddOns">
+                                <div *ngFor="let ad of r.lstAddOns" class="bg-info m-0 my-1 text-sm badge">
+                                    {{ad.addOnName}} X {{ad.qty}}
+                                </div>
+                            </ng-container>
+                        </div>
+                    </ng-template>
+                    <ng-template slot="Prices" let-r="data">
+                        <p class="flex gap-x-1 font-bold">
+                            <span class="font-bold text-black">{{r.price | number}}</span>
+                            X
+                            <span class="font-bold text-success">{{r.quantity | number}}
+                                ({{r.unitName}})</span>
+                            =
+                            <span class="font-bold text-black">{{r.total | number}}</span>
+                        </p>
+                    </ng-template>
+                    <ng-template slot="CreateDetails" let-r="data">
+                        <div>
+                            <strong class="items-center text-info">
+                                {{ r.createDate }}
+                            </strong>
+                        </div>
+                        <p class="">
+                            {{ r.createByName}}
+                        </p>
+                    </ng-template>
+                    <ng-template slot="actions" let-r="data">
+                        <div class="flex items-center gap-2" *ngIf="selectedTab.value === 0">
+                            <button type="button" (click)="openPosOrderDetails(r)"
+                                class="h-8 btn btn-success">{{'ShowInvoice' | translate}}</button>
+                        </div>
+                    </ng-template>
+
+                </ng-datatable>
+            </div>
+        </div>
+    </ng-template>
+</modal>

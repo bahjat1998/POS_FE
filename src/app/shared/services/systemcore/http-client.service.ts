@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 export class LocalHttpClient {
   baseUrl = ''
   // baseUrlWithoutApi = 'http://192.119.126.210:8070';
+  // baseUrlWithoutApi = 'http://192.119.126.210:4563'; //Demo
   baseUrlWithoutApi = 'http://localhost:5042';
 // 
   constructor(private http: HttpClient, private router: Router) {

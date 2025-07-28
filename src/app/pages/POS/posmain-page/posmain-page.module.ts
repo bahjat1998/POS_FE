@@ -23,6 +23,10 @@ import { PosExpensesListModule } from 'src/app/components/PosExpenses/pos-expens
 import { DeliveryCustomerModule } from 'src/app/components/delivery-customer/delivery-customer.module';
 import { PosOrderDetailsModule } from 'src/app/components/pos-order-details/pos-order-details.module';
 import { PosItemsSearchModule } from 'src/app/components/pos-items-search/pos-items-search.module';
+import { PosReportsModule } from 'src/app/components/pos-reports/pos-reports.module';
+import { PosBarcodeReaderModule } from 'src/app/components/pos-barcode-reader/pos-barcode-reader.module';
+import { PosApplyDiscountModule } from 'src/app/components/pos-apply-discount/pos-apply-discount.module';
+import { PosRemoveInvoiceModule } from 'src/app/components/pos-remove-invoice/pos-remove-invoice.module';
 
 
 @NgModule({
@@ -50,7 +54,11 @@ import { PosItemsSearchModule } from 'src/app/components/pos-items-search/pos-it
     DeliveryCustomerModule,
     PosOrderDetailsModule,
     PosItemsSearchModule,
-    ScrollingModule
+    ScrollingModule,
+    PosReportsModule,
+    PosBarcodeReaderModule,
+    PosApplyDiscountModule,
+    PosRemoveInvoiceModule
   ],
   providers: [InvoiceHelperService]
 })

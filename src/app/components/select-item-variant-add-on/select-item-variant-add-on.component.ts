@@ -48,10 +48,15 @@ export class SelectItemVariantAddOnComponent {
     let selectedVariant = this.componentData.lstVariants.find((z: any) => z.selected)
     if (selectedVariant) {
 
-      if (selectedVariant.affectItemQty) {
-        obj.quantity = this.otherData.variantQty ?? 1;
-      } else if (this.otherData.variantQty) {
-        selectedVariant.name = `${this.otherData.variantQty} X ${selectedVariant.name}`
+      if (selectedVariant.repalceCurrentItemName) {
+        obj.name = selectedVariant.name;
+      }
+      if (this.otherData.variantQty > 1) {
+        if (selectedVariant.affectItemQty) {
+          obj.quantity = this.otherData.variantQty ?? 1;
+        } else if (this.otherData.variantQty) {
+          selectedVariant.name = `${this.otherData.variantQty} X ${selectedVariant.name}`
+        }
       }
 
       obj['variantId'] = selectedVariant.id;
@@ -64,9 +69,6 @@ export class SelectItemVariantAddOnComponent {
         obj.price += obj['variantPrice']
       }
 
-      if (selectedVariant.repalceCurrentItemName) {
-        obj.name = obj['variantName'];
-      }
 
     }
     obj.note = this.otherData.note

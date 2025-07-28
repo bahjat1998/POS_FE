@@ -1,17 +1,13 @@
 <div class="flex justify-between w-full posBox">
     <div class="px-1 w-4/5" id="leftBox">
-        <!-- <ng-container *ngIf="Layout.category.layout != 'LV'"> -->
         <ng-container [ngTemplateOutlet]="CategoriesView">
         </ng-container>
-
         <div>
             <ng-container [ngTemplateOutlet]="ItemsView" [ngTemplateOutletContext]="{cat:selectedCategory}">
             </ng-container>
-
             <ng-container [ngTemplateOutlet]="PosButtons">
             </ng-container>
         </div>
-        <!-- </ng-container> -->
     </div>
     <div class="w-1/5">
         <ng-container [ngTemplateOutlet]="CartView" [ngTemplateOutletContext]="{cat:selectedCategory}">
@@ -59,10 +55,14 @@
     <div class="itemsViewScroll" id="itemsViewScroll" *ngIf="currentLayout && currentLayout.Items">
         <div class="flex justify-between items-center">
             <p class="p-3 pb-1 font-bold text-2xl">{{selectedCategory.label }} {{'Menu'|translate}}</p>
-            <button type="button" class="gap-x-2 btn btn-primary" (click)="btnSearch()">
-                <p>{{'Search'|translate}}</p>
-                <icon-search />
-            </button>
+
+            <div class="flex gap-x-2 w-96">
+                <app-pos-barcode-reader class="w-full"></app-pos-barcode-reader>
+                <button type="button" class="gap-x-2 btn btn-primary" (click)="btnSearch()">
+                    <p>{{'Search'|translate}}</p>
+                    <icon-search />
+                </button>
+            </div>
         </div>
         <ng-container *ngIf="currentLayout.Items.style == 0">
             <ng-container [ngTemplateOutlet]="ItemsWidgetView1" [ngTemplateOutletContext]="{cat:cat}">
@@ -103,7 +103,7 @@
     <div class="item-View-2" *ngIf="cat">
         <!-- <div > -->
         <cdk-virtual-scroll-viewport (scrolledIndexChange)="onScrollIndexChange($event)" *ngIf="chunkedItems?.length"
-            [itemSize]="50" class="viewport" id="items-grid-setup">
+            [itemSize]="10" class="viewport" id="items-grid-setup">
             <div *cdkVirtualFor="let row of chunkedItems; trackBy: trackByRowIndex" class="items-grid-ch mb-2">
                 <div class="flex flex-col justify-between shadow-[4px_6px_10px_-3px_#bfc9d4] itm itemb toWave"
                     *ngFor="let r of row" [attr.data-id]="r.id" (click)="selectItem(r)">
@@ -148,7 +148,8 @@
                 {{'QuickPay'|translate}}</button>
             <button type="button" class="btn btn-danger" (click)="logout()">{{'Logout'|translate}}</button>
             <button *ngIf="p.Split" type="button" class="btn btn-secondary" (click)="openSplitInvoice()"
-                appShiftBlock>{{'Split'|translate}}</button>
+                appShiftBlock>{{'Split'|translate}}
+            </button>
             <button *ngIf="p.Tables" type="button" class="btn btn-primary"
                 (click)="toTables()">{{'Tables'|translate}}</button>
 
@@ -198,6 +199,14 @@
                         <a href="javascript:;" *hlMenuItem="let menuItem"
                             (click)="openDisposalInvoice()">{{'DisposalInvoice'|translate}}</a>
                     </li>
+                    <li *ngIf="p.DisposalInvoice">
+                        <a href="javascript:;" *hlMenuItem="let menuItem"
+                            (click)="openApplyPosDiscount()">{{'ApplyAccountDiscount'|translate}}</a>
+                    </li>
+                    <li *ngIf="p.DisposalInvoice">
+                        <a href="javascript:;" *hlMenuItem="let menuItem"
+                            (click)="openPosReport()">{{'PosReports'|translate}}</a>
+                    </li>
                 </ul>
             </div>
 
@@ -209,6 +218,11 @@
             <button *ngIf="p.DeliveryCustomer && model.invoicePosType == 1" type="button"
                 class="row-span-2 btn btn-secondary"
                 (click)="SetDeliveryCustomer()">{{'DeliveryCustomer'|translate}}</button>
+            <button *ngIf="model.discountAccountId" type="button" class="flex-col row-span-2 btn btn-info"
+                (click)="SaveOnAccount()" appShiftBlock>
+                <p>{{'Save'|translate}}</p>
+                <p>{{'OnAccount'|translate}}</p>
+            </button>
             <button *ngIf="p.Pay" type="button" class="row-span-2 btn btn-success" (click)="PaymentBtn()"
                 appShiftBlock>{{'Pay'|translate}}</button>
             <button *ngIf="p.DisposalInvoice && enableDispose" type="button" class="row-span-2 btn btn-danger"
@@ -229,5 +243,8 @@
 <app-pos-switch-account></app-pos-switch-account>
 <app-pos-expenses-list></app-pos-expenses-list>
 <app-delivery-customer></app-delivery-customer>
-<app-pos-order-details></app-pos-order-details>
 <app-pos-items-search></app-pos-items-search>
+<app-pos-reports></app-pos-reports>
+<app-pos-order-details></app-pos-order-details>
+<app-pos-apply-discount></app-pos-apply-discount>
+<app-pos-remove-invoice></app-pos-remove-invoice>

@@ -68,10 +68,15 @@
                         [(ngModel)]="modal['openingBalanceUnitId']">
                     </ng-select>
                 </div>
-                <div class="col-span-2">
+                <div class="col-span-2 row-span-2">
                     <label class="form-label">{{'Description' | translate}}</label>
                     <textarea class="form-input" rows="3" [(ngModel)]="modal.description"></textarea>
                 </div>
+                <label class="inline-flex">
+                    <input type="checkbox" class="outline-success form-checkbox"
+                        [(ngModel)]="modal.enableWeight"/>
+                    <span>{{ 'EnableWeight' | translate }}</span>
+                </label>
             </div>
         </div>
 

@@ -47,7 +47,10 @@ export class MoveOrderItemsComponent {
   openPosMoveOrderItemsSub!: Subscription;
   subscribeToEvents() {
     this.closePosPaymentScreen = this.gto.closePosPaymentScreen$.subscribe(a => this.handleClosePosPayment(a))
-    this.splitOrderPendingSourceIdArrived = this.gto.splitOrderPendingSourceIdArrived$.subscribe(a => this.componentData.fromOrder.id = a)
+    this.splitOrderPendingSourceIdArrived = this.gto.splitOrderPendingSourceIdArrived$.subscribe(a => {
+      //new order id arrived
+      this.componentData.fromOrder.id = a
+    })
   }
   PartiallyDestroy() {
     if (this.closePosPaymentScreen) { this.closePosPaymentScreen.unsubscribe(); }
@@ -71,7 +74,8 @@ export class MoveOrderItemsComponent {
     this.gto.closePosMoveOrderItems$.next({ action: action, order: order })
   }
 
-  closePosMoveOrderItemsPopup(action = '') {
+  closePosMoveOrderItemsPopup() {
+    this.PosMoveOrderItemsPopup?.close();
   }
   handlePayAction() {
     if (!this.componentData.fromOrder || !this.componentData.fromOrder.lstItems || this.componentData.fromOrder.lstItems.length == 0) {
@@ -92,6 +96,9 @@ export class MoveOrderItemsComponent {
 
 
   handleSaveAction() {
+    if (this.fromOrder.lstItems.length != 0) {
+      this.toOrder.splitFrmInvId = this.fromOrder.id
+    }
     if (this.fromOrder) {
       if (!this.fromOrder.lstItems || this.fromOrder.lstItems.length == 0) {
         this.fromOrder.customHandle = 0;
@@ -100,9 +107,8 @@ export class MoveOrderItemsComponent {
         this.fromOrder.customHandle = 1;
       }
       this.invoiceHelperService.refreshItemPrices(this.fromOrder)
-      this.MakeOrderPending(this.fromOrder, { success: () => { this.gto.closePosMoveOrderItems$.next(1) } })
+      this.MakeOrderPending(this.fromOrder, { success: (res: any) => { /*this.fromOrder.pendingProgress = false; this.fromOrder.id = res.id;*/ this.gto.closePosMoveOrderItems$.next(1) } })
     }
-
 
     if (this.toOrder) {
       if (!this.toOrder.lstItems || this.toOrder.lstItems.length == 0) {
@@ -112,8 +118,15 @@ export class MoveOrderItemsComponent {
         this.toOrder.customHandle = 1;
       }
       this.invoiceHelperService.refreshItemPrices(this.toOrder)
-      this.MakeOrderPending(this.toOrder, { success: () => { this.gto.closePosMoveOrderItems$.next(1) } })
+      // this.toOrder.pendingProgress = true
+      this.MakeOrderPending(this.toOrder, { success: (res: any) => { /*this.toOrder.pendingProgress = false; this.toOrder.id = res.id;*/ this.gto.closePosMoveOrderItems$.next(1) } })
     }
+
+
+    // setTimeout(() => {
+    console.log("this.splitFromOrder BC", this.fromOrder)
+    console.log("this.splitToOrder BC", this.toOrder)
+    // }, 5000);
     // setTimeout(() => {
     this.PosMoveOrderItemsPopup?.close();
 
@@ -121,21 +134,48 @@ export class MoveOrderItemsComponent {
   }
   handleClosePosPayment(splittedInvoice: any) {
     if (splittedInvoice.source == "SPLIT") {
-      console.log("DEBUGGER", splittedInvoice.source, this.componentData.fromOrder, splittedInvoice)
-      //Source Order
+      // console.log("DEBUGGER", splittedInvoice.source, this.componentData.fromOrder, splittedInvoice)
+      // //Source Order
+      // this.invoiceHelperService.refreshItemPrices(this.componentData.fromOrder)
+      // this.MakeOrderPending(this.componentData.fromOrder)
+
+
+      // //Destination Order
+      // splittedInvoice.pendingProgress = true;
+      // splittedInvoice.lstItems.forEach((itm: any) => delete itm.id);
+      // splittedInvoice.invoiceStatus = 4;
+      // this.gto.closePosMoveOrderItems$.next({ action: 'BeforeSaveRefreshCurrent', remainItems: this.componentData.fromOrder.lstItems });
+      // this.MakeOrderPending(splittedInvoice, {
+      //   success: (inv: any) => {
+      //     splittedInvoice.pendingProgress = false;
+      //     this.invoiceHelperService.printInvoice(inv)
+      //     this.gto.closePosMoveOrderItems$.next({ action: 'RefreshCurrentOrder' });
+      //   }
+      // })//invoice here include paid amount
+
       this.invoiceHelperService.refreshItemPrices(this.componentData.fromOrder)
-      this.MakeOrderPending(this.componentData.fromOrder)
-
-
-      //Destination Order
+      this.gto.closePosMoveOrderItems$.next({ action: 'BeforeSaveRefreshCurrent', remainItems: this.componentData.fromOrder.lstItems });
+      this.toOrder.pendingProgress = true;
       splittedInvoice.lstItems.forEach((itm: any) => delete itm.id);
-      splittedInvoice.invoiceStatus = 4
-      this.MakeOrderPending(splittedInvoice, {
-        success: (inv: any) => {
-          this.invoiceHelperService.printInvoice(inv)
-          this.gto.closePosMoveOrderItems$.next({ action: 'RefreshCurrentOrder' });
+      splittedInvoice.invoiceStatus = 4;
+      let req = {
+        flag: "",
+        SplitToPayCommand: {
+          SourceInvoice: this.prepareObjToServer(this.componentData.fromOrder),
+          DestinationInvoice: this.prepareObjToServer(splittedInvoice)
         }
-      })//invoice here include paid amount
+      }
+      if (!splittedInvoice.key) {
+        alert("ASDASDASD")
+      }
+      this.managementService.SplitInvoiceCommands(req).subscribe(z => {
+        //Nothing to do with source order.
+        //Handle Print For Splitted Invoice
+        splittedInvoice.id = z.destinationInvoiceId;
+        this.toOrder.pendingProgress = false;
+        this.invoiceHelperService.printInvoice(splittedInvoice)
+        this.gto.closePosMoveOrderItems$.next({ action: 'RefreshCurrentOrder', sourceInvoiceDetails: z.sourceInvoiceDetails });
+      });
     }
     this.PartiallyDestroy()
   }
@@ -319,7 +359,7 @@ export class MoveOrderItemsComponent {
       const variantKey = item.variant ?? '';
       const nameKey = item.name;
 
-      const key = `${nameKey}__${variantKey}__${addOnsKey}`;
+      const key = `${item.id}__${nameKey}__${variantKey}__${addOnsKey}`;
 
       if (!grouped.has(key)) {
         // If the item group doesn't exist, create a new entry
@@ -423,15 +463,15 @@ export class MoveOrderItemsComponent {
       //So this will be new order 
       if (this.fromOrderLoaded && this.toOrderLoaded) {
         if (this.fromOrder && !this.toOrder) {
-          this.toOrder = { lstItems: [] };
-          this.common.CopyValues(this.fromOrder, this.toOrder, ['discPer', 'discAmount', 'serPer', 'serAmount', 'accountId', 'posTableId', 'invoicePosType', 'invoiceCategoryId'])
+          this.toOrder = { lstItems: [], key: this.common.getCurrentDateTimeUniqeKey() };
+          this.common.CopyValues(this.fromOrder, this.toOrder, ['discPer', 'discAmount', 'serPer', 'serAmount', 'accountId', 'posTableId', 'invoicePosType', 'invoiceCategoryId', 'invoiceType'])
           this.toOrder.posTableId = this.componentData.toTableInfo.id
           this.toOrder.posTableName = this.componentData.toTableInfo.name
           this.toOrder.invoiceStatus = 1
         }
         else if (!this.fromOrder && this.toOrder) {
           this.fromOrder = { lstItems: [] };
-          this.common.CopyValues(this.toOrder, this.fromOrder, ['discPer', 'discAmount', 'serPer', 'serAmount', 'accountId', 'posTableId', 'invoicePosType', 'invoiceCategoryId'])
+          this.common.CopyValues(this.toOrder, this.fromOrder, ['discPer', 'discAmount', 'serPer', 'serAmount', 'accountId', 'posTableId', 'invoicePosType', 'invoiceCategoryId', 'invoiceType'])
           this.fromOrder.posTableId = this.componentData.fromTableInfo.id
           this.fromOrder.posTableName = this.componentData.fromTableInfo.name
           this.fromOrder.invoiceStatus = 1

@@ -50,7 +50,7 @@ export class PosCachePdfService01 {
             this.simpleHeaderRowInfoText('الكاشير :', this.common.getCurrentUserName()),
             this.simpleHeaderRowInfoText('التاريخ :', this.common.dateTimeFormat(new Date())),
             this.simpleHeaderRowInfoText('ملاحظة :', this.paymentServerData.notes ?? "****"),
-            this.buildInvoicePart(),
+            ...this.buildInvoicePart(),
         ]
 
 
@@ -132,21 +132,25 @@ export class PosCachePdfService01 {
         });
 
         this.pageHeightCounter += 7;
-
+        let footerRows = []
         if (this.paymentServerData.discAmount)
-            rows.push(this.tableBottom('الخصم', this.paymentServerData.discAmount));
+            footerRows.push(this.tableBottom('الخصم', this.paymentServerData.discAmount, true, 12));
         if (this.paymentServerData.serAmount)
-            rows.push(this.tableBottom('الخدمة', this.paymentServerData.serAmount));
+            footerRows.push(this.tableBottom('الخدمة', this.paymentServerData.serAmount, true, 12));
         if (this.paymentServerData.deliveryCost)
-            rows.push(this.tableBottom('التوصيل', this.paymentServerData.deliveryCost));
+            footerRows.push(this.tableBottom('التوصيل', this.paymentServerData.deliveryCost, true, 12));
 
-        rows.push(this.tableBottom('النهائي', this.paymentServerData.finalTotal, true));
+        footerRows.push(this.tableBottom('النهائي', this.paymentServerData.finalTotal, true, 12));
         if ((this.paymentServerData.paid - this.paymentServerData.finalTotal) && this.paymentServerData.paid)
-            rows.push(this.tableBottom('مرتجع', this.paymentServerData.paid - this.paymentServerData.finalTotal, true));
-        rows.push(this.tableBottom('', ''));
+            footerRows.push(this.tableBottom('مرتجع', this.paymentServerData.paid - this.paymentServerData.finalTotal, true));
+
+        if (this.paymentServerData.invoiceStatus == 3)
+            footerRows.push(this.tableBottom(this.common.arabicFormat('طريقة الدفع'), this.common.arabicFormat('غير مدفوع'), true, 12));
+
+        footerRows.push(this.tableBottom('', ''));
 
 
-        return {
+        return [{
             layout: {
                 hLineStyle: function (i: any, node: any) {
                 },
@@ -159,7 +163,22 @@ export class PosCachePdfService01 {
                     ...rows,
                 ]
             }
+        },
+        {
+            layout: {
+                hLineStyle: function (i: any, node: any) {
+                },
+            },
+            table: {
+                layout: 'noBorders',
+                headerRows: 1,
+                widths: [42, 18, 18, 80],
+                body: [
+                    ...footerRows,
+                ]
+            }
         }
+        ]
     }
 
     tableBottom(txt1: any, txt2: any, withBorderBTM = false, font = 9) {

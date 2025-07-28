@@ -31,7 +31,7 @@ export class UsersCuComponent {
     this.common.translateList(this.tabs);
     this.common.translateList(this.lstPermissions);
   }
-  lstLkpKeys = ['Gender', 'City', 'ItemsPricesLists', 'lstUserTypes', 'AttachmentType', 'Branch', 'Departments', 'PermissionGroups'];
+  lstLkpKeys = ['Gender', 'City', 'ItemsPricesLists', 'lstUserTypes', 'lstDiscountRenew', 'AttachmentType', 'Branch', 'Departments', 'PermissionGroups'];
   lstLkps: any = {}
 
   ngOnInit(): void {
@@ -182,5 +182,14 @@ export class UsersCuComponent {
 
   updateLocalPermissions($e: any) {
     this.model._permissions['_p'] = $e;
+  }
+
+  employeeDiscountChange(changed = '') {
+    if (changed == 'discountAmount') {
+      delete this.model.discountPercentage
+    }
+    else if (changed == 'discountPercentage') {
+      delete this.model.discountAmount
+    }
   }
 }

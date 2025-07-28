@@ -47,4 +47,7 @@ export class AccountingService {
   ShiftsList(req: any): Observable<any> {
     return this.http.getWithObj(`${this.mainRoute}/ShiftsList`, req);
   }
+  CommonAccountingQueries(req: any): Observable<any> {
+    return this.http.getWithObj(`${this.mainRoute}/CommonAccountingQueries`, req);
+  }
 }

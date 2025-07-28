@@ -1,0 +1,73 @@
+<modal #PosSlctAccDisc class="modal-top rounded large-modal lg">
+    <ng-template #modalHeader>
+        <div class="!py-2 title">{{ 'DiscountAccount' | translate }}</div>
+    </ng-template>
+    <ng-template #modalBody>
+        <div class="flex gap-x-3 -mt-2 mb-2">
+            <div class="flex flex-col justify-between mb-2 w-full">
+                <div class="flex items-start">
+                    <label class="min-w-56">{{ 'PleaseSelectDiscountAccount' | translate }}</label>
+                    <div class="w-full">
+                        <ng-select class="form-control" [items]="lstLkps['_Account_1_t']" bindLabel="label"
+                            bindValue="value" [(ngModel)]="localModel['selectedAccountId']" (change)="accountChanged()"
+                            [loading]="loading">
+                        </ng-select>
+
+                        <div class="flex gap-x-2" *ngIf="localModel.loaded">
+
+                            <div *ngIf="!localModel.haveADiscount">
+                                <span
+                                    class="mx-1 font-bold text-danger">{{'ThisAccountNotHaveADiscountPleaseSelectAnotherAccount'}}</span>
+                            </div>
+                            <ng-container *ngIf="localModel.haveADiscount">
+
+                                <div>
+                                    <span class="font-bold">{{'Discount'}}: </span>
+                                    <span class="mx-1 font-bold"
+                                        [ngClass]="{'text-danger':!localModel.isRemaining}">{{localModel.discountAmount
+                                        ?
+                                        localModel.discountAmount
+                                        :
+                                        (localModel.discountPercentage + '%')}}</span>
+                                </div>
+                                <div>
+                                    <span class="font-bold">{{'isRemaining'}}: </span>
+                                    <span class="mx-1 font-bold"
+                                        [ngClass]="{'text-success':localModel.isRemaining,'text-danger':!localModel.isRemaining}">{{(localModel.isRemaining
+                                        ? 'Active':'Ended')|
+                                        translate}}</span>
+                                </div>
+                            </ng-container>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between mt-auto w-full">
+                    <div>
+                        <button type="button" (click)="removeDiscount()" class="btn-outline-danger btn"
+                            *ngIf="modal['discountAccountId']">{{
+                            'RemoveDiscount' |
+                            translate
+                            }}</button>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="button" (click)="closeModel()" class="btn-outline-danger btn">{{
+                            'Discard' |
+                            translate
+                            }}</button>
+                        <button type="button" (click)="save()" class="rtl:mr-4 ltr:ml-4 btn btn-success"
+                            [disabled]="!localModel['isRemaining'] || !localModel.haveADiscount">{{
+                            'ApplyDiscount'
+                            | translate }}</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div>
+                <img src="assets/images/discimg.png" class="rounded w-40">
+            </div>
+        </div>
+    </ng-template>
+</modal>

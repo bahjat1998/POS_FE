@@ -1,6 +1,7 @@
 <modal #C_Pop class="modal-top rounded large-modal lg">
     <ng-template #modalHeader>
-        <div class="!py-2 title">{{ 'OrdersDetails' | translate }}</div>
+        <div class="!py-2 title">{{ 'OrdersDetails' | translate }} <span
+                class="font-bold text-purple-700">#{{model.id}}</span></div>
     </ng-template>
     <ng-template #modalBody>
         <div class="grid grid-cols-2">
@@ -8,12 +9,14 @@
                 <p class="w-40">{{ 'Account' | translate }}:</p>
                 <p class="font-bold text-primary">{{model.accountName}}</p>
             </div>
-            <div class="flex">
+            <div class="flex gap-x-1">
                 <p class="w-40">{{ 'Info' | translate }}:</p>
                 <p class="font-bold text-lg" *ngIf="model.invoicePosType || model.invoicePosType == 0">
                     {{(model.invoicePosType == 2 ? model.posTableName : ('invStat'+model.invoicePosType)) |
                     translate}}
                 </p>
+                <span class="bg-primary badge" *ngIf="model.splitFrmInvId">{{'SplittedFrom' | translate}}:
+                    {{model.splitFrmInvId}} </span>
             </div>
             <div class="flex col-span-2" *ngIf="model.notes">
                 <p class="w-40">{{ 'Notes' | translate }}:</p>
@@ -40,7 +43,7 @@
 
         </div>
         <div class="pb-2">
-            <div class="mt-2 datatable sm-tbl">
+            <div class="mt-2 datatable sm-tbl" *ngIf="render">
                 <ng-datatable [rows]="model.lstItems" [columns]="cols" [sortable]="true"
                     skin="whitespace-nowrap bh-table-hover" [pagination]="false">
                     <ng-template slot="ID_" let-r="data">
@@ -108,10 +111,15 @@
                 <p class="p1">{{ 'Total'|translate}} : </p>
                 <div class="tb1_1"><span class="s1">{{model.totalBeforeDiscount|number}}</span></div>
             </div>
-            <div class="tb1" *ngIf="model.discAmount">
+            <div class="tb1" *ngIf="model.discAmount && !model.discountAccountId">
                 <p class="p1">{{ 'Discount'|translate}} : </p>
                 <div class="tb1_1"><span class="s2">{{model.discPer|number}}%</span> <span
                         class="s1">{{model.discAmount|number}}</span></div>
+            </div>
+            <div class="tb1" *ngIf="model.discountAccountId">
+                <div style="width: 270px;">
+                    <app-pos-discount-card-show [orderDetails]="model" [sm]="true"></app-pos-discount-card-show>
+                </div>
             </div>
             <div class="tb1" *ngIf="model.serAmount">
                 <p class="p1">{{ 'Service'|translate}} : </p>
@@ -126,6 +134,19 @@
                 <p class="p1">{{ 'FinalTotal'|translate}} : </p>
                 <div class="tb1_1"><span class="s1">{{model.finalTotal|number}}</span></div>
             </div>
+
+
+            <ng-container *ngIf="model.invoiceStatus == 4">
+                <hr>
+                <div class="tb1">
+                    <p class="p1">{{ 'Paid'|translate}} : </p>
+                    <div class="tb1_1"> <span class="s1">{{model.paid ?? 0|number}}</span></div>
+                </div>
+                <div class="tb1">
+                    <p class="p1">{{ 'Remain'|translate}} : </p>
+                    <div class="tb1_1"><span class="s1">{{model.remaining ?? 0|number}}</span></div>
+                </div>
+            </ng-container>
         </div>
     </ng-template>
     <ng-template #modalFooter>

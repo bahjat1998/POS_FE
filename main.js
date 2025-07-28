@@ -168,10 +168,10 @@ if (!gotTheLock) {
 
         async function runPrintJob (pdfPath, printerName) {
             return new Promise((resolve, reject) => {
-                const pdfToPrinterPath = `"C:\\Program Files\\NewClickExtender.exe"`;
+                const pdfToPrinterPath = `"C:\\Program Files\\SumatraPDF\\SumatraPDF.exe"`;
                 const command = printerName
-                    ? `${pdfToPrinterPath} "${pdfPath}" "${printerName}"` // optional: add printer name
-                    : `${pdfToPrinterPath} "${pdfPath}"`;
+                    ? `${pdfToPrinterPath} -print-to "${printerName}" "${pdfPath}"` // optional: add printer name
+                    : `${pdfToPrinterPath} -print-to-default "${pdfPath}"`;
 
                 console.log('🖨️ Running command:', command);
 
@@ -181,6 +181,15 @@ if (!gotTheLock) {
                         reject(new Error('Print failed: ' + (stderr || error.message)));
                     } else {
                         console.log('✅ Printed successfully: - ' + (printerName ?? 'CASH'), stdout);
+                        setTimeout(() => {
+                            fs.unlink(pdfPath, err => {
+                                if (err) {
+                                    console.error('⚠️ Failed to delete temp file:', err.message);
+                                } else {
+                                    console.log('🗑️ Temp file deleted:', pdfPath);
+                                }
+                            });
+                        }, 50000);
                         resolve('Printed successfully');
                     }
                 });

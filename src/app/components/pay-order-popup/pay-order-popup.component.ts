@@ -116,7 +116,7 @@ export class PayOrderPopupComponent {
         return;
       }
     }
-    if (this.componentData.orderDetails.id) {
+    if (this.componentData.orderDetails.id && !this.componentData.orderDetails.pendingProgress) {
       this.gto.closePosPaymentScreen$.next({ ...this.componentData.orderDetails, paymentType: this.componentData.paymentType, paid: this.componentData.orderDetails.paid, source: this.componentData.source, withoutPrinters: withoutPrinters })
       this.PosPaymentScreenPopup.close()
     }

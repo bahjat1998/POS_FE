@@ -126,6 +126,11 @@ const routes: Routes = [
     { path: 'components/PosItemsSearch', loadChildren: () => import('./components/pos-items-search/pos-items-search.module').then(m => m.PosItemsSearchModule) },
     { path: 'pages/Accounts/PermissionGroup', loadChildren: () => import('./pages/Accounts/permission-group/permission-group.module').then(m => m.PermissionGroupModule) },
     { path: 'pages/Accounts/permission-group/PermissionForm', loadChildren: () => import('./pages/Accounts/permission-group/permission-form/permission-form.module').then(m => m.PermissionFormModule) },
+    { path: 'components/PosReports', loadChildren: () => import('./components/pos-reports/pos-reports.module').then(m => m.PosReportsModule) },
+    { path: 'components/PosBarcodeReader', loadChildren: () => import('./components/pos-barcode-reader/pos-barcode-reader.module').then(m => m.PosBarcodeReaderModule) },
+    { path: 'components/PosApplyDiscount', loadChildren: () => import('./components/pos-apply-discount/pos-apply-discount.module').then(m => m.PosApplyDiscountModule) },
+    { path: 'components/Display/PosDiscountCardShow', loadChildren: () => import('./components/Display/pos-discount-card-show/pos-discount-card-show.module').then(m => m.PosDiscountCardShowModule) },
+    { path: 'components/PosRemoveInvoice', loadChildren: () => import('./components/pos-remove-invoice/pos-remove-invoice.module').then(m => m.PosRemoveInvoiceModule) },
 ];
 
 @NgModule({

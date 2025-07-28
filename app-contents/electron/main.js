@@ -169,6 +169,16 @@ if (!gotTheLock) {
                         reject(new Error('Print failed: ' + (stderr || error.message)));
                     } else {
                         console.log('✅ Printed successfully:', stdout);
+
+                        setTimeout(() => {
+                            fs.unlink(pdfPath, err => {
+                                if (err) {
+                                    console.error('⚠️ Failed to delete temp file:', err.message);
+                                } else {
+                                    console.log('🗑️ Temp file deleted:', pdfPath);
+                                }
+                            });
+                        }, 5000);
                         resolve('Printed successfully');
                     }
                 });

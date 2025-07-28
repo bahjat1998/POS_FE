@@ -11,6 +11,31 @@ export class InvoiceHelperService {
     constructor(private common: CommonOperationsService, private managementService: ManagementService, private posCachePdf: PosCachePdfService, private posCachePdf01: PosCachePdfService01, private posKitchenPdf: PosKitchenPdfService) {
         // this.common.translateList(this.lstWords)
     }
+    SaveInvoiceOnAccount(invoice: any, callBacks: any = {}) {
+        let req = {
+            flag: 2,
+            Notes: invoice.notes,
+            OrderToMoveOnAccount: invoice
+        }
+        if (callBacks.onPost) {
+            callBacks.onPost(invoice);
+        }
+
+        this.managementService.InvoiceCommands(req).subscribe(z => {
+            if (z.status) {
+                this.common.success("تم الحفظ")
+                if (callBacks.success) {
+                    callBacks.success(invoice)
+                }
+            }
+        }, e => {
+            if (callBacks.error) {
+                callBacks.error(invoice)
+            }
+        })
+    }
+
+
     MakeOrderPayment(invoice: any, callBacks: any = {}) {
         if (invoice.id) {
             let req = {
@@ -201,6 +226,50 @@ export class InvoiceHelperService {
                     mapKey[r.id].quantity += r.quantity;
                 }
             });
+        }
+    }
+
+    changeItemUnitInTheKey(item: any, lastUnitId: any) {
+        //item unitId should have new unit id
+        if (item.key) {
+            console.log("Last key", item.key)
+            let lastKeys = item.key.split("_");
+            let newKeys: any = [];
+            lastKeys.forEach((lk: any) => {
+                if (lk == String(lastUnitId)) {
+                    newKeys.push(item.unitId)
+                }
+                else {
+                    newKeys.push(lk)
+                }
+            });
+            item.key = newKeys.join("_")
+            console.log("New key", item.key)
+        }
+    }
+
+    mergeItemsHasSameKey(inv: any) {
+        if (inv.lstItems) {
+            var uniqeKeys = inv.lstItems.reduce((acc: any, item: any) => {
+                const key = item.key;
+                if (!acc[key]) {
+                    acc[key] = item;
+                }
+                else if (acc[key]) {
+                    acc[key].quantity += item.quantity
+                }
+                return acc;
+            }, {})
+            inv.lstItems = Object.keys(uniqeKeys).map(z => uniqeKeys[z]);
+        }
+    }
+
+    getBarcodeObject(barcode: any) {
+        if (barcode.length == 13 && Number(barcode.substring(7, 13))) {
+            return { barcode: barcode, productBarcode: barcode.substring(0, 7), quantityCode: (Math.floor(Number(barcode.substring(7, 13)) / 10000 * 10) / 10) }
+        }
+        else {
+            return { barcode: barcode }
         }
     }
 }

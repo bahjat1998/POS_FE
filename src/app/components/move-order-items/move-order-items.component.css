@@ -20,4 +20,5 @@
     max-height: 57vh;
     min-height: 57vh;
     overflow: auto;
+    overflow-x: hidden;
 }

@@ -58,23 +58,30 @@ export class TablesViewComponent {
     this.accountingService.FloorsList({ p: 1, ps: 25 }).subscribe(z => {
       this.lstFloors = z.lstData;
       this.common.fixImagesUrls(this.lstFloors, 'img')
-      if (this.lstFloors[0]) {
-        this.selectFloor(this.lstFloors[0])
-      }
-      else {
-        alert("No Floors Declared")
-      }
+      this.selectInitialFloor()
     })
   }
-  handleTempTableBusy(lstData: any) {
-    let tempTblBusy = localStorage.getItem("tempTblBusy");
-    if (tempTblBusy) {
-      let tId = Number(tempTblBusy)
-      if (!lstData.some((a: any) => a.id == tId)) {
-        lstData.push({ id: tId, b: true })
-      }
+  selectInitialFloor() {
+    let lastSelectedFloor = localStorage.getItem("lastSelectedFloor");
+    if (lastSelectedFloor) {
+      let floorToSelect = this.lstFloors.find((z: any) => z.id == Number(lastSelectedFloor))
+      this.selectFloor(floorToSelect)
     }
-    localStorage.removeItem("tempTblBusy")
+    else if (this.lstFloors && this.lstFloors[0]) {
+      this.selectFloor(this.lstFloors[0])
+    }
+    else {
+      alert("No Floors Declared")
+    }
+  }
+  handleTempTableBusy(lstData: any) {
+    if (this.gto.lstProgressTables && Object.keys(this.gto.lstProgressTables).length > 0) {
+      Object.keys(this.gto.lstProgressTables).forEach((tId: any) => {
+        if (!lstData.some((a: any) => a.id == tId)) {
+          lstData.push({ id: tId, b: true })
+        }
+      });
+    }
     return lstData;
   }
   lstTables: any = []
@@ -256,9 +263,13 @@ export class TablesViewComponent {
     imageContainer.appendChild(badgeFO);
   }
 
-  handleTableClick(tblName: any) {
+  async handleTableClick(tblName: any) {
     let relatedTbl = this.lstTables.find((a: any) => a.name == tblName)
     console.log(tblName, relatedTbl)
+    if (this.gto.lstProgressTables[relatedTbl.id]) {
+      await this.common.confirmationMessage(`Wait!`, `This table has pending order`)
+      return;
+    }
     if (this.isMoveOrderEnabeld) {
       if (!this.moveOrderModel) {
         this.moveOrderModel = {}
@@ -298,6 +309,7 @@ export class TablesViewComponent {
       this.PayInvoice(relatedTbl.id)
     }
     else {
+      localStorage.setItem("lastSelectedFloor", this.selectedFloor.id);
       this.common.navigateTo("../pos", { tId: relatedTbl.id, t: tblName })
     }
   }

@@ -18,6 +18,9 @@ export class PosPageLayoutComponent {
     let style: any = await this.storeManagementService.getItem("StyleSetup")
     if (style) {
       this.model = style;
+      if (!this.model.setup) {
+        this.model.setup = {}
+      }
     } else {
       this.model = this.gto.DefaultStyle;
     }
@@ -47,7 +50,7 @@ export class PosPageLayoutComponent {
   }
 
   openPosStyleSetup: any
-  constructor(public common: CommonOperationsService, private managementService: ManagementService, private storeManagementService: StoreManagementService, private gto: GeneralTemplateOperations, private invoiceHelperService: InvoiceHelperService) {
+  constructor(public common: CommonOperationsService, private cacheService: CacheService, private managementService: ManagementService, private storeManagementService: StoreManagementService, private gto: GeneralTemplateOperations, private invoiceHelperService: InvoiceHelperService) {
     this.openPosStyleSetup = gto.openPosStyleSetup$.subscribe((z: any) => {
       this.readStyleSetup()
     })
@@ -76,7 +79,8 @@ export class PosPageLayoutComponent {
     { label: "CategoriesPart", value: 0, },
     { label: "CategoryItems", value: 1 },
     { label: "Cart", value: 2 },
-    { label: "ShortCuts", value: 3 }
+    { label: "ShortCuts", value: 3 },
+    { label: "Setup", value: 4 }
   ]
   selectedTab: any = {}
   selectTab(tab: any) {
@@ -144,13 +148,18 @@ export class PosPageLayoutComponent {
       return { action: a.value, bind: a.bind, handleBy: a.handleBy };
     })
   }
-
-  reloadItems = false;
-  async ReloadItems() {
-    this.reloadItems = true
-    this.managementService.LoadAllItemsAndCacheIt({ force: true }).subscribe(z => {
-      this.reloadItems = false;
-      this.common.confirmationMessage("Success","Please restart program to see the updates")
-    })
+  lstPrintMethods = [
+    { label: 'Local', value: 'local' },
+    { label: 'BasedOnRemote', value: 'api' },
+    { label: 'WebView', value: 'WebView' },
+  ]
+  clearCache = false;
+  async ClearCache() {
+    this.clearCache = true;
+    let result = await this.common.confirmationMessage(undefined, `You will be logged out`);
+    if (result.value) {
+      this.cacheService.clear();
+      this.common.logout();
+    }
   }
 }

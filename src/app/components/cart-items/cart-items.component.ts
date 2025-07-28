@@ -130,15 +130,26 @@ export class CartItemsComponent {
         itm.quantity -= 1;
       }
     }
+    this.model.changed = true;
     this.invoiceHelperService.refreshItemPrices(this.model)
+  }
+
+  async deleteInvoice() {
+    this.gto.openPosRemoveInvoice$.next({
+      invoiceId: this.model.id
+    });
   }
   selectedUnitChanged(newUnit: any, item: any) {
     item.selectedUnit = newUnit;
     if (newUnit) {
+      let lastUnitId = item['unitId']
       item['price'] = newUnit[this.model.priceListKey ?? this.common.getCurrentPosSalesPriceListKey()];
       item['unitId'] = newUnit.unitId;
+      this.invoiceHelperService.changeItemUnitInTheKey(item, lastUnitId)
     }
+    this.invoiceHelperService.mergeItemsHasSameKey(this.model)
     this.invoiceHelperService.refreshItemPrices(this.model)
+
   }
 
   openPosOrderDetails() {
@@ -213,4 +224,6 @@ export class CartItemsComponent {
       this.model.totQty = this.common.sum(this.model.lstItems, 'quantity')
     }
   }
+
+
 }

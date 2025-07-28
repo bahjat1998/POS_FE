@@ -274,7 +274,41 @@ export class CommonOperationsService {
           //console.log(e);
         });
     });
+  }
+  getCurrentDateTimeUniqeKey() {
+    const now = new Date();
+    const pad = (num: any, size = 2) => num.toString().padStart(size, '0');
+    const day = pad(now.getDate());
+    const month = pad(now.getMonth() + 1); // Months are zero-based
+    const year = now.getFullYear();
 
+    const hours = pad(now.getHours());
+    const minutes = pad(now.getMinutes());
+    const seconds = pad(now.getSeconds());
+    const milliseconds = pad(now.getMilliseconds(), 3);
+
+    const date = `${day}${month}${year}.`;
+    const time = `${hours}${minutes}${seconds}${milliseconds}`;
+
+    return date + time;
+  }
+  saveFilesForPrinting(file: any) {
+    let randomKey = this.makeid(5);
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+      this.http.post(`${this.localHttpClient.baseUrlWithoutApi}/api/Attachments/uploadToPrint`, formData, { reportProgress: true, observe: 'events', headers: this.httpOptions.headers })
+        .subscribe((event: any) => {
+          if (event.type === HttpEventType.UploadProgress) {
+            this.progress = Math.round(100 * event.loaded / event.total);
+          }
+          else if (event.type === HttpEventType.Response) {
+            resolve(event.body.strAttachmentsIds[0]);
+          }
+        }, e => {
+          //console.log(e);
+        });
+    });
   }
   CopyValues(from: any, to: any, props: any) {
     if (from)
@@ -305,6 +339,7 @@ export class CommonOperationsService {
     localStorage.setItem("PDFSetup", JSON.stringify({ pdfMargins: c["pdfMargins"], pdfLetter: c["pdfLetter"] }))
     this.storeManagementService.refreshCurrentLogin();
     setTimeout(async () => {
+      await this.storeManagementService.refreshCurrentLogin()
       var isPOS = await this.storeManagementService.IsPosVersion()
       if (isPOS) {
         if (c['posDetails'] && c['posDetails'].posIsFloorPos) {
@@ -433,7 +468,7 @@ export class CommonOperationsService {
     return 0
   }
   /*
-
+  
   */
   exportToPDF(lstCols: any, lstData: any, orientation: any) {
     // this.exportDataPdfService.CreateReport(lstCols, lstData, orientation);
@@ -546,6 +581,11 @@ export class CommonOperationsService {
     { label: "Suppliers", value: 2, color: 'badge-outline-success' },
     { label: "Customers", value: 3, color: 'badge-outline-secondary' },
     { label: "Others", value: 4, color: 'badge-outline-dark', BelongToUser: true },
+  ]
+  lstDiscountRenew: any = [
+    { label: 'Opened', value: 0 },
+    { label: 'OnePeerDay', value: 1 },
+    { label: 'TwoPeerDay', value: 1 },
   ]
   lstInvoiceType: any = [
     { label: 'Payed', value: 0 },
@@ -695,6 +735,10 @@ export class CommonOperationsService {
           }
           else if (key == "lstInvoiceType") {
             lstInventoryLookupsByKey[key] = this.lstInvoiceType;
+            executeCallBack();
+          }
+          else if (key == "lstDiscountRenew") {
+            lstInventoryLookupsByKey[key] = this.lstDiscountRenew;
             executeCallBack();
           }
           else if (key == "lstItemType") {
@@ -896,7 +940,6 @@ export class CommonOperationsService {
         paragraph = paragraph.replaceAll("(", "__TEMP__");
         paragraph = paragraph.replaceAll(")", "(");
         paragraph = paragraph.replaceAll("__TEMP__", ")");
-        console.log(txt, paragraph)
         return paragraph;
       }
     }

@@ -20,8 +20,8 @@
             </div>
             <div class="flex justify-between items-end">
                 <label class="inline-flex">
-                    <input type="checkbox" class="outline-success form-checkbox" [(ngModel)]="params.employeeInvoicesOnly"
-                        (ngModelChange)="search()" />
+                    <input type="checkbox" class="outline-success form-checkbox"
+                        [(ngModel)]="params.employeeInvoicesOnly" (ngModelChange)="search()" />
                     <span>{{ 'EmployeeInvoicesOnly' | translate }}</span>
                 </label>
             </div>
@@ -50,7 +50,7 @@
                 <div class="flex justify-end items-end">
                     <div hlMenu class="dropdown" *ngIf="extraParams.canAdd">
                         <button type="button" hlMenuButton class="btn btn-info dropdown-toggle">
-                            AddNew
+                            {{ 'AddNew' | translate }}
                             <icon-caret-down class="inline-block rtl:mr-1 ltr:ml-1" />
                         </button>
                         <ul *hlMenuItems @toggleAnimation class="ltr:right-0 rtl:left-0 whitespace-nowrap">

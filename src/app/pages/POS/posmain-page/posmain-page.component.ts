@@ -84,6 +84,7 @@ export class POSMainPageComponent {
   currentActiveShiftChanged!: Subscription;
   closePosSelectAccount!: Subscription;
   closePosItemsSearch!: Subscription;
+  closePosRemoveInvoice!: Subscription;
 
   subscribeToEvents() {
     this.closePosSelectItemDetails = this.gto.closePosSelectItemDetails$.subscribe(a => this.handleCloseSelectItem(a))
@@ -97,6 +98,7 @@ export class POSMainPageComponent {
       this.handleSelectDestructionAccount(a)
     })
     this.closePosItemsSearch = this.gto.closePosItemsSearch$.subscribe(a => this.handleClosePosItemsSearch(a))
+    this.closePosRemoveInvoice = this.gto.closePosRemoveInvoice$.subscribe(a => this.handleClosePosRemoveInvoice(a))
   }
 
   ngOnDestroy() {
@@ -107,6 +109,7 @@ export class POSMainPageComponent {
     if (this.currentActiveShiftChanged) { this.currentActiveShiftChanged.unsubscribe(); }
     if (this.closePosSelectAccount) { this.closePosSelectAccount.unsubscribe(); }
     if (this.closePosItemsSearch) { this.closePosItemsSearch.unsubscribe(); }
+    if (this.closePosRemoveInvoice) { this.closePosRemoveInvoice.unsubscribe(); }
   }
 
 
@@ -159,6 +162,7 @@ export class POSMainPageComponent {
   selectItem(item: any) {
     this.CheckItemTypeToAdd(item)
     this.model.changed = true;
+    this.model.pendingProgress = false
   }
   CheckItemTypeToAdd(item: any) {
     if (!this.model['lstItems']) { this.model['lstItems'] = [] }
@@ -193,7 +197,9 @@ export class POSMainPageComponent {
     });
   }
   getItemKey(itm: any) {
-    return `${itm.itemId}_${itm.variantId ?? ''}_${itm.note}_${itm.unitId ?? ""}_${itm.sentToKit ?? "F"}_${itm.lstAddOns ? itm.lstAddOns.sort((a: any, b: any) => a.addOnId - b.addOnId).map((a: any) => `${a.addOnId}.${a.qty}`).join(",") : ''}`
+    var key = `${itm.itemId}_${itm.variantId ?? ''}_${itm.variantName ?? ''}_${itm.note}_${itm.sentToKit ?? "F"}_${itm.lstAddOns ? itm.lstAddOns.sort((a: any, b: any) => a.addOnId - b.addOnId).map((a: any) => `${a.addOnId}.${a.qty}`).join(",") : ''}_${itm.unitId ?? ""}`;
+    console.log("getItemKey", itm, key)
+    return key;
   }
   checkIfItemDeclaredBefore(item: any) {
     let relatedCartItem = this.model.lstItems.find((z: any) => z.key == item.key)
@@ -286,7 +292,7 @@ export class POSMainPageComponent {
   btnSearch() {
     this.gto.openPosItemsSearch$.next(1)
   }
-  prepareObjToServer(invoice: any) {
+  prepareObjToServer_addInvoice(invoice: any) {
     let toServerObj = JSON.parse(JSON.stringify(invoice))
     if (!toServerObj['ShiftId']) {
       toServerObj['ShiftId'] = this.shiftStateManagement.CurrentShiftId
@@ -298,44 +304,104 @@ export class POSMainPageComponent {
     }
     return toServerObj;
   }
+  // getInvoiceKey(invoice: any) {
+  //   let invoiceKey = `${invoice.id}_${invoice.finalTotal}`;
+  //   invoice.lstItems.forEach(element => {
+
+  //   });
+  // }
+  switchProgressTable_local(obj: any, tf: any) {
+    if (obj.posTableId)
+      this.gto.switchProgressTable(obj.posTableId, tf)
+    // if (!tf) {
+    //   this.gto.finishAddTableOrder$.next(true)
+    // }
+  }
   MakeOrderPending(invoice: any = this.model, callBacks: any = {}) {
-    if (this.isValidInvoice(invoice)) {
-      if (callBacks.onPost) {
-        callBacks.onPost(invoice);
-      }
-      let obj = this.prepareObjToServer(invoice);
-      this.managementService.AddInvoice(obj).subscribe(z => {
-        if (z.status) {
-          invoice.id = z.entityId
-          if (callBacks.success) {
-            callBacks.success(invoice)
-          }
+    if (!invoice.key) {
+      alert("This invoice without key");
+    }
+    if (!invoice.pendingProgress) {
+      invoice.pendingProgress = true;
+      if (this.isValidInvoice(invoice)) {
+        if (callBacks.onPost) {
+          callBacks.onPost(invoice);
         }
-      })
-    } else {
-      if (callBacks.error) {
-        callBacks.error(invoice)
+        this.checkDuplicatesItems(invoice)
+        let obj = this.prepareObjToServer_addInvoice(invoice);
+        this.switchProgressTable_local(obj, true)
+        this.managementService.AddInvoice(obj).subscribe(z => {
+          if (z.status) {
+            invoice.id = z.entityId
+            if (callBacks.success) {
+              callBacks.success(invoice)
+            }
+          }
+          this.handleError(z)
+          invoice.pendingProgress = false;
+          this.switchProgressTable_local(obj, false)
+        }, e => {
+          invoice.pendingProgress = false
+          this.switchProgressTable_local(obj, false)
+        })
+      } else {
+        invoice.pendingProgress = false;
+        if (callBacks.error) {
+          callBacks.error(invoice)
+        }
       }
     }
   }
-
+  checkDuplicatesItems(invoice: any) {
+    if (invoice.lstItems) {
+      var uniqeKeys = invoice.lstItems.reduce((acc: any, item: any) => {
+        const key = item.key;
+        if (!acc[key]) {
+          acc[key] = item;
+        }
+        else if (acc[key] && !acc[key].sentToKit && item.sentToKit) {
+          acc[key] = item.sentToKit
+        }
+        return acc;
+      }, {})
+      invoice.lstItems = Object.keys(uniqeKeys).map(z => uniqeKeys[z]);
+    }
+  }
   getInvoiceDetails(req: any, callBacks: any = {}, invoiceRepo = 'model') {
-    let thit: any = this;
     this.managementService.InvoiceDetails(req).subscribe(z => {
-      if (z) {
-        z.lstItems.forEach((itm: any) => itm._sentToKit = itm.sentToKit);
-        thit[invoiceRepo] = z;
-      }
-      else {
-        this.resetCurrentInvoice();
-      }
-      if (callBacks.onFinish) {
-        callBacks.onFinish()
-      }
-      this.addItemsHashKey(thit[invoiceRepo])
-      this.refreshInvoiceTotalQty(thit[invoiceRepo])
-      this.checkIfPricelistNotBelongToDefaultCurrentPosAccount(thit[invoiceRepo])
+      this.fetchInvoiceDetails(req, z, callBacks, invoiceRepo)
     })
+  }
+  fetchInvoiceDetails(req: any, z: any, callBacks: any = {}, invoiceRepo = 'model') {
+    let thit: any = this;
+    if (z) {
+      //Compare with Key before delete 
+      if (req.fromSplit) {
+        let itemKeys = z.lstItems.map((i: any) => i.key)
+        let itemsAddedWhileSyncWithBe = thit[invoiceRepo].lstItems.filter((i: any) => itemKeys.indexOf(i.key) == -1)
+        if (itemsAddedWhileSyncWithBe.length > 0) {
+          console.log("Detect items while save", itemsAddedWhileSyncWithBe)
+          z.lstItems.push(...itemsAddedWhileSyncWithBe)
+        }
+        else {
+          console.log("No Items While Save", itemsAddedWhileSyncWithBe)
+        }
+      }
+
+
+      z.lstItems.forEach((itm: any) => delete itm.key);
+      z.lstItems.forEach((itm: any) => itm._sentToKit = itm.sentToKit);
+      thit[invoiceRepo] = z;
+    }
+    else {
+      this.resetCurrentInvoice();
+    }
+    if (callBacks.onFinish) {
+      callBacks.onFinish()
+    }
+    this.addItemsHashKey(thit[invoiceRepo])
+    this.refreshInvoiceTotalQty(thit[invoiceRepo])
+    this.checkIfPricelistNotBelongToDefaultCurrentPosAccount(thit[invoiceRepo])
   }
   checkIfPricelistNotBelongToDefaultCurrentPosAccount(invoice: any) {
     let currentUserInfo = this.common.getCurrentUserInfo();
@@ -350,16 +416,18 @@ export class POSMainPageComponent {
       this.invoiceHelperService.printInvoice(invoice);
     }
     if (PrintTo.indexOf("Kit") > -1) {
+      console.log("invoice.lstItems to kitchen", JSON.parse(JSON.stringify(invoice.lstItems)))
       this.invoiceHelperService.lstItemGroupsLkp = this.lstLkps['ItemGroups']
       let ItmsToPrint = [];
       if (invoice.lstItems) { ItmsToPrint.push(...invoice.lstItems) }
       if (invoice.lstDeletedItems) { ItmsToPrint.push(...invoice.lstDeletedItems) }
-      this.invoiceHelperService.printInvoicePartsToKitchens({ ...invoice, lstItems: ItmsToPrint });
+      this.invoiceHelperService.printInvoicePartsToKitchens({ ...invoice, lstItems: ItmsToPrint }); // This is not vaild! in this way we ignore issenttokitchent prop 
+      // this.invoiceHelperService.printInvoicePartsToKitchens(invoice); // This is not vaild! in this way we ignore issenttokitchent prop 
     }
   }
   toTables() {
     if (this.model.changed) {
-      this.tempSaveOrderTable()
+      // this.tempSaveOrderTable()
       this.MakeOrderPending(this.model, {
         ...this.generalPendingOrderCallbacks, error: '',
         onPost: this.PreSubmitOrderPrintPending.bind(this),
@@ -368,12 +436,12 @@ export class POSMainPageComponent {
     }
     this.common.navigateTo("../floors");
   }
-  tempSaveOrderTable() {
-    if (this.model.posTableId && this.model.lstItems && this.model.lstItems.length > 0) {
-      console.log("Save To Table", this.model.posTableId)
-      localStorage.setItem("tempTblBusy", this.model.posTableId)
-    }
-  }
+  // tempSaveOrderTable() {
+  //   if (this.model.posTableId && this.model.lstItems && this.model.lstItems.length > 0) {
+  //     console.log("Save To Table", this.model.posTableId)
+  //     localStorage.setItem("tempTblBusy", this.model.posTableId)
+  //   }
+  // }
   clearCurrentRoutesParams() {
     this.routeTableId = '';
     this.routeTblName = '';
@@ -393,7 +461,8 @@ export class POSMainPageComponent {
       invoiceType: currentUserInfo.posDetails.invoiceType,
       accountName: currentUserInfo.posDetails.mainAccName,
       paymentType: 0,
-      lstItems: []
+      lstItems: [],
+      key: this.common.getCurrentDateTimeUniqeKey()
       // ShiftId: this.shiftStateManagement.CurrentShiftId //should be runing at submit, because may close and open new shift after create this model
     }
 
@@ -476,11 +545,13 @@ export class POSMainPageComponent {
   handleClosePosOrdersList(data: any) {
     if (data.action == "Pick") {
       //submit Last opened order 
-      this.MakeOrderPending(this.model, {
-        ...this.generalPendingOrderCallbacks, error: null,
-        onPost: this.PreSubmitOrderPrintPending.bind(this),
-        success: this.AfterSubmitOrderPrintPending.bind(this)
-      })
+      if (this.model.changed) {
+        this.MakeOrderPending(this.model, {
+          ...this.generalPendingOrderCallbacks, error: null,
+          onPost: this.PreSubmitOrderPrintPending.bind(this),
+          success: this.AfterSubmitOrderPrintPending.bind(this)
+        })
+      }
       this.getInvoiceDetails({ id: data.inv.id });
     }
   }
@@ -492,30 +563,67 @@ export class POSMainPageComponent {
 
 
   // Start Split Logic 
+  splitFromOrder: any = null;
+  splitToOrder: any = null;
   openSplitInvoice(inv: any = this.model) {
+    if (this.splitToOrder && this.splitToOrder.pendingProgress) {
+      this.common.confirmationMessage("SystemAlert", "Please wait until first split complete");
+      return;
+    }
+    if (inv.discountAccountId) {
+      this.common.error(this.lstWords['YouCantSplitInvoiceHasEmployeeDiscount'])
+      return;
+    }
     if (this.isValidInvoice(inv)) {
-      //Make order pending
-      // setTimeout(() => {
-      this.MakeOrderPending(this.model, { success: () => { this.gto.splitOrderPendingSourceIdArrived$.next(this.model.id) } })
+      if (inv.changed) {
+        this.MakeOrderPending(inv, {
+          onPost: (inv: any) => {
+            if (inv.id) {
+              this.printInvoice(inv, 'Kit')
+              inv.printedBeforeSubmit = true;
+            }
+            this.MarkItemsAsSentToKit(inv)
+          }, success: (inv: any) => {
+            if (inv.id && !inv.printedBeforeSubmit) {
+              this.printInvoice(inv, 'Kit')
+            }
+            this.gto.splitOrderPendingSourceIdArrived$.next(inv.id)
+          }
+        })
+      }
       // }, 5000);
-      let fromOrder = JSON.parse(JSON.stringify(inv))
+      this.splitFromOrder = JSON.parse(JSON.stringify(inv))
 
-      let toOrder: any = { lstItems: [] };
-      this.common.CopyValues(fromOrder, toOrder, ['discPer', 'discAmount', 'serPer', 'serAmount', 'accountId', 'posTableId', 'invoicePosType', 'invoiceCategoryId'])
+      this.splitToOrder = { lstItems: [], key: this.common.getCurrentDateTimeUniqeKey() };
+      this.common.CopyValues(this.splitFromOrder, this.splitToOrder, ['discPer', 'discAmount', 'serPer', 'serAmount', 'accountId', 'posTableId', 'invoicePosType', 'invoiceCategoryId'])
 
       this.gto.openPosMoveOrderItems$.next({
-        fromOrder: fromOrder,
-        toOrder: toOrder,
+        fromOrder: this.splitFromOrder,
+        toOrder: this.splitToOrder,
         buttons: { PAY: true }
       })
+
+
+      setTimeout(() => {
+        console.log("this.splitFromOrder", this.splitFromOrder)
+        console.log("this.splitToOrder", this.splitToOrder)
+      }, 10000);
     } else {
       this.common.error(this.lstWords['NotValidOrder'])
     }
   }
 
   handleClosePosMoveOrderItems(payload: any) {
-    if (payload.action == "RefreshCurrentOrder") {
-      this.getInvoiceDetails({ id: this.model.id })
+    if (payload.action == "BeforeSaveRefreshCurrent") {
+      this.model.lstItems = payload.remainItems
+      this.invoiceHelperService.calculateInvoiceTotals(this.model)
+    }
+    else if (payload.action == "RefreshCurrentOrder") {
+      //If get invoice from split, you should keep items not added to the backend "not have id" keep in the lstItems
+      // this.getInvoiceDetails({ id: this.model.id, fromSplit: true })
+      if (this.model.id == payload.sourceInvoiceDetails.id) {
+        this.fetchInvoiceDetails({ fromSplit: true }, payload.sourceInvoiceDetails);
+      }
     }
   }
   openPosSetup() {
@@ -535,7 +643,12 @@ export class POSMainPageComponent {
   //End Split Logic
 
   lstWords = {
-    "NotValidOrder": ""
+    "NotValidOrder": "",
+    "AreYouSure": "",
+    "ThisInvoiceWillBeTransferredTo__Account": "",
+    "?": "",
+    "YouCantSplitInvoiceHasEmployeeDiscount": "",
+    "UnknownErrorTryAgainLater": ""
   }
   generalPendingOrderCallbacks = {
     onPost: (inv: any) => { this.resetCurrentInvoice() },
@@ -765,38 +878,89 @@ export class POSMainPageComponent {
     }
 
   }
+
+  private barcodeBuffer: string = '';
+  private lastKeyTime: number = 0;
+  private barcodeTimeout: any = null;
+  private isReadingBarcode: boolean = false;
+
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
-    console.log(event.key)
-    // if (event.ctrlKey && event.key === 's') {
-    //   event.preventDefault();
-    //   console.log('Ctrl + S pressed');
-    //   // Add your custom logic here
-    // }
+    const currentTime = new Date().getTime();
+    const timeDiff = currentTime - this.lastKeyTime;
+    this.lastKeyTime = currentTime;
+
+    if (event.key.length === 1) {
+      // Append key to buffer
+      if (timeDiff < 50) {
+        this.isReadingBarcode = true;
+        this.barcodeBuffer += event.key;
+      } else {
+        this.isReadingBarcode = false;
+        this.barcodeBuffer = event.key;
+      }
+
+      clearTimeout(this.barcodeTimeout);
+      this.barcodeTimeout = setTimeout(() => {
+        if (this.barcodeBuffer.length >= 5) {
+          console.log('🔍 Barcode detected:', this.barcodeBuffer);
+        } else {
+          // If input was short and slow, treat it as manual
+          const key = this.barcodeBuffer;
+          this.lstShortCuts.forEach((z: any) => {
+            if (z.action && z.key) {
+              if (Number(key) && z.key === 'nums') {
+                console.log('Manual Number Key Pressed (delayed)');
+                this.gto.shortCutDetection$.next({ ...z, pressOn: Number(key) });
+              } else if (z.key === key) {
+                console.log('Manual Shortcut Key Pressed (delayed)', z.action);
+                let thit: any = this;
+                if (z.bind && !z.handleBy) {
+                  thit[z.bind]();
+                } else if (z.handleBy) {
+                  this.gto.shortCutDetection$.next({ ...z });
+                }
+              }
+            }
+          });
+        }
+
+        this.barcodeBuffer = '';
+        this.isReadingBarcode = false;
+      }, 100);
+
+      return; // Skip immediate manual handling
+    }
+
+    // Skip all other manual handling if a barcode is in progress
+    if (this.isReadingBarcode) return;
+
+    // Manual shortcut handling for non-character keys (like Enter, F1, etc.)
     this.lstShortCuts.forEach((z: any) => {
-      if (z.action && z.key) {
-        if (Number(event.key) && z.key == "nums") {
-          console.log("action", z.action);
-          this.gto.shortCutDetection$.next({ ...z, pressOn: Number(event.key) })
+      if (z.action && z.key === event.key) {
+        console.log('Manual Shortcut Key Pressed (non-char)', z.action);
+        let thit: any = this;
+        if (z.bind && !z.handleBy) {
+          thit[z.bind]();
+        } else if (z.handleBy) {
+          this.gto.shortCutDetection$.next({ ...z });
         }
-        else if (z.key == event.key) {
-          console.log("action", z.action);
-          let thit: any = this;
-          if (z.bind && !z.handleBy) {
-            thit[z.bind]();
-          } else if (z.handleBy) {
-            this.gto.shortCutDetection$.next({ ...z })
-          }
-          event.preventDefault();
-        }
+        event.preventDefault();
       }
     });
   }
+
+
   handleClosePosItemsSearch(c: any) {
     if (c.action == 'add') {
       c.itm = this.common.fixItemDefaultUnits([c.itm], this.getCurrentPriceListKey())[0]
-      this.CheckItemTypeToAdd(c.itm);
+      // this.CheckItemTypeToAdd(c.itm);
+      this.selectItem(c.itm)
     }
+  }
+
+  handleClosePosRemoveInvoice(p: any) {
+    this.resetCurrentInvoice()
   }
   trackByRowIndex = (index: number, row: any[]): number => {
     setTimeout(() => {
@@ -818,7 +982,7 @@ export class POSMainPageComponent {
     return result;
   }
   checkDiscountAmountLimits() {
-    if (this.model.discAmount && this.p['MaximumDiscount']) {
+    if (this.model.discAmount && this.p['MaximumDiscount'] && !this.model.discountAccountId) {
       if (this.model.discAmount > this.p['MaximumDiscount']) {
         delete this.model.discAmount;
         delete this.model.discPer;
@@ -828,5 +992,35 @@ export class POSMainPageComponent {
     }
   }
 
+  openPosReport() {
+    this.gto.openPosReports$.next(1)
+  }
+  openApplyPosDiscount() {
+    this.gto.openApplyPosDiscount$.next({ orderDetails: this.model })
+  }
 
+
+  async SaveOnAccount() {
+    if (this.model.discountAccountId) {
+      let msg = this.lstWords['ThisInvoiceWillBeTransferredTo__Account'].replace("__", this.model.discountAccountName)
+      let result = await this.common.confirmationMessage(`${this.lstWords['AreYouSure']}`, `${msg} ${this.lstWords['?']}`);
+      if (result.value) {
+        const callBacks = {
+          onPost: this.PreSubmitOrderPrintPay.bind(this),
+          success: this.AfterSubmitOrderPrintPay.bind(this)
+        }
+        this.model.accountId = this.model.discountAccountId;
+
+        let OrderToMoveOnAccount = this.prepareObjToServer_addInvoice({ ...this.model })
+        this.invoiceHelperService.SaveInvoiceOnAccount(OrderToMoveOnAccount, callBacks)
+        this.resetCustomAccountIfSetted()
+      }
+    }
+  }
+
+  handleError(z: any) {
+    if (z.lstError && z.lstError.length > 0) {
+      this.common.confirmationMessage(' ', `${this.lstWords['UnknownErrorTryAgainLater']}`);
+    }
+  }
 }

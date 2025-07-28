@@ -17,7 +17,6 @@ export class PosOrderDetailsComponent {
   constructor(gto: GeneralTemplateOperations, private managementService: ManagementService, private common: CommonOperationsService) {
     this.openPosOrderDetailsSub = gto.openPosOrderDetails$.subscribe((z: any) => {
       this.componentData = z;
-      console.log("this.componentData.orderDetails", this.componentData.orderDetails)
       if (this.componentData.orderDetails) {
         this.model = this.componentData.orderDetails
       } else if (this.componentData.loadInvoiceId) {
@@ -42,6 +41,7 @@ export class PosOrderDetailsComponent {
   }
   ngOnDestroy() {
     if (this.openPosOrderDetailsSub) {
+      this.model = {}
       this.openPosOrderDetailsSub.unsubscribe();
     }
   }
@@ -63,13 +63,16 @@ export class PosOrderDetailsComponent {
     { field: 'Audit', title: 'Audit' },
     { field: 'note', title: 'Notes' }
   ];
+  render = true;
   getInvoiceDetails(id: any) {
     let req = {
       id: id
     }
+    this.render = false
     this.managementService.InvoiceDetails(req).subscribe(z => {
       this.model = z;
       this.model.totQty = this.common.sum(this.model.lstItems, 'quantity')
+      this.render = true
     })
   }
 }

@@ -1,0 +1,20 @@
+<button type="button" class="my-2 p-1 w-full btn btn-secondary" *ngIf="!sm"
+    (click)="openApplyPosDiscount()">
+    <span class="flex items-center gap-x-2">
+        <img src="assets/images/discimg1.png" class="rounded w-8"> {{ 'EmployeeDiscount' | translate }}:
+        {{model.discountAccountName}}
+    </span>
+    <span class="-top-3 ltr:right-0 rtl:left-0 absolute bg-danger p-0.5 px-1.5 rounded-full badge">{{model.discPer}}
+        %</span>
+</button>
+
+
+<button type="button" class="p-1 w-full btn btn-secondary btn-sm" *ngIf="sm">
+    <span class="flex items-center gap-x-1">
+        {{model.discountAccountName}}
+        <img src="assets/images/discimg1.png" class="rounded w-6">
+    </span>
+    <span
+        class="-top-3 ltr:right-0 rtl:left-0 absolute bg-danger p-0.5 px-1 rounded-full !text-sm badge">{{model.discPer}}
+        %</span>
+</button>

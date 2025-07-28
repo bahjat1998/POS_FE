@@ -11,6 +11,9 @@
                 <button type="button" class="btn"
                     [ngClass]="filters['invoiceStatus'] == 4 ? 'btn-secondary':'btn-outline-secondary'"
                     (click)="selectFilter(4)">{{'PaidOrders'|translate}}</button>
+                <button type="button" class="btn"
+                    [ngClass]="filters['invoiceStatus'] == 2 ? 'btn-danger':'btn-outline-danger'"
+                    (click)="selectFilter(2)">{{'DeletedOrders'|translate}}</button>
             </div>
             <div class="flex justify-between items-center gap-x-3 p-2 font-semibold">
                 <div>
@@ -39,6 +42,9 @@
                         <strong class="items-center text-primary">
                             {{ r.accountName }}
                         </strong>
+                        <ng-container *ngIf="r.discountAccountId">
+                            <app-pos-discount-card-show [orderDetails]="r" [sm]="true"></app-pos-discount-card-show>
+                        </ng-container>
                     </ng-template>
                     <ng-template slot="PosTypeLbl" let-r="data">
                         <span class="badge badge-outline-{{r.InvoicePosTypeColor}}">
@@ -53,16 +59,18 @@
                         </p>
                     </ng-template>
                     <ng-template slot="Amount" let-r="data">
-                        <p class="font-bold" (dblclick)="navTo(r)">
+                        <p class="font-bold text-lg" (dblclick)="navTo(r)">
                             {{ r.finalTotal | number}} <span class="font-bold text-success">{{' ' +
                                 PaymentMethodMap[r['paymentType']]}}</span>
                         </p>
                     </ng-template>
                     <ng-template slot="CreateDate" let-r="data">
-                        <div>
-                            <strong class="items-center text-info">
+                        <div class="space-y-1">
+                            <p class="items-center text-info">
                                 {{ r.createDate }}
-                            </strong>
+                            </p>
+                            <p class="bg-primary badge" *ngIf="r.splitFrmInvId">{{'SplittedFrom' | translate}}:
+                                {{r.splitFrmInvId}} </p>
                         </div>
                     </ng-template>
                     <ng-template slot="CreateByName" let-r="data">

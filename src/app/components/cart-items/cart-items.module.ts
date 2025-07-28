@@ -11,6 +11,7 @@ import { InvoiceItemNoteModule } from '../invoice-item-note/invoice-item-note.mo
 import { RemoveItemModule } from '../remove-item/remove-item.module';
 import { ModalModule } from 'angular-custom-modal';
 import { MenuModule } from 'headlessui-angular';
+import { PosDiscountCardShowModule } from '../Display/pos-discount-card-show/pos-discount-card-show.module';
 
 
 @NgModule({
@@ -28,7 +29,8 @@ import { MenuModule } from 'headlessui-angular';
     ModalModule,
     InvoiceItemNoteModule,
     RemoveItemModule,
-    MenuModule
+    MenuModule,
+    PosDiscountCardShowModule
   ],
   exports: [CartItemsComponent]
 })

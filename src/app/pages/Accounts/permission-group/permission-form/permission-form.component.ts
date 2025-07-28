@@ -47,6 +47,7 @@ export class PermissionFormComponent {
     { isPos: true, label: "Pay", value: "Pay" },
     { isPos: true, label: "DeleteItemAfterSave", value: "DeleteItemAfterSave" },
     { isPos: true, label: "ChangeDiscount", value: "ChangeDiscount" },
-    { isPos: true, label: "ChangeService", value: "ChangeService" }
+    { isPos: true, label: "ChangeService", value: "ChangeService" },
+    { isPos: true, label: "AllowDeleteInvoice", value: "AllowDeleteInvoice" }
   ]
 }

@@ -151,7 +151,75 @@ export class CacheService {
     }
 
 
-    async getItemsBasedGroupId(req: any): Promise<any[]> {
+    async getItemsBasedFilter(req: any): Promise<any[]> {
+        return new Promise((resolve, reject) => {
+            if (!this.db) {
+                return reject('Database not initialized');
+            }
+
+            const result: any[] = []; // To store matching items
+            const transaction = this.db.transaction(this.storeName, 'readonly');
+            const store = transaction.objectStore(this.storeName);
+
+            // Open cursor to iterate over all items in the store
+            const request = store.openCursor();
+
+            request.onsuccess = (event: any) => {
+                const cursor = event.target.result;
+
+                if (cursor) {
+                    const currentItem = cursor.value;
+
+                    // Check your condition here to filter the data
+                    if (currentItem.key === "__AllItems__" && currentItem.value.lstData) {
+                        // Filter the data based on your condition
+                        let filteredItems: any = [];
+                        if (req.GroupId) {
+                            filteredItems = currentItem.value.lstData.filter((item: any) => {
+                                return item.groupId === req.GroupId; // Modify the condition as needed
+                            });
+                        }
+                        else if (req.strSearch) {
+                            filteredItems = currentItem.value.lstData.filter((item: any) => {
+                                return item.nameAr.indexOf(req.strSearch) > -1 || item.nameEn.indexOf(req.strSearch) > -1; // Modify the condition as needed
+                            });
+                        }
+                        else if (req.barcode) {
+                            let relatedItem = null;
+                            let matchedItem = null;
+                            if (req.productBarcode) {
+                                let lstItemsHasEnableWeights = currentItem.value.lstData.filter((item: any) => item.lstUnits && item.enableWeight);
+                                if (lstItemsHasEnableWeights.length > 0) {
+                                    let productBarcode = req.barcode.substring(0, 7);
+                                    matchedItem = lstItemsHasEnableWeights.find((item: any) => item.lstUnits && item.lstUnits.some((z: any) => z.barcode == productBarcode));
+                                    if (matchedItem) {
+                                        matchedItem.quantity = req.quantityCode
+                                        relatedItem = matchedItem;
+                                    }
+                                }
+                            }
+                            if (!matchedItem) {
+                                relatedItem = currentItem.value.lstData.find((item: any) => item.lstUnits && item.lstUnits.some((z: any) => z.barcode == req.barcode));
+                            }
+                            filteredItems = [relatedItem]
+                        }
+                        // Add the filtered items to the result
+                        result.push(...filteredItems);
+                    }
+                    cursor.continue();
+                } else {
+                    // When the cursor reaches the end, resolve the result
+                    resolve(result);
+                }
+            };
+
+            request.onerror = () => {
+                reject('Error retrieving data using cursor');
+            };
+        });
+    }
+
+    async getItemsBasedSelectedItems(req: any): Promise<any[]> {
         return new Promise((resolve, reject) => {
             if (!this.db) {
                 return reject('Database not initialized');
@@ -174,14 +242,16 @@ export class CacheService {
                     if (currentItem.key === "__AllItems__" && currentItem.value.lstData) {
                         // Filter the data based on your condition
                         let filteredItems: any = {};
-                        if (req.GroupId) {
+                        if (req.lstItemIds) {
                             filteredItems = currentItem.value.lstData.filter((item: any) => {
-                                return item.groupId === req.GroupId; // Modify the condition as needed
+                                return req.lstItemIds.indexOf((z: any) => item.id == z) > -1; // Modify the condition as needed
                             });
                         }
-                        else if (req.strSearch) {
-                            filteredItems = currentItem.value.lstData.filter((item: any) => {
-                                return item.nameAr.indexOf(req.strSearch) > -1 || item.nameEn.indexOf(req.strSearch) > -1; // Modify the condition as needed
+                        else {
+                            currentItem.value.lstData.forEach((item: any) => {
+                                if (filteredItems.length <= 50) {
+                                    filteredItems.push(item)
+                                }
                             });
                         }
 
@@ -189,7 +259,12 @@ export class CacheService {
                         result.push(...filteredItems);
                     }
 
-                    cursor.continue(); // Continue to the next item
+                    if ((!req.lstItemIds || req.lstItemIds.length == 0) && result.length == 50) {
+                        resolve(result);
+                    }
+                    else {
+                        cursor.continue();
+                    }
                 } else {
                     // When the cursor reaches the end, resolve the result
                     resolve(result);

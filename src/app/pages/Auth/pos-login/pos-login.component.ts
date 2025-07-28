@@ -28,6 +28,7 @@ export class PosLoginComponent {
   constructor(public translate: TranslateService, private accountService: AccountService, private shiftStateManagement: ShiftStateManagement, private common: CommonOperationsService, public storeData: Store<any>, public router: Router, private appSetting: AppService, private storeManagementService: StoreManagementService) {
     this.initStore();
     this.common.loadLkps(this.lstLkpKeys, this.lstLkps, this.handleSelectedBranch.bind(this))
+    localStorage.setItem("loginSetup", "\"POS\"")
   }
   handleSelectedBranch() {
     if (this.lstLkps['Branch'] && this.lstLkps['Branch'].length > 0) {
@@ -72,6 +73,7 @@ export class PosLoginComponent {
               return;
             }
             if (c["token"]) {
+              this.storeManagementService.currentLogin = "../loginPos";
               this.common.saveAuth(c);
               this.shiftStateManagement.checkedFromBe = false;
               this.shiftStateManagement.CheckCurrentShift()
